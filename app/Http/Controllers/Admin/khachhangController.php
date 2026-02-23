@@ -131,4 +131,4 @@ function destroy($id){
                 ->with('error', 'Lỗi: ' . $res);
     }
 }
-}
+}//end class
