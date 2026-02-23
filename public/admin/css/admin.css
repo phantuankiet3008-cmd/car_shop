@@ -1,0 +1,432 @@
+/* ========== 1. CẤU TRÚC CHUNG & SIDEBAR ========== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+  background: #f4f6f9;
+}
+
+.dau_trang {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px; /* Chỉnh lại chiều cao vừa phải */
+  background: #1a2236;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  z-index: 1000;
+}
+
+.title_trang {
+  font-size: 20px;
+  font-weight: bold;
+  margin-right: 20px;
+}
+
+.logout {
+  margin-left: auto;
+  color: white;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+.body_trang {
+  display: flex;
+  margin-top: 80px;
+  min-height: calc(100vh - 80px);
+}
+html,
+body {
+  height: auto;
+}
+
+.left_menu {
+  width: 250px;
+  min-width: 250px;
+  background: #1a2236;
+  transition: 0.3s;
+}
+
+.menu_admin {
+  list-style: none;
+}
+
+.menu_item a {
+  display: block;
+  padding: 15px 20px;
+  color: #9d7dfa; /* Màu tím menu */
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.menu_item a:hover {
+  background: #252d45;
+  color: white;
+}
+
+.right_content {
+  flex: 1;
+  background: white;
+  padding: 30px;
+  overflow-x: auto;
+}
+
+/* ========== 2. BẢNG DANH SÁCH ========== */
+.table-admin {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.table-admin th {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 2px solid #eee;
+  background: #f8f9fa;
+}
+
+.table-admin td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+/* ========== 3. CHỈNH SỬA PHẦN FORM (QUAN TRỌNG) ========== */
+/* Container chia làm 3 cột dựa trên Flexbox */
+.container {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+/* Cột 1: Tiêu đề & Ảnh đại diện */
+.section-main-img {
+  flex: 1; /* Chiếm khoảng 30-35% */
+  min-width: 300px;
+}
+
+.section-main-img h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.img-main-preview {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Cột 2: Album ảnh chi tiết (Có vạch xanh đứng) */
+.section-album {
+  flex: 0.6; /* Chiếm khoảng 20% */
+  border-left: 4px solid #3b82f6; /* Vạch xanh dương thẳng đứng */
+  padding-left: 15px;
+  min-width: 200px;
+}
+
+.section-album h3 {
+  font-size: 16px;
+  margin-bottom: 15px;
+  line-height: 1.4;
+}
+
+.img-item {
+  margin-bottom: 15px;
+}
+
+.img-item img {
+  width: 120px;
+  height: auto;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  display: block;
+  cursor: pointer;
+}
+
+/* Cột 3: Form thông tin */
+.section-info {
+  flex: 1.5; /* Chiếm phần còn lại rộng nhất */
+}
+
+.form-group {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 100%;
+}
+
+/* Ô màu vàng thay đổi ảnh */
+.form-group[style*="background: #fff3cd"] {
+  background-color: #fff3cd !important;
+  padding: 15px !important;
+  border-radius: 5px;
+  border: 1px solid #ffeeba;
+}
+
+/* Nút bấm Lưu màu xanh lá */
+.btn-update {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 15px;
+  width: 100%;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.btn-update:hover {
+  background: #218838;
+}
+
+/* Trạng thái ẩn Menu */
+.body_trang.hide-menu .left_menu {
+  width: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Zoom Modal */
+#zoomModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 2000;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ========== CHỈ CHỈNH SỬA PHẦN NÀY TRONG CSS CỦA BẠN ========== */
+
+/* Cột 2: Album ảnh chi tiết */
+.section-album {
+  flex: 1; /* Tăng nhẹ độ rộng để đủ chỗ chứa ảnh nằm ngang */
+  border-left: 4px solid #3b82f6;
+  padding-left: 15px;
+  min-width: 250px;
+}
+
+/* Container chứa các ảnh màu */
+.horizontal-images {
+  display: flex; /* Ép các hình ảnh nằm ngang */
+  flex-wrap: wrap; /* Nếu quá nhiều ảnh sẽ tự động xuống dòng */
+  gap: 10px; /* Khoảng cách giữa các ảnh */
+  margin-top: 10px;
+}
+
+.img-item {
+  margin-bottom: 0; /* Bỏ margin bottom cũ để đều hàng */
+}
+
+.img-item img {
+  width: 100px; /* Điều chỉnh lại kích thước ảnh một chút để vừa hàng ngang */
+  height: 70px;
+  object-fit: cover; /* Giữ ảnh không bị méo */
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  display: block;
+  cursor: pointer;
+}
+
+/* ============================================================== */
+
+/* ================= FORM KHÁCH HÀNG (ADD / EDIT) ================= */
+
+.form-container {
+  background: white;
+  max-width: 650px;
+  margin: 30px auto;
+  padding: 30px 35px;
+  border-radius: 10px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+
+.form-container h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 22px;
+  color: #1a2236;
+}
+
+/* Input & Select */
+.form-container input,
+.form-container select {
+  width: 100%;
+  padding: 11px 12px;
+  margin-top: 6px;
+  margin-bottom: 15px;
+  border: 1px solid #ccd1d9;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* Label text */
+.form-container label {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Button group */
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+/* Button chuẩn */
+.btn-submit {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 11px 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-submit:hover {
+  background: #218838;
+}
+
+.btn-back {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 11px 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-back:hover {
+  background: #5a6268;
+}
+
+/* Message */
+.msg {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+.right_content {
+    min-height: 100%;
+}
+body {
+    background: white;
+}
+/* ================= PRODUCT MENU ================= */
+
+.nav-product {
+    position: relative;
+}
+
+/* Nút mở menu */
+.product-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 15px 20px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.product-btn:hover {
+    background: #f0b040;
+    color: #22323a;
+}
+
+/* Panel lọc */
+.product-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 520px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 15px 40px rgba(0,0,0,.25);
+    padding: 20px 22px;
+    display: none;
+    z-index: 9999;
+}
+
+/* Header */
+.product-panel-header {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+/* ==== 2 CỘT: LOẠI | THƯƠNG HIỆU ==== */
+.product-filter {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+}
+
+/* Tiêu đề mỗi cột */
+.filter-group h4 {
+    margin-bottom: 10px;
+    color: #22323a;
+    font-size: 15px;
+}
+
+/* Link lọc */
+.filter-group a {
+    display: block;
+    padding: 8px 12px;
+    border-radius: 6px;
+    color: #333;
+    text-decoration: none;
+    transition: .2s;
+    font-size: 14px;
+}
+
+.filter-group a:hover {
+    background: #2563eb;
+    color: white;
+}
+
+.filter-group a.active {
+    background: #f0b040;
+    color: #22323a;
+    font-weight: 600;
+}
+
+.empty {
+    font-style: italic;
+    color: #777;
+    font-size: 13px;
+}

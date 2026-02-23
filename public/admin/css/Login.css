@@ -1,0 +1,38 @@
+body {
+  background: linear-gradient(135deg, #020617, #1e293b);
+  font-family: "Segoe UI", sans-serif;
+}
+
+.auth-container {
+  background: white;
+  width: 420px;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+}
+
+h2 {
+  text-align: center;
+  color: #020617;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #94a3b8;
+  margin-bottom: 15px;
+}
+
+.btn {
+  width: 100%;
+  background: #020617;
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+}
+
+.btn:hover {
+  background: #1e40af;
+}
