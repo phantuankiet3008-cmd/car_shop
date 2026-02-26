@@ -4,10 +4,6 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\DB; 
 
-
-// ============================
-// 1. KẾT NỐI DATABASE VÀ CLASS QL
-// ============================
 class QL {
     public $hostname = "localhost";
     public $username = "root";

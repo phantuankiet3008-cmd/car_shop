@@ -1,0 +1,184 @@
+/* ================= FIX CHI TIẾT SẢN PHẨM ================= */
+
+body { padding-top: 0 !important; }
+
+.chi_tiet_san_pham {
+    max-width: 1200px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,.08);
+}
+
+/* ---- Tiêu đề ---- */
+.tieu_de_xe {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.ten_xe { font-size: 28px; font-weight: 700; }
+
+.gia_xe {
+    font-size: 26px;
+    color: #e11d48;
+    font-weight: 700;
+}
+
+/* ---- Nội dung ---- */
+.noi_dung_chinh {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.khu_trai { flex: 7; }
+.khu_phai  { flex: 3; }
+
+/* ---- Ảnh ---- */
+.anh_sp_lon {
+    background: #f1f5f9;
+    border-radius: 12px;
+    padding: 10px;
+}
+
+.anh_sp_lon img {
+    width: 100%;
+    height: 420px;
+    object-fit: contain;
+    border-radius: 10px;
+}
+
+.anh_sp_nho {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 12px;
+}
+
+.anh_sp_nho img {
+    width: 80px;
+    height: 65px;
+    object-fit: contain;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: .2s;
+}
+
+.anh_sp_nho img:hover,
+.anh_sp_nho img.active {
+    border-color: #2563eb;
+}
+
+/* ---- Màu xe ---- */
+.khu_mau_xe h4 { margin-bottom: 10px; }
+
+.mau {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.the_mau {
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: #e5e7eb;
+    font-size: 14px;
+}
+
+/* ---- Tóm tắt ---- */
+.tom_tat_don {
+    background: #f8fafc;
+    padding: 18px;
+    border-radius: 12px;
+    margin-top: 20px;
+}
+
+.tom_tat_don h4 { margin-bottom: 10px; }
+
+/* ---- 3D ---- */
+.viewer3d {
+    width: 100%;
+    height: 380px;
+    background: black;
+    border-radius: 12px;
+    margin-top: 15px;
+    position: relative;
+}
+
+.hidden {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
+
+#btn3D {
+    margin-top: 15px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    background: #2563eb;
+    color: #fff;
+    cursor: pointer;
+}
+
+#btn3D:hover { background: #1d4ed8; }
+
+.close3d {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    padding: 4px 10px;
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+#threeContainer {
+    width: 100%;
+    height: 100%;
+}
+.ds_mau {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.item_mau input { display: none; }
+
+.noi_dung {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1.5px solid #d1d5db;
+    transition: .2s;
+    cursor: pointer;
+}
+
+.item_mau input:checked + .noi_dung {
+    border: 2px solid #2563eb;
+    box-shadow: 0 0 0 2px rgba(37,99,235,.1);
+}
+
+.trai {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.o_mau {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+}
+
+.ten_mau { font-weight: 600; }
+
+.gia_mau { font-weight: 600; }
