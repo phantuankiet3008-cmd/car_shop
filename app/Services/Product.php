@@ -180,7 +180,13 @@ public function list_xe_theo_loai_va_thuong_hieu($MaLoai, $MaThuongHieu){
     }
  function chitietsp($id) {
         $id = (int)$id;
-        $sql = "SELECT * FROM san_pham_xe WHERE id_Xe = $id";
+        $sql = "SELECT sp.*,
+                       lx.Ten_Loai_Xe,
+                       th.Ten_Thuong_Hieu
+                FROM san_pham_xe sp
+                JOIN loai_xe lx ON sp.id_Loai_Xe = lx.id_Loai_xe
+                JOIN thuong_hieu_xe th ON sp.id_Thuong_Hieu = th.id_Thuong_Hieu
+                WHERE sp.id_Xe = $id";
         $result = $this->db->query($sql);
         if ($result && $result->num_rows > 0) {
             return $result->fetch_assoc();
@@ -264,12 +270,22 @@ public function locSanPham($MaLoai, $MaThuongHieu)
 
     // 3. Hàm lấy ưu đãi - Đã sửa lỗi thiếu Return
      function uu_dai_cua_xe($id) {
-        $id_xe = (int)$id;
-        $sql = "SELECT ud.* FROM uu_dai ud
-                JOIN xe_uu_dai xud ON ud.id_Uu_Dai = xud.id_Uu_Dai
-                WHERE xud.id_Xe = $id";
-        return $this->db->query($sql);
-    }
+
+    $id_xe = (int)$id;
+
+    $sql = "
+        SELECT ud.* 
+        FROM uu_dai ud
+        JOIN xe_uu_dai xud 
+            ON ud.id_Uu_Dai = xud.id_Uu_Dai
+        WHERE xud.id_Xe = $id_xe
+        AND ud.Trang_Thai = 1
+        AND CURDATE() <= ud.Ngay_Ket_Thuc
+        AND CURDATE() >= ud.Ngay_Bat_Dau
+    ";
+
+    return $this->db->query($sql);
+}
     function list_mau_xe($id) {
     $id = (int)$id;
     // Lấy thêm Ma_Mau và Gia từ bảng xe_mau và mau_xe

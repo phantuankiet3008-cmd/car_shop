@@ -50,12 +50,25 @@
                 </button>
             </div>
             {{-- ===== KHUNG XEM 3D ===== --}}
-<div id="mo_hinh_3D" class="viewer3d hidden">
+    <div id="mo_hinh_3D" class="viewer3d hidden">
     <button class="close3d">✖</button>
     <div id="threeContainer" style="width:100%; height:500px;"></div>
-</div>
+    </div>
+        
+
+        <div>
+            {{-- ===== thông tin chi tiết ===== --}}
+            <div class="khu_thong_tin_chi_tiet">
+                <h3>Thông tin chi tiết</h3>
+                <p><strong>Loại xe:</strong> {{ $chitietsp['Ten_Loai_Xe'] }}</p>
+                <p><strong>Thương hiệu:</strong> {{ $chitietsp['Ten_Thuong_Hieu'] }}</p>
+                <p><strong>Mô tả:</strong> {{ $chitietsp['Mo_Ta'] }}</p>
+        </div>
 
         </div>
+        
+</div>
+    
 
 
         {{-- ===== PHẦN BÊN PHẢI ===== --}}
@@ -113,22 +126,43 @@
 
                 <p>Tên xe: {{ $chitietsp['Ten_Xe'] }}</p>
 
-                <p>Giá:
-                    <span id="giaTomTat">
-                        {{ number_format($gia_mac_dinh, 0, ',', '.') }}
+                <p>Giá gốc:
+                <span id="giaTomTat"
+                    data-gia-mac-dinh="{{ $gia_mac_dinh }}">
+                    {{ number_format($gia_mac_dinh, 0, ',', '.') }}
+                </span> đ
+                </p>
+
+                <p>Ưu đãi:</p>
+
+                <ul id="danhSachUuDai">
+                    @foreach($uu_dai as $ud)
+                    <li 
+                        data-loai="{{ $ud['Loai'] }}"
+                        data-gia-tri="{{ $ud['Gia_Tri'] }}">
+            
+                    @if($ud['Loai'] == 'phan_tram')
+                        {{ $ud['Gia_Tri'] }}%
+                    @else
+                        {{ number_format($ud['Gia_Tri'], 0, ',', '.') }} đ
+                    @endif
+
+                    </li>
+                     @endforeach
+                </ul>
+
+                 <hr>
+
+                 <p>
+                <strong>
+                 Tổng sau ưu đãi:
+                    <span id="tongSauUuDai">
+                       {{ number_format($gia_mac_dinh, 0, ',', '.') }}
                     </span> đ
+                </strong>
                 </p>
 
-                <hr>
-
-                <p>
-                    <strong>
-                        Tổng:
-                        <span id="tongGia">
-                            {{ number_format($gia_mac_dinh, 0, ',', '.') }}
-                        </span> đ
-                    </strong>
-                </p>
+            <p><a href="{{ url('car_shop/dat_hang/'.$chitietsp['id_Xe']) }}" class="btn-dat-hang">ĐẶT CỌC</a></p>
             </div>
 
         </div>
@@ -216,25 +250,71 @@ document.addEventListener("DOMContentLoaded", function () {
     const radios = document.querySelectorAll('input[name="chon_mau"]');
     const giaChinh = document.getElementById("giaChinh");
     const giaTomTat = document.getElementById("giaTomTat");
-    const tongGia = document.getElementById("tongGia");
+    const tongSauUuDai = document.getElementById("tongSauUuDai");
+    const dsUuDai = document.querySelectorAll("#danhSachUuDai li");
 
-    if (!radios.length) return;
+    function tinhGiaSauUuDai(gia) {
+
+    let maxGiam = 0;
+
+    dsUuDai.forEach(item => {
+
+        let loai = item.dataset.loai;
+        let value = parseFloat(item.dataset.giaTri);
+
+        if (!value) return;
+
+        let giam = 0;
+
+        if (loai === 'phan_tram') {
+            giam = gia * value / 100;
+        } 
+        else if (loai === 'tien') {
+            giam = value;
+        }
+
+        if (giam > maxGiam) {
+            maxGiam = giam;
+        }
+
+    });
+
+    let tong = gia - maxGiam;
+
+    if (tong < 0) tong = 0;
+
+    return tong;
+}
+
+    function capNhatGia(gia) {
+
+        let giaFormat = Number(gia).toLocaleString('vi-VN');
+
+        giaChinh.innerText = giaFormat + " đ";
+        giaTomTat.innerText = giaFormat;
+
+        let giaSauUuDai = tinhGiaSauUuDai(gia);
+
+        tongSauUuDai.innerText = 
+            Number(giaSauUuDai).toLocaleString('vi-VN');
+    }
 
     radios.forEach(radio => {
         radio.addEventListener("change", function () {
 
-            let gia = this.dataset.gia;
-
+            let gia = parseFloat(this.dataset.gia);
             if (!gia) return;
 
-            // format số tiền kiểu VN
-            let giaFormat = Number(gia).toLocaleString('vi-VN');
+            capNhatGia(gia);
 
-            giaChinh.innerText = giaFormat + " đ";
-            giaTomTat.innerText = giaFormat;
-            tongGia.innerText = giaFormat;
         });
     });
+
+    // Load mặc định
+    const checked = document.querySelector('input[name="chon_mau"]:checked');
+    if (checked) {
+        capNhatGia(parseFloat(checked.dataset.gia));
+    }
 
 });
 </script>
