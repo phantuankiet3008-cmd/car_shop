@@ -236,37 +236,32 @@ function list_anh_xe_mau($id) {
 
     return $this->db->query($sql);
 }
-public function locSanPham($MaLoai, $MaThuongHieu)
-{
-    $sql = "SELECT sp.id_Xe, sp.Ten_Xe, sp.Mo_Ta, sp.Anh_Dai_Dien, sp.Trang_thai, sp.id_Loai_Xe, sp.id_Thuong_Hieu,
-            lx.Ten_Loai_Xe,
-            th.Ten_Thuong_Hieu,
-            xm.Gia AS Gia_Mau
-            FROM san_pham_xe sp
-            LEFT JOIN loai_xe lx ON sp.id_Loai_Xe = lx.id_Loai_xe
-            LEFT JOIN thuong_hieu_xe th ON sp.id_Thuong_Hieu = th.id_Thuong_Hieu
-            LEFT JOIN xe_mau xm ON sp.id_Xe = xm.id_Xe
-            WHERE sp.Trang_Thai = 1 AND xm.is_Default = 1 ";
+// Đã nâng cấp thêm tham số $search và dùng DB::table để phân trang
+    public function locSanPham($search, $MaLoai, $MaThuongHieu)
+    {
+        $query = DB::table('san_pham_xe')
+            ->join('loai_xe', 'san_pham_xe.id_Loai_Xe', '=', 'loai_xe.id_Loai_xe')
+            ->join('thuong_hieu_xe', 'san_pham_xe.id_Thuong_Hieu', '=', 'thuong_hieu_xe.id_Thuong_Hieu')
+            ->leftJoin('xe_mau', function($join) {
+                $join->on('san_pham_xe.id_Xe', '=', 'xe_mau.id_Xe')
+                     ->where('xe_mau.is_Default', '=', 1);
+            })
+            ->select('san_pham_xe.*', 'loai_xe.Ten_Loai_Xe', 'thuong_hieu_xe.Ten_Thuong_Hieu', 'xe_mau.Gia as Gia_Mau')
+            ->where('san_pham_xe.Trang_Thai', 1)
+            ->orderBy('san_pham_xe.id_Xe', 'desc');
 
-    if ($MaLoai > 0) {
-        $sql .= " AND sp.id_Loai_Xe = $MaLoai";
-    }
-
-    if ($MaThuongHieu > 0) {
-        $sql .= " AND sp.id_Thuong_Hieu = $MaThuongHieu";
-    }
-
-    $result = $this->db->query($sql);
-    $data = [];
-
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            $data[] = $row;
+        if ($search !== '') {
+            $query->where('san_pham_xe.Ten_Xe', 'like', '%' . $search . '%');
         }
-    }
+        if ($MaLoai > 0) {
+            $query->where('san_pham_xe.id_Loai_Xe', $MaLoai);
+        }
+        if ($MaThuongHieu > 0) {
+            $query->where('san_pham_xe.id_Thuong_Hieu', $MaThuongHieu);
+        }
 
-    return $data;
-}
+        return $query->paginate(9);
+    }
 
     // 3. Hàm lấy ưu đãi - Đã sửa lỗi thiếu Return
      function uu_dai_cua_xe($id) {
@@ -295,5 +290,12 @@ public function locSanPham($MaLoai, $MaThuongHieu)
             WHERE xm.id_Xe = $id";
     return $this->db->query($sql);
 }
+public function getAllLoaiXe() {
+        return DB::table('loai_xe')->where('Trang_Thai', 1)->get();
+    }
+
+    public function getAllThuongHieu() {
+        return DB::table('thuong_hieu_xe')->where('Trang_Thai', 1)->get();
+    }
 }
 ?>
