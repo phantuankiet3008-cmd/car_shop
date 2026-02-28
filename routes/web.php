@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\KhachHangController;
 use Illuminate\Support\Facades\Route;
 use App\Services\QL;
 use App\Http\Controllers\AdminAuthController;
-
+use App\Http\Controllers\User\danhsachsanphamController;
 /*
 |--------------------------------------------------------------------------
 | ADMIN ROUTES
@@ -76,4 +76,5 @@ Route::middleware('admin.auth')->group(function () {
     Route :: get('/trang_admin/uu_dai_xe/xoa/{id_xe}/{id_uudai}',[UuDaiController::class,'destroyXeUuDai']);
    
 });
-// xxx
+// Khi người dùng gõ /san-pham, nó sẽ gọi hàm index của controller
+Route::get('/danhsachsanpham', [danhsachsanphamController::class, 'index']);
