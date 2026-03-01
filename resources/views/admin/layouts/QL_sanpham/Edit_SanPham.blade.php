@@ -116,7 +116,10 @@
                     <label>Thay đổi ảnh đại diện:</label>
                     <input type="file" name="new_anh_dai_dien">
                 </div>
-
+                <div class="form-group" style="background:#fff3cd;padding:15px;margin-top:15px">
+                    <label>Thay đổi ảnh 3d:</label>
+                    <input type="file" name="new_anh_3d">
+                </div>
                 <button class="btn-update">LƯU THAY ĐỔI</button>
                 <a href="{{ url('/trang_admin/san_pham') }}" class="btn-cancel">
                     Quay lại

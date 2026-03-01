@@ -4,10 +4,6 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\DB; 
 
-
-// ============================
-// 1. KẾT NỐI DATABASE VÀ CLASS QL
-// ============================
 class QL {
     public $hostname = "localhost";
     public $username = "root";
@@ -399,8 +395,38 @@ move_uploaded_file(
     $files['anh_dai_dien']['tmp_name'],
     $path.'/'.$new_name
 );
+$this->db->query("
+        UPDATE san_pham_xe 
+        SET Anh_Dai_Dien = '$new_name'
+        WHERE id_Xe = $id_xe
+    ");
     }
+if (!empty($files['new_anh_3d']['name'])) {
 
+        // Lấy ảnh cũ
+        $old = $this->db->query("SELECT Anh_3d FROM san_pham_xe WHERE id_Xe = $id_xe")->fetch_assoc();
+        if ($old && file_exists("../upload/anh_3d/" . $old['Anh_3d'])) {
+            unlink("../upload/anh_3d/" . $old['Anh_3d']);
+        }
+
+        // Upload ảnh mới
+        $new_name = time() . "_" . preg_replace('/\s+/', '_', $files['new_anh_3d']['name']);
+        $path = public_path('upload/anh_3d');
+
+if ($old && file_exists($path.'/'.$old['Anh_3d'])) {
+    unlink($path.'/'.$old['Anh_3d']);
+}
+
+move_uploaded_file(
+    $files['new_anh_3d']['tmp_name'],
+    $path.'/'.$new_name
+);
+$this->db->query("
+        UPDATE san_pham_xe 
+        SET Anh_3d = '$new_name'
+        WHERE id_Xe = $id_xe
+    ");
+    }
     return true;
 }
 function Get_ChiTietXe($id){

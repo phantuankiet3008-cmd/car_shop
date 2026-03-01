@@ -48,7 +48,7 @@ public function store(Request $request)
 
     $ql = new QL();
 
-    // ❌ KHÔNG move file ở đây
+    
     $anh_dai_dien = time().'_'.$request->file('anh_dai_dien')->getClientOriginalName();
 
     $anh_3d = null;
