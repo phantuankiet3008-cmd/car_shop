@@ -89,10 +89,6 @@
                 <p style="text-align:center; width: 100%; grid-column: 1 / -1;">Rất tiếc, không tìm thấy chiếc xe nào phù hợp với yêu cầu của bạn!</p>
             @endforelse
         </div>
-
-        <div class="pagination">
-            {{ $danhSachXe->withQueryString()->links() }}
-        </div>
     </div>
 </div>
 

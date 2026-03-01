@@ -4,7 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Services\Product; // << Gọi công nhân Product của nhóm vào
+use App\Services\Product; // Gọi công nhân Product của nhóm vào
 
 class danhsachsanphamController extends Controller
 {
@@ -21,8 +21,7 @@ class danhsachsanphamController extends Controller
         // 3. Gọi hàm từ Class Product
         $danhSachXe = $sp->locSanPham($search, $maLoai, $maThuongHieu);
         $loaiXeList = $sp->getAllLoaiXe();
-        $thuongHieuList = $sp->getAllThuongHieu();
-
+        $thuongHieuList = $sp->getAllThuongHieu();    
         // 4. Quăng ra View
         return view('user.layouts.danhsachsanpham', compact('danhSachXe', 'loaiXeList', 'thuongHieuList', 'search', 'maLoai', 'maThuongHieu'));
     }

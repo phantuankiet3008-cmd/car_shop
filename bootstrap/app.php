@@ -10,12 +10,12 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function () {
-        Route::middleware('web')
+    Route::middleware('web')
+        ->group(base_path('routes/DangNhap.php'));
 
-            ->group(base_path('routes/DangNhap.php'));}, 
-
-            ->group(base_path('routes/user_chitiet.php'));
-    },
+    Route::middleware('web')
+        ->group(base_path('routes/user_chitiet.php'));
+},
 
     )
    ->withMiddleware(function (Middleware $middleware): void {
