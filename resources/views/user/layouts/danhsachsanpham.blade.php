@@ -28,9 +28,6 @@
         .product-card small { color: #777; display: block; margin-bottom: 10px;}
         .btn-gold { display: inline-block; padding: 8px 15px; background: #d4af37; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; }
         .btn-gold:hover { background: #b5952f; }
-        
-        /* Phân trang */
-        .pagination { margin-top: 20px; text-align: center; }
     </style>
 </head>
 <body>
@@ -50,7 +47,7 @@
                 <select name="MaLoai" class="form-control">
                     <option value="0">-- Tất cả loại xe --</option>
                     @foreach($loaiXeList as $loai)
-                        <option value="{{ $loai->id_Loai_xe }}" {{ request('MaLoai') == $loai->id_Loai_xe ? 'selected' : '' }}>
+<option value="{{ $loai->id_Loai_xe }}" {{ request('MaLoai') == $loai->id_Loai_xe ? 'selected' : '' }}>
                             {{ $loai->Ten_Loai_Xe }}
                         </option>
                     @endforeach
@@ -88,10 +85,6 @@
             @empty
                 <p style="text-align:center; width: 100%; grid-column: 1 / -1;">Rất tiếc, không tìm thấy chiếc xe nào phù hợp với yêu cầu của bạn!</p>
             @endforelse
-        </div>
-
-        <div class="pagination">
-            {{ $danhSachXe->withQueryString()->links() }}
         </div>
     </div>
 </div>
