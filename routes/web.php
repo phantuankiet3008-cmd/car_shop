@@ -8,8 +8,6 @@ use App\Http\Controllers\Admin\KhachHangController;
 use Illuminate\Support\Facades\Route;
 use App\Services\QL;
 use App\Http\Controllers\AdminAuthController;
-
-
 /*
 |--------------------------------------------------------------------------
 | ADMIN ROUTES
@@ -79,5 +77,5 @@ Route::middleware('admin.auth')->group(function () {
 
 });
 
-});
-// Khi người dùng gõ /san-pham, nó sẽ gọi hàm index của controller
+
+

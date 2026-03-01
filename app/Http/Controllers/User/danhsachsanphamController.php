@@ -39,7 +39,7 @@ class danhsachsanphamController extends Controller
         $loaiXeList = DB::table('loai_xe')->where('Trang_Thai', 1)->get();
         $thuongHieuList = DB::table('thuong_hieu_xe')->where('Trang_Thai', 1)->get();
 
-        // CHÚ Ý CHỖ NÀY: Trong máy bạn, file blade nằm trong thư mục user/layouts/
+       
         return view('user.layouts.danhsachsanpham', compact('danhSachXe', 'loaiXeList', 'thuongHieuList', 'search', 'maLoai', 'maThuongHieu'));
     }
 }
