@@ -78,6 +78,3 @@ Route::middleware('admin.auth')->group(function () {
    
 
 });
-
-});
-// Khi người dùng gõ /san-pham, nó sẽ gọi hàm index của controller
