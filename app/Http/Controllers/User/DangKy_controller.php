@@ -21,6 +21,7 @@ class DangKy_controller extends Controller {
     // Validate dữ liệu
     $request->validate([
         'HoTen' => 'required',
+        'DiaChi'=> 'required',
         'SDT' => 'required',
         'email' => 'required|email',
         'MatKhau' => 'required|min:6'
@@ -30,6 +31,7 @@ class DangKy_controller extends Controller {
 
     $result = $service->dang_ky(
         $request->HoTen,
+        $request->DiaChi,
         $request->SDT,
         $request->email,
         $request->MatKhau
