@@ -34,6 +34,10 @@
         </div>
 
         <div class="form-group auth-box">
+            <input type="text" name="DiaChi" placeholder="Địa Chỉ" required>
+        </div>
+
+        <div class="form-group auth-box">
             <input type="email" name="email" placeholder="Email" required>
         </div>
 

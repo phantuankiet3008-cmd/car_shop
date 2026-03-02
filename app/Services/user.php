@@ -37,9 +37,10 @@ class User {
     }
 
     // ĐĂNG KÝ
-    public function dang_ky($HoTen, $SDT, $email, $MatKhau) {
+    public function dang_ky($HoTen,$DiaChi, $SDT, $email, $MatKhau) {
 
         $HoTen = $this->db->real_escape_string($HoTen);
+        $DiaChi = $this->db->real_escape_string($DiaChi);
         $SDT = $this->db->real_escape_string($SDT);
         $email = $this->db->real_escape_string($email);
         $MatKhauHash = password_hash($MatKhau, PASSWORD_DEFAULT);
@@ -53,8 +54,8 @@ class User {
             return false; 
         }
     
-        $sql = "INSERT INTO khach_hang (Ho_Ten, So_Dien_Thoai, Email, Mat_Khau)
-                VALUES ('$HoTen', '$SDT', '$email', '$MatKhauHash')";
+        $sql = "INSERT INTO khach_hang (Ho_Ten, Dia_Chi, So_Dien_Thoai, Email, Mat_Khau)
+                VALUES ('$HoTen','$DiaChi', '$SDT', '$email', '$MatKhauHash')";
     
         if ($this->db->query($sql)) {
             return true; 
