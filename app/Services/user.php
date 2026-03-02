@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 
+
 class User {
     private $host = "localhost";
     private $user = "root";
@@ -49,19 +50,44 @@ class User {
         );
     
         if ($check && $check->num_rows > 0) {
-            return false; // báo controller biết là đã tồn tại
+            return false; 
         }
     
         $sql = "INSERT INTO khach_hang (Ho_Ten, So_Dien_Thoai, Email, Mat_Khau)
                 VALUES ('$HoTen', '$SDT', '$email', '$MatKhauHash')";
     
         if ($this->db->query($sql)) {
-            return true; // đăng ký thành công
+            return true; 
         }
     
         return false;
     }
     
+
+    // CẬP NHẬT MẬT KHẨU
+    public function update_mk($SDT, $MK)
+{
+    $SDT = $this->db->real_escape_string($SDT);
+    $MatKhauHash = password_hash($MK, PASSWORD_DEFAULT);
+
+    $check = $this->db->query(
+        "SELECT id_Khach_Hang FROM khach_hang WHERE So_Dien_Thoai = '$SDT'"
+    );
+
+    if (!$check || $check->num_rows == 0) {
+        return false; 
+    }
+
+    $sql = "UPDATE khach_hang 
+            SET Mat_Khau = '$MatKhauHash'
+            WHERE So_Dien_Thoai = '$SDT'";
+
+    if ($this->db->query($sql)) {
+        return true; 
+    }
+
+    return false; 
+}
 }
 
 ?>

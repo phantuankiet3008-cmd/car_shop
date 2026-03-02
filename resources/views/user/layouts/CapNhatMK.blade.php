@@ -58,7 +58,7 @@
             </form>
 
             <p>
-                <a href="{{ route('login.form') }}">
+                <a href="{{ route('dangnhap') }}">
                     Quay lại đăng nhập
                 </a>
             </p>

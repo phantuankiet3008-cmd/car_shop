@@ -75,7 +75,5 @@ Route::middleware('admin.auth')->group(function () {
     Route :: get('/trang_admin/uu_dai_xe/xoa/{id_xe}/{id_uudai}',[UuDaiController::class,'destroyXeUuDai']);
    
 
+
 });
-
-
-

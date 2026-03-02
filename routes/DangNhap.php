@@ -39,7 +39,7 @@ Route::post('/car_shop/xacminhotp',
 // CẬP NHẬT MẬT KHẨU
 Route::get('/car_shop/capnhatmk', 
     [QuenMK_controller::class, 'formCapNhatMK'])
-    ->name('password.reset.form');
+    ->name('form.capnhatmk');
 
 Route::post('/car_shop/capnhatmk', 
     [QuenMK_controller::class, 'capNhatMK'])
