@@ -236,14 +236,16 @@ function list_anh_xe_mau($id) {
 
     return $this->db->query($sql);
 }
- public function locSanPham($search, $MaLoai, $MaThuongHieu)
-    {
-        // 1. Chống lỗi bảo mật SQL Injection (Rất quan trọng khi viết SQL thuần)
-        $search = $this->db->real_escape_string($search);
-        $MaLoai = (int) $MaLoai;
-        $MaThuongHieu = (int) $MaThuongHieu;
 
-        // 2. Viết câu SQL cơ sở
+// Notice the order of the parameters here matches the controller call
+  public function locSanPham($search = '', $MaLoai = 0, $MaThuongHieu = 0)
+{
+    // 1. Prevent SQL Injection
+    $search = $this->db->real_escape_string($search);
+    $MaLoai = (int)$MaLoai;
+    $MaThuongHieu = (int)$MaThuongHieu;
+
+        // 2. Base SQL Query
         $sql = "SELECT sp.*, 
                        lx.Ten_Loai_Xe, 
                        th.Ten_Thuong_Hieu, 
@@ -254,7 +256,7 @@ function list_anh_xe_mau($id) {
                 LEFT JOIN xe_mau xm ON sp.id_Xe = xm.id_Xe AND xm.is_Default = 1
                 WHERE sp.Trang_Thai = 1";
 
-        // 3. Cộng nối chuỗi SQL dựa vào bộ lọc
+        // 3. Append filter conditions
         if ($search !== '') {
             $sql .= " AND sp.Ten_Xe LIKE '%$search%'";
         }
@@ -265,24 +267,23 @@ function list_anh_xe_mau($id) {
             $sql .= " AND sp.id_Thuong_Hieu = $MaThuongHieu";
         }
 
-        // 4. Sắp xếp sản phẩm mới nhất lên đầu
+        // 4. Sort 
         $sql .= " ORDER BY sp.id_Xe DESC";
 
-        
+        // 5. Execute and gather results
         $result = $this->db->query($sql);
         $data = [];
 
         if ($result) {
             while ($row = $result->fetch_assoc()) {
-                
+                // Ensure data is treated as an object for Blade compatibility
                 $data[] = (object) $row; 
             }
         }
 
+ 
         return $data;
     }
-     
-
     // 3. Hàm lấy ưu đãi - Đã sửa lỗi thiếu Return
      function uu_dai_cua_xe($id) {
 
