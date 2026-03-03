@@ -9,6 +9,7 @@ Route::prefix('user')->group(function () {
     Route::get('/car_shop/chitietxe/{id}', [chitietxeController::class, 'index']);
 
 
+
 // Danh sách sản phẩm
      Route::get('/car_shop/danhsachsanpham', [danhsachsanphamController::class, 'index']);
     Route::get('/car_shop/danhsachsanpham/{IDloai}/{IDTH}',[danhsachsanphamController::class,'index']);
@@ -20,4 +21,12 @@ Route::prefix('user')->group(function () {
     Route::post('/car_shop/dangkilaithu', [dangkilaithuController::class, 'dangKyLaiThu'])
         ->name('dangkilaithu');
 
+
+          Route::get('/car_shop/danhsachsanpham', [danhsachsanphamController::class, 'index']);
+    Route::get('/car_shop/danhsachsanpham/{IDloai}/{IDTH}',[danhsachsanphamController::class,'index']);
+
 });    
+
+  
+
+

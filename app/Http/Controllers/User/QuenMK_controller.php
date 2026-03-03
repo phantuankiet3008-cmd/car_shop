@@ -1,43 +1,46 @@
 <?php
 
 namespace App\Http\Controllers\User;
+
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use App\Services\User;
 
-class QuenMK_controller extends Controller{
-
-public function capNhatMK(Request $request)
+class QuenMK_controller extends Controller
 {
-    $request->validate([
-        'phone' => 'required',
-        'password' => 'required|min:6|confirmed',
-    ]);
+    public function CapNhatMK(Request $request)
+    {
+        $request->validate([
+            'phone' => 'required',
+            'password' => 'required|min:6|confirmed',
+        ]);
 
-    $user = User::where('So_Dien_Thoai', $request->phone)->first();
+        $service = new User();
 
-    if (!$user) {
+        $user = $service->update_mk(
+            $request->phone,
+            $request->password
+        );
+
+        if ($user) {
+
+            session()->forget('xac_minh_otp');
+
+            return redirect()->route('dangnhap')
+                ->with('success', 'Cập nhật mật khẩu thành công');
+        }
+
         return back()->with('error', 'Không tìm thấy tài khoản');
     }
 
-    $user->Mat_Khau = Hash::make($request->password);
-    $user->save();
+    public function formCapNhatMK(Request $request)
+    {
+        if (!session('xac_minh_otp')) {
+            return redirect()->route('quenmk');
+        }
 
-    session()->forget('xac_minh_otp');
-
-    return redirect()->route('login.form')
-        ->with('success', 'Cập nhật mật khẩu thành công');
-}
-
-function formCapNhatMK(Request $request)
-{
-    if (!session('xac_minh_otp')) {
-        return redirect()->route('forgot.form');
+        return view('user.layouts.CapNhatMK', [
+            'phone' => $request->phone
+        ]);
     }
-
-    return view('user.layouts.CapNhatMK', [
-        'phone' => $request->phone
-    ]);
-}
 }
