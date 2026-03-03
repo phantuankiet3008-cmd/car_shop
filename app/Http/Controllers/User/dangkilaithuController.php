@@ -8,10 +8,9 @@ use Illuminate\Http\Request;
 use App\Services\Product;
 
 
-class ChitietxeController extends Controller
+class DangkilaithuController extends Controller
 {
-    public function index($id)
-    {
+    function index($id){
         $sp = new Product();
 
         $id = (int)$id;
@@ -51,29 +50,12 @@ class ChitietxeController extends Controller
             }
         }
 
-        // ===== 4. Giá mặc định =====
-        $gia_mac_dinh = 0;
-        if (!empty($mau_xe)) {
-            $gia_mac_dinh = $mau_xe[0]['Gia'];
-        }
-
-        // ===== 5. Ưu đãi =====
-        $uu_dai = [];
-        $result_uu_dai = $sp->uu_dai_cua_xe($id);
-
-        if ($result_uu_dai) {
-            while ($row = $result_uu_dai->fetch_assoc()) {
-                $uu_dai[] = $row;
-            }
-        }
-
-        return view('user.layouts.chitietsp', compact(
-            'chitietsp',
-            'Xe_mau',
-            'anh_xe_mau',
-            'mau_xe',
-            'gia_mac_dinh',
-            'uu_dai'
-        ));
+        
+         return view('user.layouts.DangKiLaiThu', [
+             'chitietsp' => (object)$chitietsp,
+             'anh_xe_mau' => $anh_xe_mau,
+             'xeMau' => !empty($Xe_mau) ? (object)$Xe_mau[0] : null,
+             'mau_xe' => $mau_xe
+         ]);
     }
 }

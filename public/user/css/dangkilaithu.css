@@ -1,0 +1,44 @@
+.lai_thu_container {
+    width: 600px;
+    margin: 40px auto;
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.lai_thu_tieu_de {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.lai_thu_thong_tin_xe {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.lai_thu_group {
+    margin-bottom: 15px;
+}
+
+.lai_thu_input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.lai_thu_btn {
+    width: 100%;
+    padding: 10px;
+    background: black;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.lai_thu_btn:hover {
+    background: #333;
+}

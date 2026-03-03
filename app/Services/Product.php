@@ -337,5 +337,22 @@ public function getAllLoaiXe() {
         }
         return $data;
     }
+    public function getDanhSachXeMauTheoXe($id_Xe)
+{
+    $id_Xe = (int)$id_Xe;
+
+    $sql = "SELECT 
+                xm.id_Xe_Mau,
+                xm.Gia,
+                xm.is_Default,
+                m.id_Mau,
+                m.Ten_Mau,
+                m.Ma_Mau
+            FROM xe_mau xm
+            JOIN mau_xe m ON xm.id_Mau = m.id_Mau
+            WHERE xm.id_Xe = $id_Xe";
+
+    return $this->db->query($sql); // trả về result object
+}
 }
 ?>

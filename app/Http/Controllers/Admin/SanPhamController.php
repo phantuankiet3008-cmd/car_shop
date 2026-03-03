@@ -23,7 +23,7 @@ function index()
     ]);
 }
 
-public function create()
+ function create()
 {
     $ql = new QL();
 
@@ -36,7 +36,7 @@ public function create()
         ]
     ]);
 }
-public function store(Request $request)
+ function store(Request $request)
 {
     $request->validate([
         'ten_xe' => 'required',
@@ -67,7 +67,7 @@ public function store(Request $request)
 
     return redirect('/trang_admin/san_pham');
 }
-public function edit($id)
+ function edit($id)
 {
     $ql = new QL();
 
@@ -88,7 +88,7 @@ public function edit($id)
         ]
     ]);
 }
-public function update(Request $request, $id)
+ function update(Request $request, $id)
 {
     $ql = new QL();
 
@@ -102,7 +102,7 @@ public function update(Request $request, $id)
     return back()->with('error', 'Có lỗi khi cập nhật');
 }
 
-public function destroy($id)
+function destroy($id)
 {
     $ql = new QL();
 
@@ -116,6 +116,19 @@ public function destroy($id)
     return redirect('/trang_admin/san_pham')
         ->with('error', 'Xóa sản phẩm thất bại');
 }
+function destroyMau($id)
+{
+    $ql = new QL();
 
+    $ok = $ql->Delete_MauXe($id); // hàm xóa màu xe
 
+    if ($ok) {
+        return redirect()->back()
+            ->with('success', 'Xóa màu xe thành công');
+    }
+
+    return redirect()->back()
+        ->with('error', 'Xóa màu xe thất bại');
+
+}
 }

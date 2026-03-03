@@ -429,6 +429,40 @@ $this->db->query("
     }
     return true;
 }
+function Delete_MauXe($id_Xe_Mau)
+{
+    $id_Xe_Mau = (int)$id_Xe_Mau;
+
+    // ===== 1. Lấy danh sách ảnh của màu =====
+    $res = $this->db->query("
+        SELECT Hinh_Anh_Xe_Mau 
+        FROM xe_mau_anh 
+        WHERE id_Xe_Mau = $id_Xe_Mau
+    ");
+
+    if ($res) {
+        while ($row = $res->fetch_assoc()) {
+
+            $path = public_path('upload/anh_xe_mau/' . $row['Hinh_Anh_Xe_Mau']);
+
+            if (!empty($row['Hinh_Anh_Xe_Mau']) && file_exists($path)) {
+                unlink($path);
+            }
+        }
+    }
+
+    // ===== 2. Xóa ảnh trong DB =====
+    $this->db->query("
+        DELETE FROM xe_mau_anh 
+        WHERE id_Xe_Mau = $id_Xe_Mau
+    ");
+
+    // ===== 3. Xóa màu xe =====
+    return $this->db->query("
+        DELETE FROM xe_mau 
+        WHERE id_Xe_Mau = $id_Xe_Mau
+    ");
+}
 function Get_ChiTietXe($id){
     $id = (int)$id;
 

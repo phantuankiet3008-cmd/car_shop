@@ -55,6 +55,7 @@ Route::middleware('admin.auth')->group(function () {
     Route :: post('/trang_admin/san_pham/them', [SanPhamController::class, 'store']);
     Route :: get('/trang_admin/san_pham/sua/{id}', [SanPhamController::class, 'edit']);
     Route :: post('/trang_admin/san_pham/sua/{id}', [SanPhamController::class, 'update']);
+    Route :: delete('/trang_admin/san_pham/xoa_mau/{id}', [SanPhamController::class, 'destroyMau']);
     Route :: get('/trang_admin/san_pham/xoa/{id}', [SanPhamController::class, 'destroy']);
     //===== khách hàng =====
     Route :: get('/trang_admin/khach_hang',[KhachHangController::class,'index']);

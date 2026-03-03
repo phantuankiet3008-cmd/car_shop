@@ -35,7 +35,7 @@
 <div class="container">
     <div class="sidebar">
         <h3>LỌC SẢN PHẨM</h3>
-        <form action="{{ url('/danhsachsanpham') }}" method="GET">
+        <form action="{{ url('user/car_shop/danhsachsanpham') }}" method="GET">
             
             <div class="form-group">
                 <label>Tìm kiếm tên xe:</label>
