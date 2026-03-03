@@ -3,6 +3,7 @@
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
+
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-12">
@@ -35,6 +36,7 @@
     </div>
 </div>
     </head>
+
 <body>
 
 <div class="container">
@@ -53,7 +55,9 @@
                 <select id="loaiSelect" class="form-control">
                     <option value="0">-- Tất cả loại xe --</option>
                     @foreach($loaiXeList as $loai)
+
                         <option value="{{ $loai->id_Loai_xe }}" @selected(isset($IDloai) && $IDloai == $loai->id_Loai_xe)>
+
                             {{ $loai->Ten_Loai_Xe }}
                         </option>
                     @endforeach
@@ -76,6 +80,7 @@
         </form>
     </div>
 </div>
+
 
 <script>
 function submitFilter() {
