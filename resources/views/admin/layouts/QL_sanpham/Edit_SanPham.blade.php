@@ -58,15 +58,33 @@
                 {{-- Giá theo màu --}}
                 <h4 style="margin-top:15px">Giá theo từng màu</h4>
                 @foreach($data['ds_mau'] as $m)
-                    <div class="mau-edit">
-                        <span style="width:100px;display:inline-block">
-                            {{ $m['Ten_Mau'] }}
-                        </span>
-                        <input type="text"
-                               name="gia_mau[{{ $m['id_Xe_Mau'] }}]"
-                               value="{{ number_format($m['Gia'],0,',','.') }}">
-                    </div>
-                @endforeach
+    <div class="mau-edit" style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+
+        <span style="width:100px;display:inline-block;font-weight:600">
+            {{ $m['Ten_Mau'] }}
+        </span>
+
+        <input type="text"
+               name="gia_mau[{{ $m['id_Xe_Mau'] }}]"
+               value="{{ number_format($m['Gia'],0,',','.') }}"
+               style="flex:1">
+
+        {{-- NÚT XÓA MÀU --}}
+        <form action="{{ url('/trang_admin/san_pham/xoa_mau/'.$m['id_Xe_Mau']) }}"
+              method="POST"
+              onsubmit="return confirm('Bạn có chắc muốn xóa màu này?');">
+
+            @csrf
+            @method('DELETE')
+
+            <button type="submit"
+                    style="background:#dc3545;color:#fff;border:none;padding:6px 10px;border-radius:5px;cursor:pointer">
+                Xóa
+            </button>
+        </form>
+
+    </div>
+@endforeach
             </div>
 
             {{-- Form chỉnh sửa --}}

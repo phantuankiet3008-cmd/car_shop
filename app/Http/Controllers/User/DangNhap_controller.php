@@ -35,7 +35,12 @@ class DangNhap_controller extends Controller {
     'SDT' => $user->So_Dien_Thoai
 ]);
 
-        return redirect('/user/car_shop/trangcanhan');
+        session([
+            'user_id' => $user['id_Khach_Hang'],
+            'user_name' => $user['Ho_Ten']
+        ]);
+
+        return redirect('user/car_shop/chitietxe/21');
     }
 
     return back()->with('error', 'Sai số điện thoại hoặc mật khẩu');
