@@ -34,7 +34,6 @@
                 <li class="menu_item"><a href="{{ url('/trang_admin/uu_dai') }}">Quản Lý Ưu Đãi</a></li>
                 <li class="menu_item"><a href="{{ url('/trang_admin/lai_thu') }}">Đặt Lịch Lái Thử</a></li>
                 <li class="menu_item"><a href="{{ url('/trang_admin/bao_duong') }}">Đặt Lịch Bảo Dưỡng</a></li>
-                <li class="menu_item"><a href="{{ url('/trang_admin/lay_xe') }}">Đặt Lịch Lấy Xe</a></li>
                 <li class="menu_item"><a href="{{ url('/trang_admin/kiem_ke') }}">Kiểm Kê</a></li>
             </ul>
         </div>
@@ -142,15 +141,11 @@
             @break
 
         @case('lai_thu')
-            @include('admin.layouts.Lai_Thu')
+            @include('admin.layouts.QL_laithu.LichLaiThu')
             @break
 
         @case('bao_duong')
             @include('admin.layouts.Bao_Duong')
-            @break
-
-        @case('lay_xe')
-            @include('admin.layouts.Lay_Xe')
             @break
 
         @case('kiem_ke')

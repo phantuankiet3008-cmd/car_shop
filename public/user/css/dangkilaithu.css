@@ -1,44 +1,141 @@
+/* ===== Container ===== */
 .lai_thu_container {
-    width: 600px;
-    margin: 40px auto;
-    background: white;
-    padding: 25px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    max-width: 900px;
+    margin: 50px auto;
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    font-family: 'Segoe UI', sans-serif;
 }
 
-.lai_thu_tieu_de {
+/* ===== Tiêu đề ===== */
+.lai_thu_tieu_de h2 {
     text-align: center;
-    margin-bottom: 20px;
+    font-size: 28px;
+    margin-bottom: 30px;
+    color: #1f2937;
 }
 
+/* ===== Thông tin xe ===== */
 .lai_thu_thong_tin_xe {
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 15px;
-    margin-bottom: 20px;
+    background: #f9fafb;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    line-height: 1.8;
 }
 
+.lai_thu_thong_tin_xe p {
+    margin: 5px 0;
+}
+
+/* ===== Input ngày ===== */
 .lai_thu_group {
-    margin-bottom: 15px;
+    margin-bottom: 25px;
 }
 
 .lai_thu_input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.2s ease;
 }
 
-.lai_thu_btn {
-    width: 100%;
-    padding: 10px;
-    background: black;
-    color: white;
-    border: none;
-    border-radius: 5px;
+.lai_thu_input:focus {
+    border-color: #2f5bea;
+    box-shadow: 0 0 0 3px rgba(47,91,234,0.15);
+}
+
+/* ===== Khung giờ ===== */
+.khung_gio_wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.khung_gio_item {
+    border: 2px solid #2f5bea;
+    padding: 12px 18px;
+    border-radius: 10px;
     cursor: pointer;
+    font-weight: 600;
+    transition: all 0.25s ease;
+    background: #ffffff;
+    min-width: 120px;
+    text-align: center;
+}
+
+.khung_gio_item input {
+    display: none;
+}
+
+/* Hover */
+.khung_gio_item:not(.slot_da_dat):not(.slot_mo):hover {
+    background-color: #eef2ff;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 12px rgba(0,0,0,0.08);
+}
+
+/* Khi được chọn */
+.khung_gio_item:has(input:checked) {
+    background-color: #2f5bea;
+    color: white;
+    box-shadow: 0 6px 15px rgba(47,91,234,0.3);
+}
+
+/* Slot đã đặt */
+.slot_da_dat {
+    border-color: #d1d5db;
+    background-color: #fee2e2;
+    color: #991b1b;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Chưa chọn ngày */
+.slot_mo {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ===== Nút đặt lịch ===== */
+.lai_thu_btn {
+    display: block;
+    width: 200px;
+    margin: 30px auto 0;
+    padding: 12px;
+    background: linear-gradient(135deg, #2f5bea, #1d4ed8);
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-size: 15px;
 }
 
 .lai_thu_btn:hover {
-    background: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(47,91,234,0.4);
+}
+
+/* ===== Alert ===== */
+.alert_error {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.alert_success {
+    background: #dcfce7;
+    color: #166534;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
 }
