@@ -1,4 +1,4 @@
-<
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -39,25 +39,23 @@
 
 <div class="avatar-wrapper">
 
-@if(empty($khachhang->Avatar))
+ @if(empty($khachhang['Avatar']))
     <img src="{{ asset('upload/avatar/avatar.png') }}"
          class="avatar col-md-3">
 @else
-    <img src="{{ asset('upload/avatar/'.$khachhang->Avatar) }}"
+    <img src="{{ asset('upload/avatar/'.$khachhang['Avatar']) }}"
          class="avatar col-md-3">
 @endif
 
-</div>
-
-<p>{{ $khachhang->Ho_Ten }}</p>
-<p>{{ $khachhang->So_Dien_Thoai }}</p>
+<p>{{ $khachhang['Ho_Ten'] }}</p>
+<p>{{ $khachhang['So_Dien_Thoai'] }}</p>
 
 </div>
 </div>
 
 <div class="tab-content">
 <div class="tab-pane fade show active">
-    <iframe src="{{ url('profile') }}" width="100%" height="600" style="border:none;"></iframe>
+    <iframe src="{{ url('user/car_shop/profile') }}" width="100%" height="600" style="border:none;"></iframe>
 </div>
 </div>
 

@@ -12,17 +12,17 @@ class trangcanhanController extends Controller
         $SDT = session('SDT');
 
         if (empty($SDT)) {
-            return redirect('/login');
+            return redirect('/car_shop/dangnhap');
         }
 
-        $user = new User();   
+        $service = new User();   
 
-        $khachhang = $user->laykhachhangtheoid($SDT);
+       $user = $service->laykhachhangtheosdt($SDT);
 
-        if (!$khachhang) {
+        if (!$user) {
             abort(404, 'Không tìm thấy khách hàng');
         }
 
-        return view('thanhvien', compact('khachhang'));
+        return view('user.layouts.trangcanhan', compact('khachhang'));
     }
 }

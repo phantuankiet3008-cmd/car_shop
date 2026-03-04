@@ -236,37 +236,52 @@ function list_anh_xe_mau($id) {
 
     return $this->db->query($sql);
 }
-public function locSanPham($MaLoai, $MaThuongHieu)
-{
-    $sql = "SELECT sp.id_Xe, sp.Ten_Xe, sp.Mo_Ta, sp.Anh_Dai_Dien, sp.Trang_thai, sp.id_Loai_Xe, sp.id_Thuong_Hieu,
-            lx.Ten_Loai_Xe,
-            th.Ten_Thuong_Hieu,
-            xm.Gia AS Gia_Mau
-            FROM san_pham_xe sp
-            LEFT JOIN loai_xe lx ON sp.id_Loai_Xe = lx.id_Loai_xe
-            LEFT JOIN thuong_hieu_xe th ON sp.id_Thuong_Hieu = th.id_Thuong_Hieu
-            LEFT JOIN xe_mau xm ON sp.id_Xe = xm.id_Xe
-            WHERE sp.Trang_Thai = 1 AND xm.is_Default = 1 ";
+ public function locSanPham($search, $MaLoai, $MaThuongHieu)
+    {
+        // 1. Chống lỗi bảo mật SQL Injection (Rất quan trọng khi viết SQL thuần)
+        $search = $this->db->real_escape_string($search);
+        $MaLoai = (int) $MaLoai;
+        $MaThuongHieu = (int) $MaThuongHieu;
 
-    if ($MaLoai > 0) {
-        $sql .= " AND sp.id_Loai_Xe = $MaLoai";
-    }
+        // 2. Viết câu SQL cơ sở
+        $sql = "SELECT sp.*, 
+                       lx.Ten_Loai_Xe, 
+                       th.Ten_Thuong_Hieu, 
+                       xm.Gia AS Gia_Mau
+                FROM san_pham_xe sp
+                JOIN loai_xe lx ON sp.id_Loai_Xe = lx.id_Loai_xe
+                JOIN thuong_hieu_xe th ON sp.id_Thuong_Hieu = th.id_Thuong_Hieu
+                LEFT JOIN xe_mau xm ON sp.id_Xe = xm.id_Xe AND xm.is_Default = 1
+                WHERE sp.Trang_Thai = 1";
 
-    if ($MaThuongHieu > 0) {
-        $sql .= " AND sp.id_Thuong_Hieu = $MaThuongHieu";
-    }
-
-    $result = $this->db->query($sql);
-    $data = [];
-
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            $data[] = $row;
+        // 3. Cộng nối chuỗi SQL dựa vào bộ lọc
+        if ($search !== '') {
+            $sql .= " AND sp.Ten_Xe LIKE '%$search%'";
         }
-    }
+        if ($MaLoai > 0) {
+            $sql .= " AND sp.id_Loai_Xe = $MaLoai";
+        }
+        if ($MaThuongHieu > 0) {
+            $sql .= " AND sp.id_Thuong_Hieu = $MaThuongHieu";
+        }
 
-    return $data;
-}
+        // 4. Sắp xếp sản phẩm mới nhất lên đầu
+        $sql .= " ORDER BY sp.id_Xe DESC";
+
+        
+        $result = $this->db->query($sql);
+        $data = [];
+
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                
+                $data[] = (object) $row; 
+            }
+        }
+
+        return $data;
+    }
+     
 
     // 3. Hàm lấy ưu đãi - Đã sửa lỗi thiếu Return
      function uu_dai_cua_xe($id) {
@@ -295,5 +310,32 @@ public function locSanPham($MaLoai, $MaThuongHieu)
             WHERE xm.id_Xe = $id";
     return $this->db->query($sql);
 }
+public function getAllLoaiXe() {
+        $sql = "SELECT * FROM loai_xe WHERE Trang_Thai = 1";
+        $result = $this->db->query($sql);
+        $data = [];
+        
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                // Ép kiểu thành Object để file Blade gọi được $loai->Ten_Loai_Xe
+                $data[] = (object) $row; 
+            }
+        }
+        return $data;
+    }
+
+    public function getAllThuongHieu() {
+        $sql = "SELECT * FROM thuong_hieu_xe WHERE Trang_Thai = 1";
+        $result = $this->db->query($sql);
+        $data = [];
+        
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                // Ép kiểu thành Object để file Blade gọi được $th->Ten_Thuong_Hieu
+                $data[] = (object) $row;
+            }
+        }
+        return $data;
+    }
 }
 ?>

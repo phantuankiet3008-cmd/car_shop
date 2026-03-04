@@ -8,7 +8,6 @@ use App\Http\Controllers\Admin\KhachHangController;
 use Illuminate\Support\Facades\Route;
 use App\Services\QL;
 use App\Http\Controllers\AdminAuthController;
-
 /*
 |--------------------------------------------------------------------------
 | ADMIN ROUTES
@@ -74,6 +73,4 @@ Route::middleware('admin.auth')->group(function () {
     Route :: get('/trang_admin/xe_uu_dai/them',[UuDaiController::class,'createXeUuDai']);
     Route :: post('/trang_admin/xe_uu_dai/them',[UuDaiController::class,'storeXeUuDai']);
     Route :: get('/trang_admin/uu_dai_xe/xoa/{id_xe}/{id_uudai}',[UuDaiController::class,'destroyXeUuDai']);
-   
-});
-   //================= USER ROUTES =================
+   });

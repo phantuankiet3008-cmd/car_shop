@@ -1,5 +1,3 @@
-@include('layouts.Header')
-@include('layouts.Navbar')
 
 @php
     $tab = $tab ?? 'overview';
@@ -28,8 +26,6 @@
                 {{ session('msg') }}
             </div>
         @endif
-
-        @include('layouts.Footer')
 
     </section>
 </div>

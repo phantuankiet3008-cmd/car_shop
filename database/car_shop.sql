@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 31, 2026 at 12:13 PM
+-- Generation Time: Mar 04, 2026 at 04:30 PM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -51,12 +51,28 @@ INSERT INTO `admin` (`id_Ad`, `UserName`, `PassWord`, `Trang_Thai`, `created_at`
 
 CREATE TABLE `dat_lich_lai_thu` (
   `id_Dat_Lich` int(11) NOT NULL,
-  `id_Khach_Hang` int(11) DEFAULT NULL,
-  `id_Xe` int(11) DEFAULT NULL,
+  `id_Khach_Hang` int(10) UNSIGNED NOT NULL,
+  `id_Xe_Mau` int(10) UNSIGNED NOT NULL,
   `Ngay_Lai_Thu` date DEFAULT NULL,
   `id_Khung_Gio` int(11) DEFAULT NULL,
   `Trang_Thai` tinyint(4) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `dat_lich_lai_thu`
+--
+
+INSERT INTO `dat_lich_lai_thu` (`id_Dat_Lich`, `id_Khach_Hang`, `id_Xe_Mau`, `Ngay_Lai_Thu`, `id_Khung_Gio`, `Trang_Thai`) VALUES
+(1, 13, 5, '2026-03-07', 3, 2),
+(5, 13, 5, '2026-03-05', 2, 0),
+(6, 13, 8, '2026-03-08', 2, 1),
+(7, 13, 5, '2026-03-11', 7, 0),
+(8, 13, 5, '2026-03-08', 8, 0),
+(9, 13, 8, '2026-03-06', 8, 0),
+(10, 13, 8, '2026-03-11', 3, 0),
+(11, 13, 9, '2026-03-07', 8, 0),
+(12, 13, 9, '2026-03-08', 4, 0),
+(13, 14, 8, '2026-03-08', 7, 0);
 
 -- --------------------------------------------------------
 
@@ -73,7 +89,8 @@ CREATE TABLE `don_hang` (
   `Tong_Tien` bigint(20) NOT NULL,
   `Trang_Thai` enum('cho_duyet','da_duyet','da_len_don','tu_choi') DEFAULT 'cho_duyet',
   `Ngay_Tao` timestamp NOT NULL DEFAULT current_timestamp(),
-  `Ngay_Cap_Nhat` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `Ngay_Cap_Nhat` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `Tien_Coc` bigint(20) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -103,6 +120,7 @@ CREATE TABLE `khach_hang` (
   `Email` varchar(100) NOT NULL,
   `So_Dien_Thoai` varchar(20) NOT NULL,
   `Mat_Khau` varchar(255) NOT NULL,
+  `Avatar` varchar(255) DEFAULT NULL,
   `Dia_Chi` varchar(255) DEFAULT NULL,
   `Trang_Thai` tinyint(4) DEFAULT 1,
   `Ngay_Tao` timestamp NOT NULL DEFAULT current_timestamp(),
@@ -113,12 +131,16 @@ CREATE TABLE `khach_hang` (
 -- Dumping data for table `khach_hang`
 --
 
-INSERT INTO `khach_hang` (`id_Khach_Hang`, `Ho_Ten`, `Email`, `So_Dien_Thoai`, `Mat_Khau`, `Dia_Chi`, `Trang_Thai`, `Ngay_Tao`, `Ngay_Cap_Nhat`) VALUES
-(2, 'kiệt', 'sontonmtp@gmail.com', '0908954822', '$2y$10$Tnw0Gafdz1.PQw4anw1GCu5qlCop2FrBFRBweJmJMLx872Mzxmpva', '35/tên lữa', 1, '2026-01-05 01:07:09', '2026-01-05 01:07:09'),
-(4, 'phan tuấn kiệt ', 'phantuankiet3008@gmail.com', '0908954123', '$2y$10$LHirMOYN1juLVstvKq2IuOYWUl5vILWn33IgmyyFOH/FsUq6Al0Du', NULL, 1, '2026-01-30 01:56:19', '2026-01-30 01:57:25'),
-(5, 'teo', 'teo@gmail.com', '0777601452', '$2y$10$FUe0Kp/nKs/Hf6qn4XAsYO1qM4No7I494XrSAbHW/MoplsLpX93xS', NULL, 1, '2026-01-30 09:49:52', '2026-01-30 09:49:52'),
-(6, 'top', 'top@gmail.com', '12345678910', '$2y$10$6m4TVZcMs33r3/vtjC4gT.VwuODhL36ZAZDBoruB5f/DyM8kX9jIu', NULL, 1, '2026-01-30 10:06:12', '2026-01-30 10:06:12'),
-(7, 'pot', 'pot@gmail.com', '12345678911', '$2y$10$dUCNepc8r2UJzeXL1dwayuWodSATPcX6GshEU/vBvpkIL0PvOeYRC', NULL, 1, '2026-01-30 10:07:43', '2026-01-30 10:07:43');
+INSERT INTO `khach_hang` (`id_Khach_Hang`, `Ho_Ten`, `Email`, `So_Dien_Thoai`, `Mat_Khau`, `Avatar`, `Dia_Chi`, `Trang_Thai`, `Ngay_Tao`, `Ngay_Cap_Nhat`) VALUES
+(2, 'kiệt', 'sontonmtp@gmail.com', '0908954822', '$2y$10$Tnw0Gafdz1.PQw4anw1GCu5qlCop2FrBFRBweJmJMLx872Mzxmpva', NULL, '35/tên lữa', 1, '2026-01-05 01:07:09', '2026-01-05 01:07:09'),
+(4, 'phan tuấn kiệt', 'phantuankiet3008@gmail.com', '0908954123', '$2y$10$9bX1eTMz6W49lOxK7rvyDunif4Brehm3aLa.hAOT30bspVj0xxl26', NULL, '25/nguyễn quý yêm', 1, '2026-01-30 01:56:19', '2026-02-12 09:13:44'),
+(8, 'hoa vô ưu', 'hoavouu3008@gmail.com', '0908954622', '$2y$10$XqNjcGA9CQ1kdtBmxVb6Ve2OJF2em7RYYBaDg09LpiuTXv/GevniW', NULL, 'cữu ưu thành', 1, '2026-02-12 08:26:32', '2026-02-12 09:04:31'),
+(9, 'cữu diệp phàm', 'dieppham@gmail.com', '0908954789', '$2y$10$Z6.92IyQiCwMZysQgup7GOCRaFOM1GVothppbN68lt25seC9F.EYq', NULL, '34/cữu ưu thành', 1, '2026-02-12 08:31:36', '2026-02-12 09:06:02'),
+(10, 'bạch thuần', 'bachtieuthuan@gmail.com', '7894561230', '$2y$10$znfSARjLEPdt24Fmoc/QkOhCT3pF82KSIZ2BBj5a/ng5TqNS6/9E6', NULL, '12/thủy nguyên vực', 1, '2026-02-12 08:35:15', '2026-02-12 09:06:57'),
+(11, 'tiêu yên', 'tieuyen@gmail.com', '12345678996', '$2y$10$BlniOH6ygLNhteGeyjDmxuiKdizolne2geAxtRhtizFtxwOGU4wam', NULL, '25/hỏa nguyên vực', 1, '2026-02-12 08:37:43', '2026-02-12 08:37:43'),
+(12, 'kiet', 'kiet@gmail.com', '741852963', '$2y$10$D.u/9KiPQ7DI3ss5iO7nWODfXN2f7D0thS6C2oSoMNwdQtCoeVlEa', NULL, NULL, 1, '2026-03-03 14:34:44', '2026-03-03 14:34:44'),
+(13, 'kietphan', 'kiet3008@gmail.com', '0908954911', '$2y$10$E3NUEchzMfL6m6lFVN8xwuTVoCtXULpVsM33KCmuSlUrJsBplQ9lK', NULL, '456/123/ đường vào tim em băng giá', 1, '2026-03-04 09:26:20', '2026-03-04 09:26:20'),
+(14, 'lk', 'kl@gmail.com', '0908955741', '$2y$10$5bbJ2QM/V1cpRgVbaeGHQuxoODPerGwGPz.c2j8ZbSuCcFxtC57aG', NULL, '123cvbn', 1, '2026-03-04 13:17:54', '2026-03-04 13:17:54');
 
 -- --------------------------------------------------------
 
@@ -132,6 +154,22 @@ CREATE TABLE `khung_gio_lai_thu` (
   `Gio_Ket_Thuc` time NOT NULL,
   `Trang_Thai` tinyint(4) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `khung_gio_lai_thu`
+--
+
+INSERT INTO `khung_gio_lai_thu` (`id_Khung_Gio`, `Gio_Bat_Dau`, `Gio_Ket_Thuc`, `Trang_Thai`) VALUES
+(1, '07:00:00', '08:00:00', 1),
+(2, '08:00:00', '09:00:00', 1),
+(3, '09:00:00', '10:00:00', 1),
+(4, '10:00:00', '11:00:00', 1),
+(5, '11:00:00', '12:00:00', 1),
+(6, '12:00:00', '13:00:00', 1),
+(7, '13:00:00', '14:00:00', 1),
+(8, '14:00:00', '15:00:00', 1),
+(9, '15:00:00', '16:00:00', 1),
+(10, '16:00:00', '17:00:00', 1);
 
 -- --------------------------------------------------------
 
@@ -254,7 +292,7 @@ INSERT INTO `san_pham_xe` (`id_Xe`, `Ten_Xe`, `Mo_Ta`, `Anh_Dai_Dien`, `Anh_3d`,
 (21, 'Ford Mustang Shelby GT500 Heritage Edition (2022)', 'Carroll Shelby gọi chiếc Shelby GT500 đời đầu là \"chiếc xe thực sự đầu tiên mà tôi thực sự tự hào\". Shelby GT500 vẫn mang tính biểu tượng như ngày nay - là chiếc Mustang mạnh mẽ và tiên tiến nhất từ trước đến nay - giống như phiên bản đầu tiên cách đây 55 năm.  Để tri ân chiếc Shelby GT500 nguyên bản năm 1967, phiên bản giới hạn Mustang Shelby GT500 Heritage Edition 2022 sẽ được hoàn thiện với màu sơn ngoại thất Brittany Blue cổ điển và độc quyền, cùng hai tùy chọn sọc ngoại thất Wimbledon White khác nhau:  Sơn sọc đua nổi bật với logo GT500 độc đáo (cũng có màu Đen tuyền).  Các đường sọc đua bằng vinyl cực chất với sọc vinyl độc đáo ở bên hông xe có logo GT500.  Được thiết kế và chế tạo bởi Ford Performance như chiếc Ford mạnh mẽ nhất từng được phép lưu hành trên đường phố, Mustang Shelby GT500 2022 sở hữu sức mạnh và công nghệ hệ thống truyền động hàng đầu thế giới để đạt được hiệu suất ngang tầm siêu xe. Các tính năng nổi bật bao gồm hộp số ly hợp kép 7 cấp tiên tiến nhất trong phân khúc, các chiến lược đi', '1768037246_Ford_Mustang_Shelby_GT500_Heritage_Edition_(2022).png', '3d_1768037246_car_002.glb', 1, '2026-01-10 09:27:26', 9, 7),
 (22, 'VinFast VF8 Eco', 'công suất tối đa  260KW(349 mã lực) .Mô-men xoắn	500 Nm.Tăng tốc (0-100km/h)~5.9 giây.Hệ dẫn động	2 cầu toàn thời gian (AWD).Quãng đường (WLTP)	~471 km (Đi xa hơn).Dung lượng pin	87,7 kWh.', '1769772443_1769591870_vinfast_VF8_Eco.jpg', '', 1, '2026-01-30 11:27:23', 7, 6),
 (23, 'VinFast VF8 Plus', 'Công suất tối đa:300 kW (~402 mã lực).Mô-men xoắn:620 Nm.Tăng tốc (0-100km/h)~5.5 giây.Hệ dẫn động2 cầu toàn thời gian (AWD).Quãng đường (WLTP)~457 km.Dung lượng pin 87,7 kWh', '1769774027_VF8_Plus_đen_đồng.png', '', 1, '2026-01-30 11:53:47', 7, 6),
-(24, 'FORD RANGER ', 'Dài x rộng x Cao (mm) 3090 x 1496 x 1663,2 Chiều dài cơ sở 2065 mm Khoảng sáng gầm xe 166,3 mm Công suất tối đa 30 kW Mô men xoắn cực đại 65 Nm Quãng đường chạy (NEDC) 210 km/lần sạc đầy Dung lượng pin khả dụng 18,3 kWh Công suất sạc tối đa ≥24 kW Dẫn động RWD/Cầu sau Chế độ lái Eco/Normal Hệ thống treo (trước/sau) MacPherson/MacPherson Hệ thống phanh (trước/sau) Đĩa/Tang trống Kích thước la-zăng 13 inch Đèn chiếu sáng phía trước LED Đóng/mở cốp sau Chỉnh cơ Hệ thống điều hòa Máy lạnh, chỉnh cơ Màn hình thông tin lái 7’’ inch Chức năng giải trí FM Hệ thống loa 2 loa Ghế lái Chỉnh cơ 4 hướng', '1769775946_Ford_Ranger_Raptor_cam.png', '3d_1769775946_car_002.glb', 1, '2026-01-30 12:25:46', 5, 7);
+(24, 'FORD RANGER', 'Dài x rộng x Cao (mm) 3090 x 1496 x 1663,2 Chiều dài cơ sở 2065 mm Khoảng sáng gầm xe 166,3 mm Công suất tối đa 30 kW Mô men xoắn cực đại 65 Nm Quãng đường chạy (NEDC) 210 km/lần sạc đầy Dung lượng pin khả dụng 18,3 kWh Công suất sạc tối đa ≥24 kW Dẫn động RWD/Cầu sau Chế độ lái Eco/Normal Hệ thống treo (trước/sau) MacPherson/MacPherson Hệ thống phanh (trước/sau) Đĩa/Tang trống Kích thước la-zăng 13 inch Đèn chiếu sáng phía trước LED Đóng/mở cốp sau Chỉnh cơ Hệ thống điều hòa Máy lạnh, chỉnh cơ Màn hình thông tin lái 7’’ inch Chức năng giải trí FM Hệ thống loa 2 loa Ghế lái Chỉnh cơ 4 hướng', '1769775946_Ford_Ranger_Raptor_cam.png', '1772178335_car_003.glb', 1, '2026-01-30 12:25:46', 5, 7);
 
 -- --------------------------------------------------------
 
@@ -310,10 +348,10 @@ CREATE TABLE `uu_dai` (
 --
 
 INSERT INTO `uu_dai` (`id_Uu_Dai`, `Ten_Uu_Dai`, `Loai`, `Gia_Tri`, `Ngay_Bat_Dau`, `Ngay_Ket_Thuc`, `Trang_Thai`, `Ngay_Tao`) VALUES
-(1, 'tri ân khách hàng', 'tien_mat', 100000000, '2026-01-01', '2026-01-31', 1, '2026-01-12 01:41:48'),
-(2, 'tri ân khách hàng', 'tien_mat', 100000000, '2026-01-01', '2026-01-31', 1, '2026-01-12 01:43:07'),
-(3, 'tri ân khách hàng', 'tien_mat', 100000000, '2026-01-01', '2026-02-01', 1, '2026-01-12 01:43:50'),
-(4, 'tri ân khách hàng', 'tien_mat', 100000000, '2026-01-01', '2026-02-01', 1, '2026-01-12 01:49:25');
+(5, 'sale tết lớn', 'phan_tram', 20, '2026-02-01', '2026-03-08', 1, '2026-02-12 10:32:55'),
+(6, 'lộc đầu năm', 'phan_tram', 25, '2026-03-08', '2026-04-05', 1, '2026-02-12 11:12:22'),
+(7, 'tri ân khách hàng m', 'tien_mat', 12333, '2026-02-01', '2026-03-08', 1, '2026-02-27 08:26:21'),
+(11, 'tri ân khách hàng m', 'tien_mat', 500000000, '2026-02-08', '2026-02-26', 1, '2026-02-27 08:46:19');
 
 -- --------------------------------------------------------
 
@@ -337,7 +375,6 @@ CREATE TABLE `xe_mau` (
 INSERT INTO `xe_mau` (`id_Xe_Mau`, `id_Xe`, `id_Mau`, `is_Default`, `Gia`, `So_Luong`) VALUES
 (5, 21, 21, 1, 7810000000, 1),
 (6, 22, 9, 1, 1019000000, 0),
-(7, 22, 15, 0, 1010000000, 0),
 (8, 22, 2, 0, 1090000000, 0),
 (9, 23, 2, 1, 1198000000, 0),
 (10, 23, 15, 0, 1198000000, 0),
@@ -373,12 +410,6 @@ INSERT INTO `xe_mau_anh` (`id_Xe_Mau_Anh`, `id_Xe_Mau`, `Hinh_Anh_Xe_Mau`, `Thu_
 (23, 6, '1769772443_697c959b10c14.png', NULL),
 (24, 6, '1769772443_697c959b111b8.png', NULL),
 (25, 6, '1769772443_697c959b116bd.png', NULL),
-(26, 7, '1769772443_697c959b1210b.png', NULL),
-(27, 7, '1769772443_697c959b126fc.png', NULL),
-(28, 7, '1769772443_697c959b12c99.png', NULL),
-(29, 7, '1769772443_697c959b1315b.png', NULL),
-(30, 7, '1769772443_697c959b13744.png', NULL),
-(31, 7, '1769772443_697c959b13d0a.png', NULL),
 (32, 8, '1769772443_697c959b146a7.png', NULL),
 (33, 8, '1769772443_697c959b14c0e.png', NULL),
 (34, 8, '1769772443_697c959b1511c.png', NULL),
@@ -433,7 +464,9 @@ CREATE TABLE `xe_uu_dai` (
 --
 
 INSERT INTO `xe_uu_dai` (`id_Xe`, `id_Uu_Dai`) VALUES
-(21, 1);
+(21, 6),
+(24, 6),
+(24, 11);
 
 --
 -- Indexes for dumped tables
@@ -451,7 +484,9 @@ ALTER TABLE `admin`
 --
 ALTER TABLE `dat_lich_lai_thu`
   ADD PRIMARY KEY (`id_Dat_Lich`),
-  ADD KEY `id_Khung_Gio` (`id_Khung_Gio`);
+  ADD UNIQUE KEY `uq_lai_thu` (`id_Xe_Mau`,`Ngay_Lai_Thu`,`id_Khung_Gio`),
+  ADD KEY `id_Khung_Gio` (`id_Khung_Gio`),
+  ADD KEY `fk_lai_thu_khach` (`id_Khach_Hang`);
 
 --
 -- Indexes for table `don_hang`
@@ -561,7 +596,7 @@ ALTER TABLE `admin`
 -- AUTO_INCREMENT for table `dat_lich_lai_thu`
 --
 ALTER TABLE `dat_lich_lai_thu`
-  MODIFY `id_Dat_Lich` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_Dat_Lich` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `don_hang`
@@ -579,13 +614,13 @@ ALTER TABLE `goi_bao_duong`
 -- AUTO_INCREMENT for table `khach_hang`
 --
 ALTER TABLE `khach_hang`
-  MODIFY `id_Khach_Hang` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_Khach_Hang` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `khung_gio_lai_thu`
 --
 ALTER TABLE `khung_gio_lai_thu`
-  MODIFY `id_Khung_Gio` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_Khung_Gio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `lich_bao_duong`
@@ -597,7 +632,7 @@ ALTER TABLE `lich_bao_duong`
 -- AUTO_INCREMENT for table `loai_xe`
 --
 ALTER TABLE `loai_xe`
-  MODIFY `id_Loai_xe` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id_Loai_xe` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `mau_xe`
@@ -609,31 +644,31 @@ ALTER TABLE `mau_xe`
 -- AUTO_INCREMENT for table `san_pham_xe`
 --
 ALTER TABLE `san_pham_xe`
-  MODIFY `id_Xe` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id_Xe` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `thuong_hieu_xe`
 --
 ALTER TABLE `thuong_hieu_xe`
-  MODIFY `id_Thuong_Hieu` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id_Thuong_Hieu` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `uu_dai`
 --
 ALTER TABLE `uu_dai`
-  MODIFY `id_Uu_Dai` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_Uu_Dai` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `xe_mau`
 --
 ALTER TABLE `xe_mau`
-  MODIFY `id_Xe_Mau` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id_Xe_Mau` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `xe_mau_anh`
 --
 ALTER TABLE `xe_mau_anh`
-  MODIFY `id_Xe_Mau_Anh` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
+  MODIFY `id_Xe_Mau_Anh` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
 
 --
 -- Constraints for dumped tables
@@ -643,7 +678,9 @@ ALTER TABLE `xe_mau_anh`
 -- Constraints for table `dat_lich_lai_thu`
 --
 ALTER TABLE `dat_lich_lai_thu`
-  ADD CONSTRAINT `dat_lich_lai_thu_ibfk_1` FOREIGN KEY (`id_Khung_Gio`) REFERENCES `khung_gio_lai_thu` (`id_Khung_Gio`);
+  ADD CONSTRAINT `dat_lich_lai_thu_ibfk_1` FOREIGN KEY (`id_Khung_Gio`) REFERENCES `khung_gio_lai_thu` (`id_Khung_Gio`),
+  ADD CONSTRAINT `fk_lai_thu_khach` FOREIGN KEY (`id_Khach_Hang`) REFERENCES `khach_hang` (`id_Khach_Hang`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_lai_thu_xe_mau` FOREIGN KEY (`id_Xe_Mau`) REFERENCES `xe_mau` (`id_Xe_Mau`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `don_hang`

@@ -13,17 +13,18 @@ class profileController extends Controller
         $SDT = session('SDT');
 
         if (empty($SDT)) {
-            return redirect('/login');
+            return redirect('/car_shop/dangnhap');
         }
 
-        $userService = new User();
-        $khachhang = $userService->laykhachhangtheoid($SDT);
+        $User = new User();
+        $khachhang = $User->laykhachhangtheosdt($SDT);
 
         if (!$khachhang) {
             abort(404, 'Không tìm thấy khách hàng');
         }
 
-        return view('profile', compact('khachhang'));
+    
+        return view('user.layouts.profile', compact('khachhang'));
     }
 
     public function update(Request $request)
@@ -31,29 +32,28 @@ class profileController extends Controller
         $SDT = session('SDT');
 
         if (empty($SDT)) {
-            return redirect('/login');
+            return redirect('/car_shop/dangnhap');
         }
 
-        $userService = new User();
-        $khachhang = $userService->laykhachhangtheoid($SDT);
+        $User = new User();
+        $khachhang = $User->laykhachhangtheosdt($SDT);
 
         $id_khachhang = $khachhang['id_Khach_Hang'];
-
-        $avatar = $khachhang['Avatar'];
+        $Avatar = $khachhang['avatar'];
 
         // Upload avatar nếu có
         if ($request->hasFile('avatar')) {
-            $avatar = time().'_'.$request->file('avatar')->getClientOriginalName();
-            $request->file('avatar')->move(public_path('upload/avatar'), $avatar);
+            $Avatar = time().'_'.$request->file('avatar')->getClientOriginalName();
+            $request->file('avatar')->move(public_path('upload/avatar'), $Avatar);
         }
 
-        $res = $userService->capnhat_thong_tin_khach_hang(
+        $res = $User->capnhat_thong_tin_khach_hang(
             $id_khachhang,
             $request->TenKH,
             $request->Email,
             $request->DiaChi,
             $khachhang['So_Dien_Thoai'],
-            $avatar,
+            $Avatar,
             null
         );
 

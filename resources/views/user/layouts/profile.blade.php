@@ -28,25 +28,25 @@
     <div class="form-group">
         <label>Họ tên</label>
         <input type="text" name="TenKH"
-               value="{{ $khachhang->Ho_Ten }}" required>
+               value="{{ $khachhang['Ho_Ten'] }}" required>
     </div>
 
     <div class="form-group">
         <label>Số điện thoại</label>
         <input type="text" name="SoDienThoai"
-               value="{{ $khachhang->So_Dien_Thoai }}" disabled>
+               value="{{ $khachhang['So_Dien_Thoai'] }}" disabled>
     </div>
 
     <div class="form-group">
         <label>Email</label>
         <input type="email" name="Email"
-               value="{{ $khachhang->Email }}" required>
+               value="{{ $khachhang['Email'] }}" required>
     </div>
 
     <div class="form-group">
         <label>Địa chỉ</label>
         <input type="text" name="DiaChi"
-               value="{{ $khachhang->Dia_Chi }}" required>
+               value="{{ $khachhang['Dia_Chi'] }}" required>
     </div>
 
     <div class="form-group">
