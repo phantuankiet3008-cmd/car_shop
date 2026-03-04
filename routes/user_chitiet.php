@@ -7,6 +7,5 @@ Route::prefix('user')->group(function () {
 
     Route::get('/car_shop/chitietxe/{id}', [chitietxeController::class, 'index']);
 
-   Route::get('/car_shop/danhsachsanpham', [danhsachsanphamController::class, 'index']);
-    route::get('/car_shop/danhsachsanpham/{IDloai}/{IDTH}',[danhsachsanphamController::class,'index']);
+   Route::get('/car_shop/danhsachsanpham/{IDloai?}/{IDTH?}', [danhsachsanphamController::class, 'index']);
 });
