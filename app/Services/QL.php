@@ -880,8 +880,60 @@ function TimKiem_Khach_Hang($keyword) {
 
 }
 
+public function DanhSach_LaiThu($ngay = null, $idXe = null, $trangThai = null, $tenKhach = null)
+{
+    $sql = "
+        SELECT dl.id_Dat_Lich,
+               kh.Ho_Ten,
+               kh.So_Dien_Thoai,
+               sp.Ten_Xe,
+               mx.Ten_Mau,
+               dl.Ngay_Lai_Thu,
+               CONCAT(kg.Gio_Bat_Dau, ' - ', kg.Gio_Ket_Thuc) AS Khung_Gio,
+               dl.Trang_Thai
+        FROM dat_lich_lai_thu dl
+        JOIN khach_hang kh ON dl.id_Khach_Hang = kh.id_Khach_Hang
+        JOIN xe_mau xm ON dl.id_Xe_Mau = xm.id_Xe_Mau
+        JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+        JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau
+        JOIN khung_gio_lai_thu kg ON dl.id_Khung_Gio = kg.id_Khung_Gio
+        WHERE 1=1
+    ";
 
+    if ($ngay) {
+        $sql .= " AND dl.Ngay_Lai_Thu = '$ngay'";
+    }
 
+    if ($idXe) {
+        $sql .= " AND sp.id_Xe = $idXe";
+    }
 
+    if ($trangThai !== null && $trangThai !== '') {
+        $sql .= " AND dl.Trang_Thai = $trangThai";
+    }
+
+    if ($tenKhach) {
+        $sql .= " AND kh.Ho_Ten LIKE '%$tenKhach%'";
+    }
+
+    $sql .= " ORDER BY dl.id_Dat_Lich DESC";
+
+    return $this->db->query($sql);
+}
+public function CapNhatTrangThai_LaiThu($id, $trangThai)
+{
+    $sql = "UPDATE dat_lich_lai_thu 
+            SET Trang_Thai = $trangThai 
+            WHERE id_Dat_Lich = $id";
+
+    return $this->db->query($sql);
+}
+public function Xoa_LaiThu($id)
+{
+    $sql = "DELETE FROM dat_lich_lai_thu 
+            WHERE id_Dat_Lich = $id";
+
+    return $this->db->query($sql);
+}
 
 }

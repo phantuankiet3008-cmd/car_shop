@@ -35,7 +35,7 @@ class DangNhap_controller extends Controller {
             'user_name' => $user['Ho_Ten']
         ]);
 
-        return redirect('/car_shop/dangky');
+        return redirect('user/car_shop/chitietxe/21');
     }
 
     return back()->with('error', 'Sai số điện thoại hoặc mật khẩu');

@@ -170,7 +170,7 @@
                 
             <p><a href="{{ url('user/car_shop/dat_hang/'.$chitietsp['id_Xe']) }}" class="btn-dat-hang">ĐẶT CỌC</a></p>
             <a id="btnDatLich"
-             href="{{ url('user/car_shop/dat_lich_lai_thu/'.$mau_xe[0]['id_Xe_Mau']) }}"
+             href="{{ url('user/car_shop/dangkilaithu/'.$mau_xe[0]['id_Xe_Mau']) }}"
             class="btn-dat-lich">
             ĐẶT LỊCH LÁI THỬ
             </a>

@@ -89,6 +89,28 @@ class User {
 
     return false; 
 }
+ function LichLaiThu_CuaToi($idKhach)
+{
+    $idKhach = (int)$idKhach;
+
+$sql = "
+    SELECT dl.id_Dat_Lich,
+           sp.Ten_Xe,
+           mx.Ten_Mau,
+           dl.Ngay_Lai_Thu,
+           CONCAT(kg.Gio_Bat_Dau, ' - ', kg.Gio_Ket_Thuc) AS Khung_Gio,
+           dl.Trang_Thai
+    FROM dat_lich_lai_thu dl
+    JOIN xe_mau xm ON dl.id_Xe_Mau = xm.id_Xe_Mau
+    JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+    JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau
+    JOIN khung_gio_lai_thu kg ON dl.id_Khung_Gio = kg.id_Khung_Gio
+    WHERE dl.id_Khach_Hang = {$idKhach}
+    ORDER BY dl.id_Dat_Lich DESC
+";
+
+    return $this->db->query($sql);
+}
 }
 
 ?>
