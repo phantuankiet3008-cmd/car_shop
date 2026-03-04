@@ -25,6 +25,8 @@
 <body class="bg-light">
 
 <div class="container mt-5 mb-5">
+
+<div class="container mt-4">
     <div class="row">
         
         <div class="col-md-3 mb-4">
@@ -113,6 +115,52 @@
 
     </div>
 </div>
+    </head>
+
+<body>
+
+<div class="container">
+    <div class="sidebar">
+        <h3>LỌC SẢN PHẨM</h3>
+        
+        <form id="filterForm">
+            
+            <div class="form-group">
+                <label>Tìm kiếm tên xe:</label>
+                <input type="text" id="searchInput" class="form-control" placeholder="Nhập tên xe..." value="{{ request('search') }}">
+            </div>
+
+            <div class="form-group">
+                <label>Loại Xe:</label>
+                <select id="loaiSelect" class="form-control">
+                    <option value="0">-- Tất cả loại xe --</option>
+                    @foreach($loaiXeList as $loai)
+
+                        <option value="{{ $loai->id_Loai_xe }}" @selected(isset($IDloai) && $IDloai == $loai->id_Loai_xe)>
+
+                            {{ $loai->Ten_Loai_Xe }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Thương Hiệu:</label>
+                <select id="thuongHieuSelect" class="form-control">
+                    <option value="0">-- Tất cả thương hiệu --</option>
+                    @foreach($thuongHieuList as $th)
+                        <option value="{{ $th->id_Thuong_Hieu }}" @selected(isset($thuongHieu) && $thuongHieu == $th->id_Thuong_Hieu)>
+                            {{ $th->Ten_Thuong_Hieu }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <button type="button" class="btn-filter" onclick="submitFilter()">ÁP DỤNG LỌC</button>
+        </form>
+    </div>
+</div>
+
 
 <script>
 function submitFilter() {

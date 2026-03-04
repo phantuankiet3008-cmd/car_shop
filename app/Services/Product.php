@@ -236,6 +236,7 @@ function list_anh_xe_mau($id) {
 
     return $this->db->query($sql);
 }
+
 // Notice the order of the parameters here matches the controller call
   public function locSanPham($search = '', $MaLoai = 0, $MaThuongHieu = 0)
 {
@@ -280,6 +281,7 @@ function list_anh_xe_mau($id) {
             }
         }
 
+ 
         return $data;
     }
     // 3. Hàm lấy ưu đãi - Đã sửa lỗi thiếu Return

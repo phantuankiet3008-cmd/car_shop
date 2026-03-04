@@ -48,7 +48,7 @@
             })
             .then(res => res.json())
             .then(data => {
-                alert(data.message);
+                alert(data.message + "\nOTP của bạn là: " + data.otp);
                 document.getElementById("otp-box").style.display = "block";
             });
     }

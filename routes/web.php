@@ -8,7 +8,7 @@ use App\Http\Controllers\Admin\KhachHangController;
 use Illuminate\Support\Facades\Route;
 use App\Services\QL;
 use App\Http\Controllers\AdminAuthController;
-use App\Http\Controllers\User\danhsachsanphamController;
+
 /*
 |--------------------------------------------------------------------------
 | ADMIN ROUTES
@@ -75,5 +75,6 @@ Route :: get('/trang_admin/khach_hang/them',[KhachHangController::class,'create'
     Route :: post('/trang_admin/xe_uu_dai/them',[UuDaiController::class,'storeXeUuDai']);
     Route :: get('/trang_admin/uu_dai_xe/xoa/{id_xe}/{id_uudai}',[UuDaiController::class,'destroyXeUuDai']);
    
+
 
 });

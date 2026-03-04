@@ -3,13 +3,17 @@
 namespace App\Http\Controllers\User; // Đảm bảo đúng namespace
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Services\Product; 
+
+
+use App\Services\Product; // << Gọi công nhân Product của nhóm vào
+
 
 class danhsachsanphamController extends Controller
 {
     // Cực kỳ quan trọng: Nhận $IDloai và $IDTH thẳng từ Router
     public function index(Request $request, $IDloai = 0, $IDTH = 0)
     {
+
         // 1. Ép kiểu 2 cái ID từ đường link thành số nguyên cho an toàn
         $maLoai = (int)$IDloai;
         $maThuongHieu = (int)$IDTH;
@@ -38,5 +42,7 @@ class danhsachsanphamController extends Controller
             'maLoai', 
             'IDTH' // <-- Change back to IDTH
         ));
+
+       
     }
 }
