@@ -11,7 +11,7 @@ use App\Services\Product; // << Gọi công nhân Product của nhóm vào
 class danhsachsanphamController extends Controller
 {
     // Cực kỳ quan trọng: Nhận $IDloai và $IDTH thẳng từ Router
-    public function index(Request $request, $IDloai, $IDTH)
+    public function index(Request $request, $IDloai = 0, $IDTH = 0)
     {
 
         // 1. Ép kiểu 2 cái ID từ đường link thành số nguyên cho an toàn

@@ -12,8 +12,6 @@ Route::prefix('user')->group(function () {
 // Chi tiết xe
     Route::get('/car_shop/chitietxe/{id}', [chitietxeController::class, 'index']);
 
-
-
 // Danh sách sản phẩm
      Route::get('/car_shop/danhsachsanpham', [danhsachsanphamController::class, 'index']);
     Route::get('/car_shop/danhsachsanpham/{IDloai}/{IDTH}',[danhsachsanphamController::class,'index']);
@@ -114,3 +112,4 @@ Route::post('/car_shop/capnhatmk',
 
   });
 }); 
+
