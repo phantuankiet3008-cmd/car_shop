@@ -1,0 +1,85 @@
+/* ===== FORM LỌC ===== */
+.filter_form {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.filter_form input,
+.filter_form select {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.filter_form button {
+    padding: 8px 16px;
+    background-color: #2f5bea;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.filter_form button:hover {
+    background-color: #1d46c2;
+}
+
+
+/* ===== TABLE ADMIN CHUNG ===== */
+.admin_table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.admin_table th {
+    background-color: #f2f2f2;
+    text-align: left;
+    padding: 12px 10px;
+    font-weight: 700;
+    border-bottom: 2px solid #ddd;
+}
+
+.admin_table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.admin_table tr:hover {
+    background-color: #f9f9f9;
+}
+
+
+/* ===== TRẠNG THÁI ===== */
+.status_wait {
+    color: orange;
+    font-weight: 600;
+}
+
+.status_success {
+    color: green;
+    font-weight: 600;
+}
+
+.status_cancel {
+    color: red;
+    font-weight: 600;
+}
+
+
+/* ===== HÀNH ĐỘNG ===== */
+.action_link {
+    color: #2f5bea;
+    font-weight: 600;
+    text-decoration: none;
+    margin-right: 8px;
+}
+
+.action_link:hover {
+    text-decoration: underline;
+}

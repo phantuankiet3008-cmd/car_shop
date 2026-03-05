@@ -122,9 +122,12 @@
 <div class="container">
     <div class="sidebar">
         <h3>LỌC SẢN PHẨM</h3>
+
+        <form action="{{ url('user/car_shop/danhsachsanpham') }}" method="GET">
+
         
         <form id="filterForm">
-            
+
             <div class="form-group">
                 <label>Tìm kiếm tên xe:</label>
                 <input type="text" id="searchInput" class="form-control" placeholder="Nhập tên xe..." value="{{ request('search') }}">

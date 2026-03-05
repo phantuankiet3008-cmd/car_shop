@@ -284,6 +284,7 @@ function list_anh_xe_mau($id) {
  
         return $data;
     }
+
     // 3. Hàm lấy ưu đãi - Đã sửa lỗi thiếu Return
      function uu_dai_cua_xe($id) {
 
@@ -338,5 +339,150 @@ public function getAllLoaiXe() {
         }
         return $data;
     }
+     function getDanhSachXeMauTheoXe($id_Xe)
+{
+    $id_Xe = (int)$id_Xe;
+
+    $sql = "SELECT 
+                xm.id_Xe_Mau,
+                xm.Gia,
+                xm.is_Default,
+                m.id_Mau,
+                m.Ten_Mau,
+                m.Ma_Mau
+            FROM xe_mau xm
+            JOIN mau_xe m ON xm.id_Mau = m.id_Mau
+            WHERE xm.id_Xe = $id_Xe";
+
+    return $this->db->query($sql); // trả về result object
+}
+ function getKhungGio()
+{
+    $sql = "SELECT id_Khung_Gio, Gio_Bat_Dau, Gio_Ket_Thuc
+            FROM khung_gio_lai_thu
+            ORDER BY Gio_Bat_Dau ASC";
+
+    return $this->db->query($sql);
+}
+ function getGioDaDat($ngay, $idXeMau)
+{
+    $ngay = $this->db->real_escape_string($ngay);
+    $idXeMau = (int)$idXeMau;
+
+    $sql = "SELECT id_Khung_Gio
+            FROM dat_lich_lai_thu
+            WHERE ngay_lai_thu = '$ngay'
+            AND id_Xe_Mau = $idXeMau";
+
+    return $this->db->query($sql);
+}
+ function checkTrungLich($ngay, $idXeMau, $idKhungGio)
+{
+    $ngay = $this->db->real_escape_string($ngay);
+    $idXeMau = (int)$idXeMau;
+    $idKhungGio = (int)$idKhungGio;
+
+    $sql = "SELECT id_Dat_Lich
+            FROM dat_lich_lai_thu
+            WHERE Ngay_Lai_Thu = '$ngay'
+            AND id_Xe_Mau = $idXeMau
+            AND id_Khung_Gio = $idKhungGio
+            LIMIT 1";
+
+    $result = $this->db->query($sql);
+
+    return ($result && $result->num_rows > 0);
+}
+ public function insertLichLaiThu($idKhach, $idXeMau, $ngay, $idKhungGio)
+{
+    $idKhach = (int)$idKhach;
+    $idXeMau = (int)$idXeMau;
+    $idKhungGio = (int)$idKhungGio;
+    $ngay = $this->db->real_escape_string($ngay);
+
+    $sql = "INSERT INTO dat_lich_lai_thu
+            (id_Khach_Hang, id_Xe_Mau, Ngay_Lai_Thu, id_Khung_Gio, Trang_Thai)
+            VALUES
+            ($idKhach, $idXeMau, '$ngay', $idKhungGio, 0)";
+
+    return $this->db->query($sql);
+}
+public function getThongTinXeTheoXeMau($id_Xe_Mau)
+{
+    $id_Xe_Mau = (int)$id_Xe_Mau;
+
+    $sql = "SELECT 
+                sp.id_Xe,
+                sp.Ten_Xe,
+                sp.Mo_Ta,
+                sp.id_Loai_Xe,
+                sp.id_Thuong_Hieu,
+
+                lx.Ten_Loai_Xe,
+                th.Ten_Thuong_Hieu,
+
+                xm.id_Xe_Mau,
+                xm.Gia,
+                xm.is_Default,
+
+                m.id_Mau,
+                m.Ten_Mau,
+                m.Ma_Mau
+
+            FROM xe_mau xm
+
+            JOIN san_pham_xe sp 
+                ON xm.id_Xe = sp.id_Xe
+
+            JOIN mau_xe m 
+                ON xm.id_Mau = m.id_Mau
+
+            JOIN loai_xe lx 
+                ON sp.id_Loai_Xe = lx.id_Loai_Xe
+
+            JOIN thuong_hieu_xe th 
+                ON sp.id_Thuong_Hieu = th.id_Thuong_Hieu
+
+            WHERE xm.id_Xe_Mau = $id_Xe_Mau
+            LIMIT 1";
+
+    $result = $this->db->query($sql);
+
+    if ($result && $result->num_rows > 0) {
+        return $result->fetch_assoc();
+    }
+
+    return null;
+}
+function kiemTraKhachDaDat($idKhach, $idXeMau, $ngay)
+{
+    $idKhach = (int)$idKhach;
+    $idXeMau = (int)$idXeMau;
+    $ngay = $this->db->real_escape_string($ngay);
+
+    $sql = "SELECT id_Dat_Lich
+            FROM dat_lich_lai_thu
+            WHERE id_Khach_Hang = $idKhach
+            AND id_Xe_Mau = $idXeMau
+            AND Ngay_Lai_Thu = '$ngay'
+            LIMIT 1";
+
+    return $this->db->query($sql);
+}
+public function kiemTraSlotDaDat($idXeMau, $ngay, $idKhungGio)
+{
+    $idXeMau = (int)$idXeMau;
+    $idKhungGio = (int)$idKhungGio;
+    $ngay = $this->db->real_escape_string($ngay);
+
+    $sql = "SELECT id_Dat_Lich
+            FROM dat_lich_lai_thu
+            WHERE id_Xe_Mau = $idXeMau
+            AND Ngay_Lai_Thu = '$ngay'
+            AND id_Khung_Gio = $idKhungGio
+            LIMIT 1";
+
+    return $this->db->query($sql);
+}
 }
 ?>

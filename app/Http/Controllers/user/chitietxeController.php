@@ -32,6 +32,14 @@ class ChitietxeController extends Controller
                 $anh_xe_mau[] = $row;
             }
         }
+        $Xe_mau = [];
+        $result_xe_mau = $sp->getDanhSachXeMauTheoXe($id);
+
+        if ($result_xe_mau) {
+            while ($row = $result_xe_mau->fetch_assoc()) {
+                $Xe_mau[] = $row;
+            }
+        }
 
         // ===== 3. Màu xe =====
         $mau_xe = [];
@@ -61,6 +69,7 @@ class ChitietxeController extends Controller
 
         return view('user.layouts.chitietsp', compact(
             'chitietsp',
+            'Xe_mau',
             'anh_xe_mau',
             'mau_xe',
             'gia_mac_dinh',
