@@ -5,10 +5,10 @@ use App\Http\Controllers\Admin\ThuongHieuXeController;
 use App\Http\Controllers\Admin\UuDaiController;
 use App\Http\Controllers\Admin\SanPhamController;
 use App\Http\Controllers\Admin\KhachHangController;
+use App\Http\Controllers\Admin\lichlaythuController;
 use Illuminate\Support\Facades\Route;
 use App\Services\QL;
 use App\Http\Controllers\AdminAuthController;
-use App\Http\Controllers\User\TrangChuController;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,11 +57,12 @@ Route::middleware('admin.auth')->group(function () {
     Route :: post('/trang_admin/san_pham/them', [SanPhamController::class, 'store']);
     Route :: get('/trang_admin/san_pham/sua/{id}', [SanPhamController::class, 'edit']);
     Route :: post('/trang_admin/san_pham/sua/{id}', [SanPhamController::class, 'update']);
+    Route :: delete('/trang_admin/san_pham/xoa_mau/{id}', [SanPhamController::class, 'destroyMau']);
     Route :: get('/trang_admin/san_pham/xoa/{id}', [SanPhamController::class, 'destroy']);
     //===== khách hàng =====
-    Route :: get('/trang_admin/khach_hang',[KhachHangController::class,'index']);
+Route :: get('/trang_admin/khach_hang',[KhachHangController::class,'index']);
     Route :: get('/trang_admin/khach_hang/tim/{keyword}',[KhachHangController::class,'search']);
-    Route :: get('/trang_admin/khach_hang/them',[KhachHangController::class,'create']);
+Route :: get('/trang_admin/khach_hang/them',[KhachHangController::class,'create']);
     Route :: post('/trang_admin/khach_hang/them',[KhachHangController::class,'store']);
     Route :: get('/trang_admin/khach_hang/sua/{id}',[KhachHangController::class,'edit']);
     Route :: post('/trang_admin/khach_hang/sua/{id}',[KhachHangController::class,'update']);
@@ -75,11 +76,10 @@ Route::middleware('admin.auth')->group(function () {
     Route :: get('/trang_admin/xe_uu_dai/them',[UuDaiController::class,'createXeUuDai']);
     Route :: post('/trang_admin/xe_uu_dai/them',[UuDaiController::class,'storeXeUuDai']);
     Route :: get('/trang_admin/uu_dai_xe/xoa/{id_xe}/{id_uudai}',[UuDaiController::class,'destroyXeUuDai']);
-   
+   // ===== LỊCH LÁI THỬ =====
+   Route::get('/trang_admin/lai_thu', [lichLayThuController::class, 'index']);
+Route::get('/trang_admin/lai_thu/cap-nhat/{id}/{trangThai}', [lichLayThuController::class, 'capNhatTrangThai']);
+Route::get('/trang_admin/lai_thu/xoa/{id}', [lichLayThuController::class, 'xoa']);
+
+
 });
-// xxx
-
-// Public home page (converted from legacy PHP)
-Route::get('/', [TrangChuController::class, 'index'])->name('home');
-
-require __DIR__.'/giaodienuser.php';

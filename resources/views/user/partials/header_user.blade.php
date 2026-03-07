@@ -28,12 +28,12 @@
             <!-- LOGIN / ACCOUNT -->
             <div class="login-info">
                 @auth
-                    <a href="{{ route('profile') }}">
+                    <a href="{{ url('/user/profile') }}">
                         <i class="fa-solid fa-circle-user"></i>
                         <span>Tài khoản</span>
                     </a>
                 @else
-                    <a href="{{ route('login') }}">
+                    <a href="{{ route('dangnhap') }}">
                         <i class="fa-solid fa-user"></i>
                         <span>Đăng nhập</span>
                     </a>
@@ -41,14 +41,14 @@
             </div>
 
             <!-- CART -->
-            <a href="{{ route('cart') }}">
+            <a href="{{ route('donhang') }}" class="cart-link">
                 <i class="fas fa-shopping-cart"></i>
                 <span>Đơn Hàng</span>
             </a>
 
             <!-- LOGOUT -->
             @auth
-                <a href="{{ route('logout') }}"
+                <a href="{{ url('/user/logout') }}"
                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <i class="fas fa-sign-out-alt"></i>
                     Đăng xuất

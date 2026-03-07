@@ -236,37 +236,54 @@ function list_anh_xe_mau($id) {
 
     return $this->db->query($sql);
 }
-public function locSanPham($MaLoai, $MaThuongHieu)
+
+// Notice the order of the parameters here matches the controller call
+  public function locSanPham($search = '', $MaLoai = 0, $MaThuongHieu = 0)
 {
-    $sql = "SELECT sp.id_Xe, sp.Ten_Xe, sp.Mo_Ta, sp.Anh_Dai_Dien, sp.Trang_thai, sp.id_Loai_Xe, sp.id_Thuong_Hieu,
-            lx.Ten_Loai_Xe,
-            th.Ten_Thuong_Hieu,
-            xm.Gia AS Gia_Mau
-            FROM san_pham_xe sp
-            LEFT JOIN loai_xe lx ON sp.id_Loai_Xe = lx.id_Loai_xe
-            LEFT JOIN thuong_hieu_xe th ON sp.id_Thuong_Hieu = th.id_Thuong_Hieu
-            LEFT JOIN xe_mau xm ON sp.id_Xe = xm.id_Xe
-            WHERE sp.Trang_Thai = 1 AND xm.is_Default = 1 ";
+    // 1. Prevent SQL Injection
+    $search = $this->db->real_escape_string($search);
+    $MaLoai = (int)$MaLoai;
+    $MaThuongHieu = (int)$MaThuongHieu;
 
-    if ($MaLoai > 0) {
-        $sql .= " AND sp.id_Loai_Xe = $MaLoai";
-    }
+        // 2. Base SQL Query
+        $sql = "SELECT sp.*, 
+                       lx.Ten_Loai_Xe, 
+                       th.Ten_Thuong_Hieu, 
+                       xm.Gia AS Gia_Mau
+                FROM san_pham_xe sp
+                JOIN loai_xe lx ON sp.id_Loai_Xe = lx.id_Loai_xe
+                JOIN thuong_hieu_xe th ON sp.id_Thuong_Hieu = th.id_Thuong_Hieu
+                LEFT JOIN xe_mau xm ON sp.id_Xe = xm.id_Xe AND xm.is_Default = 1
+                WHERE sp.Trang_Thai = 1";
 
-    if ($MaThuongHieu > 0) {
-        $sql .= " AND sp.id_Thuong_Hieu = $MaThuongHieu";
-    }
-
-    $result = $this->db->query($sql);
-    $data = [];
-
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            $data[] = $row;
+        // 3. Append filter conditions
+        if ($search !== '') {
+            $sql .= " AND sp.Ten_Xe LIKE '%$search%'";
         }
-    }
+        if ($MaLoai > 0) {
+            $sql .= " AND sp.id_Loai_Xe = $MaLoai";
+        }
+        if ($MaThuongHieu > 0) {
+            $sql .= " AND sp.id_Thuong_Hieu = $MaThuongHieu";
+        }
 
-    return $data;
-}
+        // 4. Sort 
+        $sql .= " ORDER BY sp.id_Xe DESC";
+
+        // 5. Execute and gather results
+        $result = $this->db->query($sql);
+        $data = [];
+
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                // Ensure data is treated as an object for Blade compatibility
+                $data[] = (object) $row; 
+            }
+        }
+
+ 
+        return $data;
+    }
 
     // 3. Hàm lấy ưu đãi - Đã sửa lỗi thiếu Return
      function uu_dai_cua_xe($id) {
@@ -293,6 +310,178 @@ public function locSanPham($MaLoai, $MaThuongHieu)
             FROM xe_mau xm
             JOIN mau_xe m ON xm.id_Mau = m.id_Mau
             WHERE xm.id_Xe = $id";
+    return $this->db->query($sql);
+}
+public function getAllLoaiXe() {
+        $sql = "SELECT * FROM loai_xe WHERE Trang_Thai = 1";
+        $result = $this->db->query($sql);
+        $data = [];
+        
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                // Ép kiểu thành Object để file Blade gọi được $loai->Ten_Loai_Xe
+                $data[] = (object) $row; 
+            }
+        }
+        return $data;
+    }
+
+    public function getAllThuongHieu() {
+        $sql = "SELECT * FROM thuong_hieu_xe WHERE Trang_Thai = 1";
+        $result = $this->db->query($sql);
+        $data = [];
+        
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                // Ép kiểu thành Object để file Blade gọi được $th->Ten_Thuong_Hieu
+                $data[] = (object) $row;
+            }
+        }
+        return $data;
+    }
+     function getDanhSachXeMauTheoXe($id_Xe)
+{
+    $id_Xe = (int)$id_Xe;
+
+    $sql = "SELECT 
+                xm.id_Xe_Mau,
+                xm.Gia,
+                xm.is_Default,
+                m.id_Mau,
+                m.Ten_Mau,
+                m.Ma_Mau
+            FROM xe_mau xm
+            JOIN mau_xe m ON xm.id_Mau = m.id_Mau
+            WHERE xm.id_Xe = $id_Xe";
+
+    return $this->db->query($sql); // trả về result object
+}
+ function getKhungGio()
+{
+    $sql = "SELECT id_Khung_Gio, Gio_Bat_Dau, Gio_Ket_Thuc
+            FROM khung_gio_lai_thu
+            ORDER BY Gio_Bat_Dau ASC";
+
+    return $this->db->query($sql);
+}
+ function getGioDaDat($ngay, $idXeMau)
+{
+    $ngay = $this->db->real_escape_string($ngay);
+    $idXeMau = (int)$idXeMau;
+
+    $sql = "SELECT id_Khung_Gio
+            FROM dat_lich_lai_thu
+            WHERE ngay_lai_thu = '$ngay'
+            AND id_Xe_Mau = $idXeMau";
+
+    return $this->db->query($sql);
+}
+ function checkTrungLich($ngay, $idXeMau, $idKhungGio)
+{
+    $ngay = $this->db->real_escape_string($ngay);
+    $idXeMau = (int)$idXeMau;
+    $idKhungGio = (int)$idKhungGio;
+
+    $sql = "SELECT id_Dat_Lich
+            FROM dat_lich_lai_thu
+            WHERE Ngay_Lai_Thu = '$ngay'
+            AND id_Xe_Mau = $idXeMau
+            AND id_Khung_Gio = $idKhungGio
+            LIMIT 1";
+
+    $result = $this->db->query($sql);
+
+    return ($result && $result->num_rows > 0);
+}
+ public function insertLichLaiThu($idKhach, $idXeMau, $ngay, $idKhungGio)
+{
+    $idKhach = (int)$idKhach;
+    $idXeMau = (int)$idXeMau;
+    $idKhungGio = (int)$idKhungGio;
+    $ngay = $this->db->real_escape_string($ngay);
+
+    $sql = "INSERT INTO dat_lich_lai_thu
+            (id_Khach_Hang, id_Xe_Mau, Ngay_Lai_Thu, id_Khung_Gio, Trang_Thai)
+            VALUES
+            ($idKhach, $idXeMau, '$ngay', $idKhungGio, 0)";
+
+    return $this->db->query($sql);
+}
+public function getThongTinXeTheoXeMau($id_Xe_Mau)
+{
+    $id_Xe_Mau = (int)$id_Xe_Mau;
+
+    $sql = "SELECT 
+                sp.id_Xe,
+                sp.Ten_Xe,
+                sp.Mo_Ta,
+                sp.id_Loai_Xe,
+                sp.id_Thuong_Hieu,
+
+                lx.Ten_Loai_Xe,
+                th.Ten_Thuong_Hieu,
+
+                xm.id_Xe_Mau,
+                xm.Gia,
+                xm.is_Default,
+
+                m.id_Mau,
+                m.Ten_Mau,
+                m.Ma_Mau
+
+            FROM xe_mau xm
+
+            JOIN san_pham_xe sp 
+                ON xm.id_Xe = sp.id_Xe
+
+            JOIN mau_xe m 
+                ON xm.id_Mau = m.id_Mau
+
+            JOIN loai_xe lx 
+                ON sp.id_Loai_Xe = lx.id_Loai_Xe
+
+            JOIN thuong_hieu_xe th 
+                ON sp.id_Thuong_Hieu = th.id_Thuong_Hieu
+
+            WHERE xm.id_Xe_Mau = $id_Xe_Mau
+            LIMIT 1";
+
+    $result = $this->db->query($sql);
+
+    if ($result && $result->num_rows > 0) {
+        return $result->fetch_assoc();
+    }
+
+    return null;
+}
+function kiemTraKhachDaDat($idKhach, $idXeMau, $ngay)
+{
+    $idKhach = (int)$idKhach;
+    $idXeMau = (int)$idXeMau;
+    $ngay = $this->db->real_escape_string($ngay);
+
+    $sql = "SELECT id_Dat_Lich
+            FROM dat_lich_lai_thu
+            WHERE id_Khach_Hang = $idKhach
+            AND id_Xe_Mau = $idXeMau
+            AND Ngay_Lai_Thu = '$ngay'
+            LIMIT 1";
+
+    return $this->db->query($sql);
+}
+public function kiemTraSlotDaDat($idXeMau, $ngay, $idKhungGio)
+{
+    $idXeMau = (int)$idXeMau;
+    $idKhungGio = (int)$idKhungGio;
+    $ngay = $this->db->real_escape_string($ngay);
+
+    $sql = "SELECT id_Dat_Lich
+            FROM dat_lich_lai_thu
+            WHERE id_Xe_Mau = $idXeMau
+            AND Ngay_Lai_Thu = '$ngay'
+            AND id_Khung_Gio = $idKhungGio
+            LIMIT 1";
+
     return $this->db->query($sql);
 }
 }

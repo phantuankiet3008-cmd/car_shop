@@ -161,8 +161,23 @@
                     </span> đ
                 </strong>
                 </p>
-
-            <p><a href="{{ url('car_shop/dat_hang/'.$chitietsp['id_Xe']) }}" class="btn-dat-hang">ĐẶT CỌC</a></p>
+                 <p>
+                <strong>
+                Tiền cọc (1%):
+                <span id="tienCoc">0</span> đ
+                </strong>
+                </p>
+                
+            <p><a href="{{ url('user/car_shop/dat_hang/'.$chitietsp['id_Xe']) }}" class="btn-dat-hang">ĐẶT CỌC</a></p>
+            <a id="btnDatLich"
+             href="{{ url('user/car_shop/dangkilaithu/'.$mau_xe[0]['id_Xe_Mau']) }}"
+            class="btn-dat-lich">
+            ĐẶT LỊCH LÁI THỬ
+            </a>
+            <p style="font-size:14px; margin-top:8px; color:#555;">
+             Sau khi thanh toán 1% giá trị xe, showroom sẽ giữ quyền ưu tiên mua xe cho bạn trong vòng <strong>24 giờ</strong>.
+             Đối với dòng xe cao cấp, chúng tôi khuyến khích khách hàng liên hệ trực tiếp để được tư vấn chi tiết trước khi đặt cọc.
+            </p>
             </div>
 
         </div>
@@ -251,40 +266,41 @@ document.addEventListener("DOMContentLoaded", function () {
     const giaChinh = document.getElementById("giaChinh");
     const giaTomTat = document.getElementById("giaTomTat");
     const tongSauUuDai = document.getElementById("tongSauUuDai");
+    const tienCoc = document.getElementById("tienCoc"); // thêm dòng này
     const dsUuDai = document.querySelectorAll("#danhSachUuDai li");
-
+    // tính uu đãi
     function tinhGiaSauUuDai(gia) {
 
-    let maxGiam = 0;
+        let maxGiam = 0;
 
-    dsUuDai.forEach(item => {
+        dsUuDai.forEach(item => {
 
-        let loai = item.dataset.loai;
-        let value = parseFloat(item.dataset.giaTri);
+            let loai = item.dataset.loai;
+            let value = parseFloat(item.dataset.giaTri);
 
-        if (!value) return;
+            if (!value) return;
 
-        let giam = 0;
+            let giam = 0;
 
-        if (loai === 'phan_tram') {
-            giam = gia * value / 100;
-        } 
-        else if (loai === 'tien') {
-            giam = value;
-        }
+            if (loai === 'phan_tram') {
+                giam = gia * value / 100;
+            } 
+            else if (loai === 'tien') {
+                giam = value;
+            }
 
-        if (giam > maxGiam) {
-            maxGiam = giam;
-        }
+            if (giam > maxGiam) {
+                maxGiam = giam;
+            }
 
-    });
+        });
 
-    let tong = gia - maxGiam;
+        let tong = gia - maxGiam;
 
-    if (tong < 0) tong = 0;
+        if (tong < 0) tong = 0;
 
-    return tong;
-}
+        return tong;
+    }
 
     function capNhatGia(gia) {
 
@@ -295,8 +311,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
         let giaSauUuDai = tinhGiaSauUuDai(gia);
 
-        tongSauUuDai.innerText = 
+        tongSauUuDai.innerText =
             Number(giaSauUuDai).toLocaleString('vi-VN');
+
+        //  TÍNH TIỀN CỌC 5%
+        let tienCocValue = giaSauUuDai * 0.01;
+
+        tienCoc.innerText =
+            Number(tienCocValue).toLocaleString('vi-VN');
     }
 
     radios.forEach(radio => {
@@ -309,12 +331,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
         });
     });
+    const btnDatLich = document.getElementById("btnDatLich");
+
 
     // Load mặc định
     const checked = document.querySelector('input[name="chon_mau"]:checked');
     if (checked) {
         capNhatGia(parseFloat(checked.dataset.gia));
     }
+   
+
 
 });
 </script>

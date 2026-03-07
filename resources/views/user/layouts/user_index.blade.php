@@ -10,7 +10,7 @@
 <body>
 
     @include('user.partials.header_user')
-    @include('user.partials.navbar_user')
+    @include('user.layouts.navbar_user')
     <div class="content">
         @yield('content')
     </div>

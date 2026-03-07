@@ -29,7 +29,7 @@
          width="990">
 
     <!-- Danh sách sản phẩm -->
-    @include('user.partials.danhsachsanpham')
+    @include('user.layouts.danhsachsanpham')
 
 </main>
 
