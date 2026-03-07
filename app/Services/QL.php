@@ -71,7 +71,7 @@ class QL {
 
     // Lấy danh sách loại xe
     function DS_Loai_Xe() {
-        $sql = "SELECT * FROM loai_xe ORDER BY id_Loai_Xe DESC";
+        $sql = "SELECT * FROM loai_xe ORDER BY id_Loai_xe DESC";
         $result = $this->db->query($sql);
 
         $data = [];

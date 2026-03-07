@@ -1,7 +1,8 @@
 @extends('user.layouts.user_index')
 
 @section('content')
-
+<!-- Trang chủ -->
+     <link rel="stylesheet" href="{{ asset('user/css/giaodien_user.css') }}">
 <main>
 
     <!-- ===== Slider ===== -->
@@ -28,8 +29,6 @@
          class="center-img"
          width="990">
 
-    <!-- Danh sách sản phẩm -->
-    @include('user.layouts.danhsachsanpham')
 
 </main>
 

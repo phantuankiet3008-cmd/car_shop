@@ -44,7 +44,7 @@ Route::prefix('user')->group(function () {
     Route::get('/car_shop/trangchu', [TrangChuController::class, 'index'])
         ->name('home');
 Route::get('/donhang', [donhangController::class, 'index'])->name('donhang');
-
+route ::get('car_shop/hangmoi', [TrangChuController::class,'hangmoi'])->name('hangmoi');
 
 
 

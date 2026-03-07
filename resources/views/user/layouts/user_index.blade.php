@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang Chủ Cửa Hàng Point </title>
 
-    <link rel="stylesheet" href="{{ asset('/css/giaodien_user.css') }}">
+    <link rel="stylesheet" href="{{ asset('user/css/giaodien_user.css') }}">
 </head>
 <body>
 
