@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\KhachHangController;
 use Illuminate\Support\Facades\Route;
 use App\Services\QL;
 use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\User\TrangChuController;
 
 /*
 |--------------------------------------------------------------------------
@@ -77,3 +78,8 @@ Route::middleware('admin.auth')->group(function () {
    
 });
 // xxx
+
+// Public home page (converted from legacy PHP)
+Route::get('/', [TrangChuController::class, 'index'])->name('home');
+
+require __DIR__.'/giaodienuser.php';

@@ -9,4 +9,16 @@ Route::prefix('user')->group(function () {
 
    
 
+
+
+
+
+
+
+
+Route::get('/trangchu', function () {
+    return view('user.layouts.user_index');
 });
+         
+
+    });
