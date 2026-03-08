@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -8,6 +9,9 @@ use App\Http\Controllers\User\DangNhap_controller;
 use App\Http\Controllers\User\DangKy_controller;
 use App\Http\Controllers\User\QuenMK_controller;
 use App\Http\Controllers\User\otp_controller;
+use App\Http\Controllers\User\TrangChuController;
+use App\Http\Controllers\User\donhangController;
+
 Route::prefix('user')->group(function () {
 // Chi tiết xe
     Route::get('/car_shop/chitietxe/{id}', [chitietxeController::class, 'index']);
@@ -36,6 +40,11 @@ Route::prefix('user')->group(function () {
 
 
 
+// trang chur user
+    Route::get('/car_shop/trangchu', [TrangChuController::class, 'index'])
+        ->name('home');
+Route::get('/donhang', [donhangController::class, 'index'])->name('donhang');
+route ::get('car_shop/hangmoi', [TrangChuController::class,'hangmoi'])->name('hangmoi');
 
 
 
