@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\lichlaythuController;
 use Illuminate\Support\Facades\Route;
 use App\Services\QL;
 use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\Admin\QLGoiBaoDuong_controller;
+use App\Http\Controllers\Admin\QLBaoDuong_controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -82,4 +84,17 @@ Route::get('/trang_admin/lai_thu/cap-nhat/{id}/{trangThai}', [lichLayThuControll
 Route::get('/trang_admin/lai_thu/xoa/{id}', [lichLayThuController::class, 'xoa']);
 
 
+
+
+// BẢO DƯỠNG ADMIN
+Route::get('/trang_admin/baoduong', [QLBaoDuong_controller::class, 'index']);
+
+// GÓI BẢO DƯỠNG
+Route::get('/trang_admin/goibaoduong', [QLGoiBaoDuong_controller::class,'index']);
+Route::get('/trang_admin/goibaoduong/them', function () {
+    return view('admin.layouts.index_AD', [
+        'key' => 'add_goi_bao_duong'
+    ]);
+});
+Route::get('/trang_admin/goibaoduong/xoa/{id}', [QLGoiBaoDuong_controller::class,'xoa_goi']);
 });
