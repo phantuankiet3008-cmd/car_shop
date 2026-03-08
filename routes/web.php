@@ -82,19 +82,3 @@ Route :: get('/trang_admin/khach_hang/them',[KhachHangController::class,'create'
    Route::get('/trang_admin/lai_thu', [lichLayThuController::class, 'index']);
 Route::get('/trang_admin/lai_thu/cap-nhat/{id}/{trangThai}', [lichLayThuController::class, 'capNhatTrangThai']);
 Route::get('/trang_admin/lai_thu/xoa/{id}', [lichLayThuController::class, 'xoa']);
-
-
-
-
-// BẢO DƯỠNG ADMIN
-Route::get('/trang_admin/baoduong', [QLBaoDuong_controller::class, 'index']);
-
-// GÓI BẢO DƯỠNG
-Route::get('/trang_admin/goibaoduong', [QLGoiBaoDuong_controller::class,'index']);
-Route::get('/trang_admin/goibaoduong/them', function () {
-    return view('admin.layouts.index_AD', [
-        'key' => 'add_goi_bao_duong'
-    ]);
-});
-Route::get('/trang_admin/goibaoduong/xoa/{id}', [QLGoiBaoDuong_controller::class,'xoa_goi']);
-});
