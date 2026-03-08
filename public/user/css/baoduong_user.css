@@ -1,0 +1,86 @@
+body {
+    font-family: Arial;
+    background: #f5f6fa;
+    margin: 0;
+}
+
+.container {
+    width: 1000px;
+    margin: auto;
+}
+
+.title {
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+    margin: 30px 0;
+}
+
+.goi-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.goi {
+    background: white;
+    width: 300px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: 0.3s;
+}
+
+.goi:hover {
+    transform: translateY(-5px);
+}
+
+.goi h3 {
+    color: #2f3640;
+}
+
+.mota {
+    color: #555;
+    margin: 10px 0;
+}
+
+.gia {
+    color: red;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+form {
+    margin-top: 15px;
+}
+
+input[type="date"] {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background: #0984e3;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0652dd;
+}
+
+.success {
+    background: #d4edda;
+    color: #155724;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}

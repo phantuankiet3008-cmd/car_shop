@@ -910,6 +910,98 @@ public function Xoa_LaiThu($id)
     return $this->db->query($sql);
 }
 
+
+
+// BẢO DƯỠNG ADMIN
+function danh_sach_lich($request){
+
+    $sql = "SELECT 
+                l.id_lich,
+                k.Ho_Ten,
+                k.So_Dien_Thoai,
+                sp.Ten_Xe,
+                g.ten_goi,
+                g.gia,
+                l.ngay_bao_duong,
+                l.ghi_chu,
+                l.trang_thai
+            FROM lich_bao_duong l
+
+            JOIN khach_hang k 
+                ON l.id_Khach_Hang = k.id_Khach_Hang
+
+            JOIN xe_mau xm 
+                ON l.id_Xe_Mau = xm.id_Xe_Mau
+
+            JOIN san_pham_xe sp 
+                ON xm.id_Xe = sp.id_Xe
+
+            JOIN goi_bao_duong g 
+                ON l.id_goi = g.id_goi
+
+            WHERE 1=1";
+
+    // lọc tên khách
+    if(!empty($request->ten_khach)){
+        $ten = $this->db->real_escape_string($request->ten_khach);
+        $sql .= " AND k.Ho_Ten LIKE '%$ten%'";
+    }
+
+    // lọc số điện thoại
+    if(!empty($request->sdt)){
+        $sdt = $this->db->real_escape_string($request->sdt);
+        $sql .= " AND k.So_Dien_Thoai LIKE '%$sdt%'";
+    }
+
+    // lọc tên xe
+    if(!empty($request->ten_xe)){
+        $xe = $this->db->real_escape_string($request->ten_xe);
+        $sql .= " AND sp.Ten_Xe LIKE '%$xe%'";
+    }
+
+    // lọc gói bảo dưỡng
+    if(!empty($request->goi)){
+        $goi = $this->db->real_escape_string($request->goi);
+        $sql .= " AND g.ten_goi LIKE '%$goi%'";
+    }
+
+    // lọc ngày
+    if(!empty($request->ngay)){
+        $ngay = $this->db->real_escape_string($request->ngay);
+        $sql .= " AND l.ngay_bao_duong = '$ngay'";
+    }
+
+    // lọc trạng thái
+    if(!empty($request->trang_thai)){
+        $tt = $this->db->real_escape_string($request->trang_thai);
+        $sql .= " AND l.trang_thai = '$tt'";
+    }
+
+    $result = $this->db->query($sql);
+
+    $data = [];
+
+    if($result){
+        while($row = $result->fetch_assoc()){
+            $data[] = $row;
+        }
+    }
+
+    return $data;
+}
+
+
+// QL GÓI BẢO DƯỠNG
+function danh_sach_goi(){
+
+    $sql = "SELECT * FROM goi_bao_duong";
+
+    $result = $this->db->query($sql);
+
+    $data = [];
+
+    while($row = $result->fetch_assoc()){
+
 public function list_thuong_hieu_theo_loai($MaLoai)
 {
     $sql = "SELECT * 
@@ -924,11 +1016,105 @@ public function list_thuong_hieu_theo_loai($MaLoai)
 
     $data = [];
     while ($row = $result->fetch_assoc()) {
+
         $data[] = $row;
     }
 
     return $data;
 }
+
+        // thêm gói
+        function them_goi($ten, $mo_ta, $gia){
+
+            $ten = $this->db->real_escape_string($ten);
+            $mo_ta = $this->db->real_escape_string($mo_ta);
+            $gia = $this->db->real_escape_string($gia);
+        
+            $sql = "INSERT INTO goi_bao_duong(ten_goi, mo_ta, gia)
+                    VALUES('$ten','$mo_ta','$gia')";
+        
+            return $this->db->query($sql);
+        }
+
+        // xóa gói
+        function xoa_goi($id){
+
+            $id = (int)$id;
+        
+            $sql = "DELETE FROM goi_bao_duong WHERE id_goi = $id";
+        
+            return $this->db->query($sql);
+        }
+
+
+        // SỬA XÓA BẢO DƯỠNG
+        function Get_ChiTietbaoduong($id){
+
+            $id = (int)$id;
+            
+            $sql = "SELECT 
+                        l.id_lich,
+                        l.id_Khach_Hang,
+                        l.id_Xe_Mau,
+                        l.id_goi,
+                        l.ngay_bao_duong,
+                        l.ghi_chu,
+                        l.trang_thai,
+                        k.Ho_Ten,
+                        k.So_Dien_Thoai,
+                        sp.Ten_Xe,
+                        m.Ten_Mau,
+                        g.ten_goi
+                    FROM lich_bao_duong l
+                    JOIN khach_hang k ON l.id_Khach_Hang = k.id_Khach_Hang
+                    JOIN xe_mau xm ON l.id_Xe_Mau = xm.id_Xe_Mau
+                    JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+                    JOIN mau_xe m ON xm.id_Mau = m.id_Mau
+                    JOIN goi_bao_duong g ON l.id_goi = g.id_goi
+                    WHERE l.id_lich = $id
+                    LIMIT 1";
+            
+            $result = $this->db->query($sql);
+            
+            if($result && $result->num_rows > 0){
+                return $result->fetch_assoc();
+            }
+            
+            return false;
+            
+            }
+
+            function Update_baoduong($id, $post){
+
+                $id = (int)$id;
+                
+                $ngay = $this->db->real_escape_string($post['ngay_bao_duong']);
+                $ghi_chu = $this->db->real_escape_string($post['ghi_chu']);
+                $trang_thai = $this->db->real_escape_string($post['trang_thai']);
+                
+                $sql = "UPDATE lich_bao_duong
+                        SET 
+                            ngay_bao_duong = '$ngay',
+                            ghi_chu = '$ghi_chu',
+                            trang_thai = '$trang_thai'
+                        WHERE id_lich = $id";
+                
+                return $this->db->query($sql);
+                
+                }
+
+                function Delete_BaoDuong($id){
+
+                    $id = (int)$id;
+                    
+                    $sql = "DELETE FROM lich_bao_duong
+                            WHERE id_lich = $id";
+                    
+                    return $this->db->query($sql);
+                    
+                    }
+
+
 
 
 

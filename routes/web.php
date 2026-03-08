@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\lichlaythuController;
 use Illuminate\Support\Facades\Route;
 use App\Services\QL;
 use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\Admin\QLGoiBaoDuong_controller;
+use App\Http\Controllers\Admin\QLBaoDuong_controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,7 +81,11 @@ Route :: get('/trang_admin/khach_hang/them',[KhachHangController::class,'create'
    // ===== LỊCH LÁI THỬ =====
    Route::get('/trang_admin/lai_thu', [lichLayThuController::class, 'index']);
 Route::get('/trang_admin/lai_thu/cap-nhat/{id}/{trangThai}', [lichLayThuController::class, 'capNhatTrangThai']);
+
+Route::get('/trang_admin/lai_thu/xoa/{id}', [lichLayThuController::class, 'xoa']);
+
 Route::get('/trang_admin/lai_thu/xoa/{id}', [lichLayThuController::class, 'xoa']);
 
 
 });
+
