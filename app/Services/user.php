@@ -152,3 +152,40 @@ $sql = "
 
 
 
+
+class BaoDuong {
+
+    private $db;
+
+    public function __construct(){
+        $this->db = new \mysqli("localhost","root","","car_shop");
+        $this->db->set_charset("utf8");
+    }
+
+    // LẤY GÓI BẢO DƯỠNG
+    public function chongoi_baoduong(){
+
+        $sql = "SELECT * FROM goi_bao_duong WHERE trang_thai = 1";
+
+        $result = $this->db->query($sql);
+
+        $data = [];
+
+        while($row = $result->fetch_assoc()){
+            $data[] = $row;
+        }
+
+        return $data;
+    }
+
+    // ĐẶT LỊCH BẢO DƯỠNG
+    public function datlich_baoduong($id_khach,$id_goi,$ngay){
+
+        $sql = "INSERT INTO lich_bao_duong (id_Khach_Hang,id_goi,ngay_bao_duong)
+                VALUES ('$id_khach','$id_goi','$ngay')";
+
+        return $this->db->query($sql);
+    }
+}
+?>
+
