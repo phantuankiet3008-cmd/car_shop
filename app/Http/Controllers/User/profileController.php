@@ -16,14 +16,13 @@ class profileController extends Controller
             return redirect('/car_shop/dangnhap');
         }
 
-        $User = new User();
-        $khachhang = $User->laykhachhangtheosdt($SDT);
+        $userService = new User();
+        $khachhang = $userService->laykhachhangtheosdt($SDT);
 
         if (!$khachhang) {
             abort(404, 'Không tìm thấy khách hàng');
         }
 
-    
         return view('user.layouts.profile', compact('khachhang'));
     }
 
@@ -35,31 +34,40 @@ class profileController extends Controller
             return redirect('/car_shop/dangnhap');
         }
 
-        $User = new User();
-        $khachhang = $User->laykhachhangtheosdt($SDT);
+        $userService = new User();
+        $khachhang = $userService->laykhachhangtheosdt($SDT);
 
-        $id_khachhang = $khachhang['id_Khach_Hang'];
-        $Avatar = $khachhang['avatar'];
-
-        // Upload avatar nếu có
-        if ($request->hasFile('avatar')) {
-            $Avatar = time().'_'.$request->file('avatar')->getClientOriginalName();
-            $request->file('avatar')->move(public_path('upload/avatar'), $Avatar);
+        if (!$khachhang) {
+            return back()->with('msg', 'Không tìm thấy khách hàng');
         }
 
-        $res = $User->capnhat_thong_tin_khach_hang(
-            $id_khachhang,
-            $request->TenKH,
-            $request->Email,
-            $request->DiaChi,
-            $khachhang['So_Dien_Thoai'],
-            $Avatar,
-            null
-        );
+       $id_khachhang = $khachhang['id_Khach_Hang'];
+
+// ===== GIỮ AVATAR CŨ =====
+$avatar = $khachhang['Avatar'] ?? null;
+
+// ===== UPLOAD AVATAR MỚI =====
+if ($request->hasFile('avatar')) {
+
+    $file = $request->file('avatar');
+
+    $avatar = time() . '_' . $file->getClientOriginalName();
+
+    $file->move(public_path('upload/avatar'), $avatar);
+}
+
+// ===== CẬP NHẬT DATABASE =====
+$res = $userService->capnhat_thong_tin_khach_hang(
+    $id_khachhang,
+    $request->TenKH ?? $khachhang['Ho_Ten'],
+    $request->Email ?? $khachhang['Email'],
+    $request->DiaChi ?? $khachhang['Dia_Chi'],
+    $khachhang['So_Dien_Thoai'],
+    $avatar
+);
 
         if ($res) {
-            return redirect()->route('profile')
-                ->with('msg', 'Cập nhật thành công!');
+            return redirect()->route('profile')->with('msg', 'Cập nhật thành công!');
         }
 
         return back()->with('msg', 'Cập nhật thất bại!');

@@ -15,11 +15,11 @@ class trangcanhanController extends Controller
             return redirect('/car_shop/dangnhap');
         }
 
-        $service = new User();   
+        $User = new User();   
 
-       $user = $service->laykhachhangtheosdt($SDT);
+        $khachhang = $User->laykhachhangtheosdt($SDT);
 
-        if (!$user) {
+        if (!$khachhang) {
             abort(404, 'Không tìm thấy khách hàng');
         }
 

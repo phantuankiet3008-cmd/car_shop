@@ -80,5 +80,10 @@ Route::post('/car_shop/capnhatmk',
     Route::get('/car_shop/lich-lai-thu-cua-toi', [dangkilaithuController::class, 'lichCuaToi']);
 
   });
- 
+Route::get('/car_shop/trangcanhan', [trangcanhanController::class, 'index']);
 
+Route::get('/car_shop/profile', [profileController::class, 'index'])
+    ->name('profile');
+
+Route::post('/car_shop/profile/update', [profileController::class, 'update'])
+    ->name('profile.update');

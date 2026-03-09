@@ -23,24 +23,21 @@ class DangNhap_controller extends Controller {
 
     $service = new User();
 
-    $user = $service->dangnhap(
+    $user = $service->dang_nhap(
         $request->SDT,
         $request->MatKhau
     );
 
     if ($user) {
-            session([
-    'user_id' => $user->id_Khach_Hang,
-    'user_name' => $user->Ho_Ten,
-    'SDT' => $user->So_Dien_Thoai
-]);
 
         session([
             'user_id' => $user['id_Khach_Hang'],
-            'user_name' => $user['Ho_Ten']
+            'user_name' => $user['Ho_Ten'],
+            'SDT'       => $user['So_Dien_Thoai'] 
+
         ]);
 
-        return redirect('user/car_shop/chitietxe/21');
+        return redirect('/car_shop/trangcanhan');
     }
 
     return back()->with('error', 'Sai số điện thoại hoặc mật khẩu');
