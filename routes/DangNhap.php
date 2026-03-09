@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/car_shop/dangnhap', function () {
     return view('user.layouts.DangNhap');
 })->name('dangnhap');
-Route::post('/car_shop/dangnhap', [DangNhap_controller::class, 'dangnhap']);
+Route::post('/car_shop/dangnhap', [DangNhap_controller::class, 'dang_nhap']);
 
 // ĐĂNG KÝ KH
 Route::get('/car_shop/dangky', function () {

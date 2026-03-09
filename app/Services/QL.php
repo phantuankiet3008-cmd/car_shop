@@ -773,12 +773,12 @@ function DanhSach_Khach_Hang() {
 }
 
 
-// Lấy 1 khách hàng theo ID
-function ChiTiet_Khach_Hang($id) {
-    $id = (int)$id;
-    $sql = "SELECT * FROM khach_hang WHERE id_Khach_Hang = $id LIMIT 1";
+// Lấy 1 khách hàng theo SDT
+function ChiTiet_Khach_Hang($sdt) {
+    $sdt = $this->db->real_escape_string($sdt);
+    $sql = "SELECT * FROM khach_hang WHERE So_Dien_Thoai = '$sdt' LIMIT 1";
     return $this->db->query($sql)->fetch_assoc();
-}
+}   
 
 // Thêm khách hàng
 function Add_Khach_Hang($ten, $email, $sdt, $dia_chi, $mat_khau, $trang_thai) {
