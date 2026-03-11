@@ -25,7 +25,7 @@ Route::prefix('user')->group(function () {
     Route::post('/car_shop/profile/update', [profileController::class, 'update'])->name('profile.update');
    Route::get('/car_shop/danhsachsanpham', [danhsachsanphamController::class, 'index']);
 Route::get('/car_shop/danhsachsanpham/{IDloai}/{IDTH}',[danhsachsanphamController::class,'index']);
-});
+
 
 
 
@@ -132,9 +132,6 @@ Route::post('/car_shop/capnhatmk',
   Route::middleware('user.auth')->group(function () {
     Route::post('/car_shop/dat_lich_lai_thu', [dangkilaithuController::class, 'store']);
     Route::get('/car_shop/lich-lai-thu-cua-toi', [dangkilaithuController::class, 'lichCuaToi']);
-
-  });
-
 Route::get('/car_shop/trangcanhan', [trangcanhanController::class, 'index']);
 
 Route::get('/car_shop/profile', [profileController::class, 'index'])
@@ -142,7 +139,10 @@ Route::get('/car_shop/profile', [profileController::class, 'index'])
 
 Route::post('/car_shop/profile/update', [profileController::class, 'update'])
     ->name('profile.update');
+  });
 
-}); 
+
+
+});
 
 

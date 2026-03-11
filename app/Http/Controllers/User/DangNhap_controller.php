@@ -37,7 +37,7 @@ class DangNhap_controller extends Controller {
 
         ]);
 
-        return redirect('/car_shop/trangcanhan');
+        return redirect('user/car_shop/trangchu');
     }
 
     return back()->with('error', 'Sai số điện thoại hoặc mật khẩu');

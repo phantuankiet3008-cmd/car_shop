@@ -30,7 +30,7 @@
             @endif
 
             <div class="auth-box">
-                <form method="POST" action="{{ url('/car_shop/dangnhap') }}">
+                <form method="POST" action="{{ url('user/car_shop/dangnhap') }}">
                     @csrf
 
                     <div class="form-group">

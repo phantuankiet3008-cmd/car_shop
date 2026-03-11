@@ -94,6 +94,6 @@ Route::get('/trang_admin/lai_thu/xoa/{id}', [lichLayThuController::class, 'xoa']
 
    
 
-});
+
 
 
