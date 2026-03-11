@@ -1,7 +1,5 @@
 <?php
 namespace App\Services;
-
-
 class User {
     private $host = "localhost";
     private $user = "root";
@@ -89,6 +87,43 @@ class User {
 
     return false; 
 }
+    public function laykhachhangtheosdt($SDT) {
+    $SDT = $this->db->real_escape_string($SDT);
+    $sql = "SELECT * FROM khach_hang WHERE So_Dien_Thoai = '$SDT'";
+    $result = $this->db->query($sql);
+    return ($row = $result->fetch_assoc()) ? $row : null;
+}
+ function capnhat_thong_tin_khach_hang($id_khachhang,$ten,$email,$diachi,$sdt,$avatar)
+{
+    $TenKH = $this->db->real_escape_string($ten);
+    $Email = $this->db->real_escape_string($email);
+    $DiaChi = $this->db->real_escape_string($diachi);
+    $SDT = $this->db->real_escape_string($sdt);
+
+    // Nếu có avatar mới thì cập nhật
+    if($avatar){
+        $Avatar = $this->db->real_escape_string($avatar);
+
+        $sql = "UPDATE khach_hang 
+                SET Ho_Ten='$TenKH',
+                    Email='$Email',
+                    Dia_Chi='$DiaChi',
+                    So_Dien_Thoai='$SDT',
+                    Avatar='$Avatar'
+                WHERE id_Khach_Hang='$id_khachhang'";
+    } 
+    // Nếu không upload avatar thì giữ nguyên
+    else{
+        $sql = "UPDATE khach_hang 
+                SET Ho_Ten='$TenKH',
+                    Email='$Email',
+                    Dia_Chi='$DiaChi',
+                    So_Dien_Thoai='$SDT'
+                WHERE id_Khach_Hang='$id_khachhang'";
+    }
+
+    return $this->db->query($sql);
+}
  function LichLaiThu_CuaToi($idKhach)
 {
     $idKhach = (int)$idKhach;
@@ -111,6 +146,46 @@ $sql = "
 
     return $this->db->query($sql);
 }
-}
 
+}
 ?>
+
+
+
+
+class BaoDuong {
+
+    private $db;
+
+    public function __construct(){
+        $this->db = new \mysqli("localhost","root","","car_shop");
+        $this->db->set_charset("utf8");
+    }
+
+    // LẤY GÓI BẢO DƯỠNG
+    public function chongoi_baoduong(){
+
+        $sql = "SELECT * FROM goi_bao_duong WHERE trang_thai = 1";
+
+        $result = $this->db->query($sql);
+
+        $data = [];
+
+        while($row = $result->fetch_assoc()){
+            $data[] = $row;
+        }
+
+        return $data;
+    }
+
+    // ĐẶT LỊCH BẢO DƯỠNG
+    public function datlich_baoduong($id_khach,$id_goi,$ngay){
+
+        $sql = "INSERT INTO lich_bao_duong (id_Khach_Hang,id_goi,ngay_bao_duong)
+                VALUES ('$id_khach','$id_goi','$ngay')";
+
+        return $this->db->query($sql);
+    }
+}
+?>
+

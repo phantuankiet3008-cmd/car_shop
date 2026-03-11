@@ -1,16 +1,33 @@
+
 <?php
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\chitietxeController;
+use App\Http\Controllers\User\trangcanhanController;
+use App\Http\Controllers\User\profileController;
 use App\Http\Controllers\User\danhsachsanphamController;
 use App\Http\Controllers\User\dangkilaithuController;
 use App\Http\Controllers\User\DangNhap_controller;
 use App\Http\Controllers\User\DangKy_controller;
 use App\Http\Controllers\User\QuenMK_controller;
 use App\Http\Controllers\User\otp_controller;
+use App\Http\Controllers\User\TrangChuController;
+use App\Http\Controllers\User\donhangController;
+
 Route::prefix('user')->group(function () {
 // Chi tiết xe
     Route::get('/car_shop/chitietxe/{id}', [chitietxeController::class, 'index']);
+
+
+    Route::get('/car_shop/trangcanhan', [trangcanhanController::class, 'index'])->name('trang_ca_nhan'); 
+  
+    Route::get('/car_shop/profile', [profileController::class, 'index'])->name('profile');
+    Route::post('/car_shop/profile/update', [profileController::class, 'update'])->name('profile.update');
+   Route::get('/car_shop/danhsachsanpham', [danhsachsanphamController::class, 'index']);
+Route::get('/car_shop/danhsachsanpham/{IDloai}/{IDTH}',[danhsachsanphamController::class,'index']);
+});
+
+
 
 // Danh sách sản phẩm
      Route::get('/car_shop/danhsachsanpham', [danhsachsanphamController::class, 'index']);
@@ -35,6 +52,12 @@ Route::prefix('user')->group(function () {
 
 
 
+
+// trang chur user
+    Route::get('/car_shop/trangchu', [TrangChuController::class, 'index'])
+        ->name('home');
+Route::get('/donhang', [donhangController::class, 'index'])->name('donhang');
+route ::get('car_shop/hangmoi', [TrangChuController::class,'hangmoi'])->name('hangmoi');
 
 
 
@@ -111,5 +134,15 @@ Route::post('/car_shop/capnhatmk',
     Route::get('/car_shop/lich-lai-thu-cua-toi', [dangkilaithuController::class, 'lichCuaToi']);
 
   });
+
+Route::get('/car_shop/trangcanhan', [trangcanhanController::class, 'index']);
+
+Route::get('/car_shop/profile', [profileController::class, 'index'])
+    ->name('profile');
+
+Route::post('/car_shop/profile/update', [profileController::class, 'update'])
+    ->name('profile.update');
+
 }); 
+
 
