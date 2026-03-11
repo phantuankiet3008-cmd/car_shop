@@ -13,6 +13,7 @@ use App\Http\Controllers\User\QuenMK_controller;
 use App\Http\Controllers\User\otp_controller;
 use App\Http\Controllers\User\TrangChuController;
 use App\Http\Controllers\User\donhangController;
+use App\Http\Controllers\User\DatCocController;
 
 Route::prefix('user')->group(function () {
 // Chi tiết xe
@@ -62,7 +63,7 @@ route ::get('car_shop/hangmoi', [TrangChuController::class,'hangmoi'])->name('ha
 
 
 
-
+Route::get('/car_shop/datcoc/{id}', [DatCocController::class, 'datcoc']); 
 
 
 
@@ -139,6 +140,8 @@ Route::get('/car_shop/profile', [profileController::class, 'index'])
 
 Route::post('/car_shop/profile/update', [profileController::class, 'update'])
     ->name('profile.update');
+
+   
   });
 
 

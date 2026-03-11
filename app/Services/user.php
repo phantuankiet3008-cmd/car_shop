@@ -147,20 +147,7 @@ $sql = "
     return $this->db->query($sql);
 }
 
-}
-?>
 
-
-
-
-class BaoDuong {
-
-    private $db;
-
-    public function __construct(){
-        $this->db = new \mysqli("localhost","root","","car_shop");
-        $this->db->set_charset("utf8");
-    }
 
     // LẤY GÓI BẢO DƯỠNG
     public function chongoi_baoduong(){
@@ -186,6 +173,83 @@ class BaoDuong {
 
         return $this->db->query($sql);
     }
+    public function lay_xe_mau($idXeMau){
+
+    $idXeMau = (int)$idXeMau;
+
+    $sql = "SELECT xm.*, 
+                   sp.Ten_Xe,
+                   th.Ten_Thuong_Hieu,
+                   lx.Ten_Loai_Xe,
+                   mx.Ten_Mau
+            FROM xe_mau xm
+            JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+            JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau
+            JOIN thuong_hieu_xe th ON sp.id_Thuong_Hieu = th.id_Thuong_Hieu
+            JOIN loai_xe lx ON sp.id_Loai_Xe = lx.id_Loai_Xe
+            WHERE xm.id_Xe_Mau = $idXeMau";
+
+    $result = $this->db->query($sql);
+
+    return ($row = $result->fetch_assoc()) ? $row : null;
+}
+public function dem_don_cho_duyet($idXeMau){
+
+    $idXeMau = (int)$idXeMau;
+
+    $sql = "SELECT COUNT(*) as tong
+            FROM don_hang
+            WHERE id_Xe_Mau = $idXeMau
+            AND Trang_Thai = 'cho_duyet'";
+
+    $result = $this->db->query($sql);
+
+    $row = $result->fetch_assoc();
+
+    return $row['tong'];
+}
+public function lay_khach_hang($idKhach){
+
+    $idKhach = (int)$idKhach;
+
+    $sql = "SELECT * FROM khach_hang WHERE id_Khach_Hang = $idKhach";
+
+    $result = $this->db->query($sql);
+
+    return ($row = $result->fetch_assoc()) ? $row : null;
+}
+function uu_dai_cua_xe($idXeMau) {
+
+    $idXeMau = (int)$idXeMau;
+
+    $sql = "
+        SELECT ud.*
+        FROM uu_dai ud
+        JOIN xe_uu_dai xud 
+            ON ud.id_Uu_Dai = xud.id_Uu_Dai
+        JOIN xe_mau xm 
+            ON xm.id_Xe = xud.id_Xe
+        WHERE xm.id_Xe_Mau = $idXeMau
+        AND ud.Trang_Thai = 1
+        AND CURDATE() <= ud.Ngay_Ket_Thuc
+        AND CURDATE() >= ud.Ngay_Bat_Dau
+    ";
+
+    $result = $this->db->query($sql);
+
+    $data = [];
+
+    while($row = $result->fetch_assoc()){
+        $data[] = $row;
+    }
+
+    return $data;
+}
 }
 ?>
+
+
+
+
+
 

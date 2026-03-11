@@ -85,7 +85,9 @@
                 <br><br>
                 <label>Giá của màu:</label>
                 <input type="number" name="gia_mau[0]" required>
-
+                <br><br>
+                <label>Số lượng xe:</label>
+                <input type="number" name="so_luong[0]" min="0" required>
                 <br><br>
                 <label>Ảnh chi tiết cho màu này:</label>
                 <input type="file" name="anh_mau[0][]" multiple required>
@@ -127,30 +129,35 @@ function themMau(){
     const div = document.createElement("div");
     div.className = "mau_xe_item";
     div.innerHTML = `
-        <h4>Màu xe phụ</h4>
-        <select name="mau_xe[${index}]" onchange="previewColor(this)" required>
-            <option value="">-- Chọn màu --</option>
-            ${rawOptions}
-        </select>
+<h4>Màu xe phụ</h4>
 
-        <div class="color-preview"></div>
+<select name="mau_xe[${index}]" onchange="previewColor(this)" required>
+    <option value="">-- Chọn màu --</option>
+    ${rawOptions}
+</select>
 
-        <br><br>
-        <label>Giá:</label>
-        <input type="number" name="gia_mau[${index}]" required>
+<div class="color-preview"></div>
 
-        <br><br>
-        <label>Ảnh chi tiết:</label>
-        <input type="file" name="anh_mau[${index}][]" multiple required>
+<br><br>
+<label>Giá:</label>
+<input type="number" name="gia_mau[${index}]" required>
 
-        <input type="hidden" name="is_main[${index}]" value="0">
+<br><br>
+<label>Số lượng:</label>
+<input type="number" name="so_luong[${index}]" min="0" required>
 
-        <button type="button"
-                onclick="this.parentElement.remove()"
-                style="color:red">
-            Xóa màu này
-        </button>
-    `;
+<br><br>
+<label>Ảnh chi tiết:</label>
+<input type="file" name="anh_mau[${index}][]" multiple required>
+
+<input type="hidden" name="is_main[${index}]" value="0">
+
+<button type="button"
+        onclick="this.parentElement.remove()"
+        style="color:red">
+    Xóa màu này
+</button>
+`;
     document.getElementById("ds_mau_xe").appendChild(div);
     index++;
 }

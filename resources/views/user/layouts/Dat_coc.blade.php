@@ -1,25 +1,77 @@
-<div class="container main">
+@extends('user.layouts.user_index')
 
-<div class="container_1 ">
+@section('content')
 
-<div class="ảnh_chính"></div>
-<div class="thông tin xe">
-    <h2> Thông tin xe</h2>
-    <h3 class="tên xe">Tên xe</h3>
-    <h3 class="màu xe">màu xe</h3>
-    <h3 class="loại xe">loại xe</h3>
-    <h3 class="thương hiệu">thương hiệu</h3>
+<div class="dat_coc_page">
+
+<div class="dat_coc_container">
+
+{{-- ===== XE ===== --}}
+<div class="box">
+
+<h2>Thông tin xe</h2>
+
+<p><b>Tên xe:</b> {{ $xe['Ten_Xe'] }}</p>
+<p><b>Màu:</b> {{ $xe['Ten_Mau'] }}</p>
+<p><b>Thương hiệu:</b> {{ $xe['Ten_Thuong_Hieu'] }}</p>
+<p><b>Loại xe:</b> {{ $xe['Ten_Loai_Xe'] }}</p>
+
+</div>
+
+
+{{-- ===== KHÁCH HÀNG ===== --}}
+<div class="box">
+
+<h2>Thông tin khách hàng</h2>
+
+<p><b>Tên:</b> {{ $khach['Ho_Ten'] }}</p>
+<p><b>SĐT:</b> {{ $khach['So_Dien_Thoai'] }}</p>
+
+<p><b>Email:</b> {{ $khach['Email'] }}</p>
+<p><b>Địa chỉ:</b> {{ $khach['Dia_Chi'] }}</p>
+
+</div>
+
+
+{{-- ===== THANH TOÁN ===== --}}
+<div class="box">
+
+<h2>Thông tin đặt cọc</h2>
+
+<p>Giá xe: {{ number_format($gia) }} đ</p>
+<p>Giảm giá: {{ number_format($giam) }} đ</p>
+
+<hr>
+
+<p><b>Tổng sau ưu đãi:</b> {{ number_format($tong) }} đ</p>
+
+<p>
+<b>Tiền cọc (1%):</b>
+<span class="tien_coc">
+{{ number_format($tien_coc) }} đ
+</span>
+</p>
+
+<form action="{{ url('user/car_shop/xac_nhan_dat_coc') }}" method="POST">
+
+@csrf
+
+<input type="hidden" name="id_xe_mau" value="{{ $xe['id_Xe_Mau'] }}">
+<input type="hidden" name="tien_coc" value="{{ $tien_coc }}">
+<input type="hidden" name="tong_tien" value="{{ $tong }}">
+<input type="hidden" name="giam" value="{{ $giam }}">
+
+
+<button class="btn-thanh-toan">
+Xác nhận đặt cọc
+</button>
+
+</form>
+
 </div>
 
 </div>
 
-<div class="container_2 ">
-<h2> thông tin khách hàng</h2>
-<div class="thông tin khách hàng">
-    <h3 class="tên khách hàng">tên khách hàng</h3>
-    <h3 class="số điện thoại">số điện thoại</h3>
-    <h3 class="địa chỉ">địa chỉ</h3>
-    <h3 class="email">email</h3>
 </div>
 
-</div>
+@endsection

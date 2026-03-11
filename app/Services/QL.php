@@ -266,7 +266,7 @@ function List_MauXe(){
 function Get_Mau_Theo_Xe($id_xe){
     $id_xe = (int)$id_xe;
     return $this->db->query("
-        SELECT xm.id_Xe_Mau, xm.Gia, m.Ten_Mau, m.Ma_Mau
+        SELECT xm.id_Xe_Mau, xm.Gia,xm.So_Luong, m.Ten_Mau, m.Ma_Mau
         FROM xe_mau xm
         JOIN mau_xe m ON xm.id_Mau = m.id_Mau
         WHERE xm.id_Xe = $id_xe
@@ -310,10 +310,11 @@ VALUES ('$ten_xe', '$mo_ta', '$anh_dai_dien', '$anh_3d', $id_loai, $id_thuong_hi
             foreach($post['mau_xe'] as $i => $id_mau){
      $is_default = ($i === 0) ? 1 : 0;
     $gia_mau = (int) str_replace(['.', ','], '', $post['gia_mau'][$i]);
+    $so_luong = (int)$post['so_luong'][$i];
 
     $this->db->query("
-        INSERT INTO xe_mau (id_Xe, id_Mau, is_Default, Gia) 
-        VALUES ($id_xe, $id_mau, $is_default, $gia_mau)
+        INSERT INTO xe_mau (id_Xe, id_Mau, is_Default, Gia, So_Luong) 
+        VALUES ($id_xe, $id_mau, $is_default, $gia_mau, $so_luong)
     ");
 
                 $id_xe_mau = $this->db->insert_id;
@@ -372,6 +373,10 @@ function Update_SanPham($id_xe, $post, $files) {
 if(isset($post['gia_mau'])){
     foreach($post['gia_mau'] as $id_xe_mau => $gia){
         $gia = (int)str_replace(['.', ','], '', $gia);
+        $so_luong = (int)$post['so_luong'][$id_xe_mau];
+
+         $this->db->query("UPDATE xe_mau SET So_Luong = $so_luong WHERE id_Xe_Mau = $id_xe_mau");
+         
         $this->db->query("UPDATE xe_mau SET Gia = $gia WHERE id_Xe_Mau = $id_xe_mau");
     }
 }
@@ -1001,7 +1006,8 @@ function danh_sach_goi(){
     $data = [];
 
     while($row = $result->fetch_assoc()){
-
+    }     $data[] = $row;
+    }
 public function list_thuong_hieu_theo_loai($MaLoai)
 {
     $sql = "SELECT * 
@@ -1119,3 +1125,4 @@ public function list_thuong_hieu_theo_loai($MaLoai)
 
 
 }
+

@@ -1,5 +1,7 @@
 <?php
 use App\Http\Controllers\User\BaoDuong_controller;
+use App\Http\Controllers\Admin\QLBaoDuong_controller;
+use App\Http\Controllers\Admin\QLGoiBaoDuong_controller;
 use Illuminate\Support\Facades\Route;
 
 
@@ -19,6 +21,7 @@ Route::get('/trang_admin/goibaoduong/them', function () {
     return view('admin.layouts.index_AD', [
         'key' => 'add_goi_bao_duong'
     ]);
+
+    Route::get('/trang_admin/goibaoduong/xoa/{id}', [QLGoiBaoDuong_controller::class,'xoa_goi']);
 });
-Route::get('/trang_admin/goibaoduong/xoa/{id}', [QLGoiBaoDuong_controller::class,'xoa_goi']);
-});
+

@@ -1,9 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+@extends('user.layouts.user_index')
     <style>
         .user_table {
     width: 100%;
@@ -23,11 +18,9 @@
 }
     </style>
  
-</head>
-<body>
+
     
-</body>
-</html>
+@section('content')
 <h2>Lịch lái thử của tôi</h2>
 
 <table class="user_table">
@@ -68,3 +61,11 @@
         {{ session('error') }}
     </div>
 @endif
+{{-- Thông báo thành công --}}
+@if(session('success'))
+    <div style="color: white; background: #2ecc71; padding: 10px; margin-bottom: 15px; border-radius: 5px;">
+        {{ session('success') }}
+    </div>
+@endif
+
+@endsection

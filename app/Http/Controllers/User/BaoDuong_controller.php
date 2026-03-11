@@ -4,13 +4,13 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Services\BaoDuong;
+use App\Services\User;
 
 class BaoDuong_controller extends Controller
 {
     function trang_baoduong()
     {
-        $service = new BaoDuong();
+        $service = new User();
         $goi = $service->chongoi_baoduong();
 
         return view('user.layouts.BaoDuong', [
@@ -25,7 +25,7 @@ class BaoDuong_controller extends Controller
             'ngay_bao_duong' => 'required'
         ]);
 
-        $service = new BaoDuong();
+        $service = new User();
 
         $service->datlich_baoduong(
             session('user_id'),

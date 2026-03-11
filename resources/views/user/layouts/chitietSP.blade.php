@@ -1,12 +1,11 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{ asset('user/css/chitietsp.css') }}">
-    <title>{{ $chitietsp['Ten_Xe'] }}</title>
-</head>
-<body>
+@extends('user.layouts.user_index')
 
+
+
+    <link rel="stylesheet" href="{{ asset('user/css/chitietsp.css') }}">
+    
+
+@section('content')
 <div class="chi_tiet_san_pham">
 
     <div class="tieu_de_xe">
@@ -168,7 +167,13 @@
                 </strong>
                 </p>
                 
-            <p><a href="{{ url('user/car_shop/dat_hang/'.$chitietsp['id_Xe']) }}" class="btn-dat-hang">ĐẶT CỌC</a></p>
+               <p> @if(!empty($mau_xe))
+                <a id="btnDatCoc"
+                href="{{ url('user/car_shop/datcoc/'.$mau_xe[0]['id_Xe_Mau']) }}"
+                class="btn-dat-hang">
+                ĐẶT CỌC
+                </a>
+                @endif</p>
             <a id="btnDatLich"
              href="{{ url('user/car_shop/dangkilaithu/'.$mau_xe[0]['id_Xe_Mau']) }}"
             class="btn-dat-lich">
@@ -266,9 +271,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const giaChinh = document.getElementById("giaChinh");
     const giaTomTat = document.getElementById("giaTomTat");
     const tongSauUuDai = document.getElementById("tongSauUuDai");
-    const tienCoc = document.getElementById("tienCoc"); // thêm dòng này
+    const tienCoc = document.getElementById("tienCoc");
     const dsUuDai = document.querySelectorAll("#danhSachUuDai li");
-    // tính uu đãi
+
+    const btnDatCoc = document.getElementById("btnDatCoc");
+    const btnDatLich = document.getElementById("btnDatLich");
+
+
     function tinhGiaSauUuDai(gia) {
 
         let maxGiam = 0;
@@ -276,7 +285,7 @@ document.addEventListener("DOMContentLoaded", function () {
         dsUuDai.forEach(item => {
 
             let loai = item.dataset.loai;
-            let value = parseFloat(item.dataset.giaTri);
+            let value = parseFloat(item.getAttribute("data-gia-tri"));
 
             if (!value) return;
 
@@ -302,6 +311,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return tong;
     }
 
+
     function capNhatGia(gia) {
 
         let giaFormat = Number(gia).toLocaleString('vi-VN');
@@ -314,33 +324,50 @@ document.addEventListener("DOMContentLoaded", function () {
         tongSauUuDai.innerText =
             Number(giaSauUuDai).toLocaleString('vi-VN');
 
-        //  TÍNH TIỀN CỌC 5%
         let tienCocValue = giaSauUuDai * 0.01;
 
         tienCoc.innerText =
             Number(tienCocValue).toLocaleString('vi-VN');
     }
 
+
     radios.forEach(radio => {
+
         radio.addEventListener("change", function () {
 
             let gia = parseFloat(this.dataset.gia);
-            if (!gia) return;
+            const idMau = this.dataset.mau;
 
             capNhatGia(gia);
 
+            // cập nhật link đặt cọc
+            btnDatCoc.href =
+                "{{ url('user/car_shop/datcoc') }}/" + idMau;
+
+            btnDatLich.href =
+                "{{ url('user/car_shop/dangkilaithu') }}/" + idMau;
+
         });
+
     });
-    const btnDatLich = document.getElementById("btnDatLich");
 
 
-    // Load mặc định
+    // load mặc định
     const checked = document.querySelector('input[name="chon_mau"]:checked');
-    if (checked) {
-        capNhatGia(parseFloat(checked.dataset.gia));
-    }
-   
 
+    if (checked) {
+
+        capNhatGia(parseFloat(checked.dataset.gia));
+
+        btnDatCoc.href =
+            "{{ url('user/car_shop/datcoc') }}/" + checked.dataset.mau;
+
+        btnDatLich.href =
+            "{{ url('user/car_shop/dangkilaithu') }}/" + checked.dataset.mau;
+    }
 
 });
+
+
 </script>
+@endsection

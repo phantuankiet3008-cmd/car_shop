@@ -59,6 +59,8 @@
                 <h4 style="margin-top:15px">Giá theo từng màu</h4>
                 @foreach($data['ds_mau'] as $m)
     <div class="mau-edit" style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+                
+                
 
         <span style="width:100px;display:inline-block;font-weight:600">
             {{ $m['Ten_Mau'] }}
@@ -69,19 +71,18 @@
                value="{{ number_format($m['Gia'],0,',','.') }}"
                style="flex:1">
 
+        <input type="number"
+                name="so_luong[{{ $m['id_Xe_Mau'] }}]"
+                value="{{ $m['So_Luong'] }}"
+                min="0"
+                style="width:80px">
+
         {{-- NÚT XÓA MÀU --}}
-        <form action="{{ url('/trang_admin/san_pham/xoa_mau/'.$m['id_Xe_Mau']) }}"
-              method="POST"
-              onsubmit="return confirm('Bạn có chắc muốn xóa màu này?');">
-
-            @csrf
-            @method('DELETE')
-
-            <button type="submit"
-                    style="background:#dc3545;color:#fff;border:none;padding:6px 10px;border-radius:5px;cursor:pointer">
-                Xóa
-            </button>
-        </form>
+        <button type="button"
+        onclick="deleteColor({{ $m['id_Xe_Mau'] }})"
+        style="background:#dc3545;color:#fff;border:none;padding:6px 10px;border-radius:5px;cursor:pointer">
+        Xóa
+        </button>
 
     </div>
 @endforeach
@@ -146,7 +147,10 @@
         </div>
     </div>
 </form>
-
+<form id="deleteColorForm" method="POST" style="display:none">
+    @csrf
+    @method('DELETE')
+</form>
 
 {{-- Zoom ảnh --}}
 <div id="zoomModal" onclick="this.style.display='none'">
@@ -158,6 +162,19 @@
 function openZoom(src){
     document.getElementById('zoomModal').style.display='flex';
     document.getElementById('zoomImg').src = src;
+}
+function deleteColor(id){
+
+    if(confirm("Bạn có chắc muốn xóa màu này?")){
+
+        let form = document.getElementById('deleteColorForm');
+
+        form.action = "/trang_admin/san_pham/xoa_mau/" + id;
+
+        form.submit();
+
+    }
+
 }
 </script>
 

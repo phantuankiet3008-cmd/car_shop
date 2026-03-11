@@ -1,3 +1,4 @@
+@extends('user.layouts.user_index')
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -7,7 +8,7 @@
     <link rel="stylesheet" href="{{ asset('user/css/dangkilaithu.css') }}">
 </head>
 <body>
-
+@section('content')
 <div class="lai_thu_container">
 
     <div class="lai_thu_tieu_de">
@@ -174,6 +175,6 @@ ngayInput.addEventListener('change', function() {
 });
 
 </script>
-
+@endsection
 </body>
 </html>

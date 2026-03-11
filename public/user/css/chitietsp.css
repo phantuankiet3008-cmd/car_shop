@@ -1,6 +1,6 @@
 /* ================= FIX CHI TIẾT SẢN PHẨM ================= */
 
-body { padding-top: 0 !important; }
+body { padding-top: 80px; }
 
 .chi_tiet_san_pham {
     max-width: 1200px;
