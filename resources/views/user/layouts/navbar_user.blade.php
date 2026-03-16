@@ -2,7 +2,7 @@
 <ul class="menu">
 
 <li>
-<a href="{{ route('hangmoi') }}">HÀNG MỚI
+<a href="{{ route('trangchu') }}">TRANG CHỦ
 
 </a>
 </li>
@@ -20,7 +20,7 @@
 </li>
 
 <li>
-<a href="#">MUA HÀNG</a>
+<a href="#">ĐƠN HÀNG</a>
 </li>
 
 <li>

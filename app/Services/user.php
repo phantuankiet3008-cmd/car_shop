@@ -8,7 +8,7 @@ class User {
     private $db;
 
     public function __construct() {
-        $this->db = new \mysqli($this->host, $this->user, $this->pass, $this->dbname);
+        $this->db = new \mysqli($this->host, $this->user, $this->pass, $this->dbname, 3308);
         if ($this->db->connect_error) {
             die("Kết nối thất bại: " . $this->db->connect_error);
         }

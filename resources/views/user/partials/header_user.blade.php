@@ -11,7 +11,7 @@
 
         <!-- Search -->
         <div class="search-box">
-            <form action="{{ route('home') }}" method="GET">
+            <form action="{{ route('trangchu') }}" method="GET">
                 <input type="text"
                        name="search"
                        placeholder="Bạn đang tìm gì..."

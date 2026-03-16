@@ -7,7 +7,7 @@
             <p>_Point _ Cửa Hàng Ôtô chính hãng</p>
             <p>📞 03552631245</p>
             <p>📧 Point.com.vn</p>
-            <p>🕒 08:30 - 22:00</p>
+            <p>🕒 07:00 - 18:00</p>
             <p>🎧 Hỗ trợ tin nhắn đến 24:00</p>
 
             <img src="https://file.hstatic.net/200000397757/file/dathongbao_48067cd02fae41b68bf0294777c39c94_compact.png"
@@ -31,12 +31,12 @@
         <div class="footer-col">
             <h3>Dịch Vụ</h3>
             <ul>
-                <li><a href="#">Đặt lịch dịch vụ trực tuyến</a></li>
+                
                 <li><a href="#">Đặt lịch bảo dưỡng</a></li>
                 <li><a href="#">Hỗ trợ khách hàng</a></li>
                 <li><a href="#">Đặt lịch lái thử</a></li>
                 <li><a href="#">Giao nhận xe tận nhà</a></li>
-                <li><a href="#">Đặt lịch nhận xe</a></li>
+                
             </ul>
         </div>
 
