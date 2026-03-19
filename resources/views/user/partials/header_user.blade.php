@@ -10,54 +10,51 @@
         </div>
 
         <!-- Search -->
-        <div class="search-box">
-            <form action="{{ route('trangchu') }}" method="GET">
-                <input type="text"
-                       name="search"
-                       placeholder="Bạn đang tìm gì..."
-                       value="{{ request('search') }}">
-                <button type="submit">
-                    <i class="fas fa-search"></i>
-                </button>
-            </form>
-        </div>
+<div class="search-box">
+    <form action="{{ url('/car_shop/user') }}" method="GET">
+        <input type="text"
+               name="search"
+               placeholder="Bạn đang tìm gì..."
+               value="{{ request('search') }}">
+        <button type="submit">
+            <i class="fas fa-search"></i>
+        </button>
+    </form>
+</div>
 
-        <!-- Right icons -->
-        <div class="header-icons">
+<!-- Right icons -->
+<div class="header-icons">
 
-            <!-- LOGIN / ACCOUNT -->
-            <div class="login-info">
-                @auth
-                    <a href="{{ url('/user/profile') }}">
-                        <i class="fa-solid fa-circle-user"></i>
-                        <span>Tài khoản</span>
-                    </a>
-                @else
-                    <a href="{{ route('dangnhap') }}">
-                        <i class="fa-solid fa-user"></i>
-                        <span>Đăng nhập</span>
-                    </a>
-                @endauth
-            </div>
-
-            <!-- CART -->
-            <a href="{{ route('donhang') }}" class="cart-link">
-                <i class="fas fa-shopping-cart"></i>
-                <span>Đơn Hàng</span>
+    <!-- LOGIN / ACCOUNT -->
+    <div class="login-info">
+        @if(session('user_id'))
+            <a href="{{ url('user/car_shop/trangcanhan') }}">
+                <i class="fa-solid fa-circle-user"></i>
+                <span>Tài khoản</span>
             </a>
+        @else
+            <a href="{{ url('user/car_shop/dangnhap') }}">
+                <i class="fa-solid fa-user"></i>
+                <span>Đăng nhập</span>
+            </a>
+        @endif
+    </div>
 
-            <!-- LOGOUT -->
-            @auth
-                <a href="{{ url('/user/logout') }}"
-                   onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Đăng xuất
-                </a>
+    <!-- CART -->
+    <a href="{{ url('user/car_shop/giohang') }}">
+        <i class="fas fa-shopping-cart"></i>
+        <span>Đơn Hàng</span>
+    </a>
 
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display:none;">
-                    @csrf
-                </form>
-            @endauth
+    <!-- LOGOUT -->
+    @if(session('user_id'))
+        <a href="{{ url('user/car_shop/dangxuat') }}">
+            <i class="fas fa-sign-out-alt"></i>
+            Đăng xuất
+        </a>
+    @endif
+
+</div>
 
         </div>
     </div>

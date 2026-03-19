@@ -13,13 +13,13 @@ document.addEventListener('DOMContentLoaded', function () {
     if (isLogin === 'true') {
         icon.className = 'fa-solid fa-circle-user';
         textLogin.textContent = 'Tài khoản';
-        userLink.href = 'trang ca nhan.php';
+        userLink.href = 'car_shop/trangcanhan';
     }
     // ===== CHƯA ĐĂNG NHẬP =====
     else {
         icon.className = 'fa-solid fa-user';
         textLogin.textContent = 'Đăng nhập';
-        userLink.href = 'DangNhap.php';
+        userLink.href = 'car_shop/dangnhap';
     }
 
     // ===== LOGOUT =====

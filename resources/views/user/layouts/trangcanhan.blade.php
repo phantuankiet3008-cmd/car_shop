@@ -1,4 +1,5 @@
-
+@extends('user.layouts.user_index')
+@section('content')
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -121,3 +122,4 @@ Thông báo
 
 </body>
 </html>
+@endsection

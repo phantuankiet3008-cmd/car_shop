@@ -110,7 +110,11 @@ Route::get('/car_shop/quenmk', function () {
     return view('user.layouts.QuenMK');
 })->name('quenmk');
 Route::post('/car_shop/quenmk', [QuenMK_controller::class, 'quenmk']);
-
+// ĐĂNG XUẤT
+Route::get('/car_shop/dangxuat', function () {
+    session()->flush();
+    return redirect()->route('trangchu');
+})->name('dangxuat');
 
 // OTP
 Route::post('/car_shop/guiotp', 
