@@ -12,7 +12,7 @@ class TrangChuController extends Controller
     {
         return view('user.layouts.user_index');
     }
-    public function hangmoi()
+    public function trangchu()
     {
         return view('user.partials.user_trangchu');
     }

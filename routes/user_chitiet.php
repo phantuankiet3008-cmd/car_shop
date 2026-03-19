@@ -55,10 +55,9 @@ Route::get('/car_shop/danhsachsanpham/{IDloai}/{IDTH}',[danhsachsanphamControlle
 
 
 // trang chur user
-    Route::get('/car_shop/trangchu', [TrangChuController::class, 'index'])
-        ->name('home');
+    
 Route::get('/donhang', [donhangController::class, 'index'])->name('donhang');
-route ::get('car_shop/hangmoi', [TrangChuController::class,'hangmoi'])->name('hangmoi');
+route ::get('car_shop/trangchu', [TrangChuController::class,'trangchu'])->name('trangchu');
 
 
 
@@ -111,7 +110,11 @@ Route::get('/car_shop/quenmk', function () {
     return view('user.layouts.QuenMK');
 })->name('quenmk');
 Route::post('/car_shop/quenmk', [QuenMK_controller::class, 'quenmk']);
-
+// ĐĂNG XUẤT
+Route::get('/car_shop/dangxuat', function () {
+    session()->flush();
+    return redirect()->route('trangchu');
+})->name('dangxuat');
 
 // OTP
 Route::post('/car_shop/guiotp', 
