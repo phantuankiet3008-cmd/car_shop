@@ -83,7 +83,7 @@
                             <div class="card h-100 shadow-sm border-0 rounded-3">
                                <div class="img-wrapper rounded-top-3">
                                     <a href="{{ url('user/car_shop/chitietxe/' . $xe->id_Xe) }}">
-                                        <img src="{{ asset('upload/anh_dai_dien/' . $xe->Anh_Dai_Dien) }}" class="card-img-top hover-zoom" alt="{{ $xe->Ten_Xe }}" style="object-fit: cover; height: 200px;">
+                                        <img src="{{ $xe->Anh_Dai_Dien }}" class="card-img-top hover-zoom" alt="{{ $xe->Ten_Xe }}" style="object-fit: cover; height: 200px;">
                                      </a>
                                 </div>
                                 
