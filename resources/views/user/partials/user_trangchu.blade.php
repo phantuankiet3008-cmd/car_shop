@@ -4,6 +4,17 @@
 <!-- Trang chủ -->
      <link rel="stylesheet" href="{{ asset('user/css/giaodien_user.css') }}">
 <main>
+    @if(session('success'))
+    <div style="text-align: center; font-weight: bold; padding: 15px; background-color: #d4edda; color: #155724; margin-bottom: 20px;">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if(session('error'))
+    <div style="text-align: center; font-weight: bold; padding: 15px; background-color: #f8d7da; color: #721c24; margin-bottom: 20px;">
+        {{ session('error') }}
+    </div>
+@endif
 
     <!-- ===== Slider ===== -->
     <div class="slider">

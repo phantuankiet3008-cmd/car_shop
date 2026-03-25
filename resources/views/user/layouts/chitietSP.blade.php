@@ -21,25 +21,23 @@
         {{-- ===== ẢNH XE ===== --}}
         <div class="khu_trai">
 
-            @if(!empty($anh_xe_mau))
+        @if(!empty($anh_xe_mau))
                 <div class="anh_sp_lon">
-                    <img id="mainImage"
-                         src="{{ asset('upload/anh_xe_mau/'.$anh_xe_mau[0]['duong_dan']) }}">
+                    <img id="mainImage" src="{{ $anh_xe_mau[0]['duong_dan'] }}">
                 </div>
 
                 <div class="anh_sp_nho">
-                   @foreach($anh_xe_mau as $index => $anh)
-    <img src="{{ asset('upload/anh_xe_mau/'.$anh['duong_dan']) }}"
-         class="thumb"
-         data-mau="{{ $anh['id_Xe_Mau'] }}">
-@endforeach
+                    @foreach($anh_xe_mau as $index => $anh)
+                        <img src="{{ $anh['duong_dan'] }}"
+                             class="thumb"
+                             data-mau="{{ $anh['id_Xe_Mau'] }}">
+                    @endforeach
                 </div>
             @else
                 <div class="anh_sp_lon">
                     <img src="{{ asset('upload/no-image.png') }}">
                 </div>
             @endif
-
 
             {{-- ===== NÚT 3D ===== --}}
             <div class="khu_anh_3d">
@@ -167,13 +165,19 @@
                 </strong>
                 </p>
                 
-               <p> @if(!empty($mau_xe))
-                <a id="btnDatCoc"
-                href="{{ url('user/car_shop/datcoc/'.$mau_xe[0]['id_Xe_Mau']) }}"
-                class="btn-dat-hang">
-                ĐẶT CỌC
-                </a>
-                @endif</p>
+                <p>
+                @if(!empty($mau_xe))
+                <form action="{{ route('momo.payment') }}" method="POST">
+                 @csrf
+                <input type="hidden" name="id_xe_mau" id="input_id_xe_mau" value="{{ $mau_xe[0]['id_Xe_Mau'] }}">
+        
+                <button type="submit" class="btn-dat-hang" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px;">
+               <img src="https://developers.momo.vn/v3/assets/images/square-8c08a00f550e40a2efafea4a005b1232.png" alt="MoMo" style="width: 25px; border-radius: 4px;">
+                ĐẶT CỌC QUA MOMO
+                </button>
+                </form>
+                  @endif
+                </p>
             <a id="btnDatLich"
              href="{{ url('user/car_shop/dangkilaithu/'.$mau_xe[0]['id_Xe_Mau']) }}"
             class="btn-dat-lich">
@@ -341,9 +345,8 @@ document.addEventListener("DOMContentLoaded", function () {
             capNhatGia(gia);
 
             // cập nhật link đặt cọc
-            btnDatCoc.href =
-                "{{ url('user/car_shop/datcoc') }}/" + idMau;
-
+            // Cập nhật ID xe màu cho form MoMo
+            document.getElementById("input_id_xe_mau").value = idMau;
             btnDatLich.href =
                 "{{ url('user/car_shop/dangkilaithu') }}/" + idMau;
 
@@ -359,8 +362,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         capNhatGia(parseFloat(checked.dataset.gia));
 
-        btnDatCoc.href =
-            "{{ url('user/car_shop/datcoc') }}/" + checked.dataset.mau;
+   // Cập nhật ID xe màu cho form MoMo mặc định
+document.getElementById("input_id_xe_mau").value = checked.dataset.mau;
 
         btnDatLich.href =
             "{{ url('user/car_shop/dangkilaithu') }}/" + checked.dataset.mau;

@@ -14,6 +14,7 @@ use App\Http\Controllers\User\otp_controller;
 use App\Http\Controllers\User\TrangChuController;
 use App\Http\Controllers\User\donhangController;
 use App\Http\Controllers\User\DatCocController;
+use App\Http\Controllers\User\MoMoController;
 
 Route::prefix('user')->group(function () {
 // Chi tiết xe
@@ -64,8 +65,9 @@ route ::get('car_shop/trangchu', [TrangChuController::class,'trangchu'])->name('
 
 Route::get('/car_shop/datcoc/{id}', [DatCocController::class, 'datcoc']); 
 
-
-
+// route MOMO
+Route::post('/car_shop/thanh-toan-momo', [MoMoController::class, 'thanhToanMoMo'])->name('momo.payment');
+Route::get('/car_shop/momo-return', [MoMoController::class, 'momoReturn'])->name('momo.return');
 
 
 
