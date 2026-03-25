@@ -25,7 +25,7 @@
 
     <td>
         <img class="img-xe"
-             src="{{ asset('upload/anh_dai_dien/' . $row['Anh_Dai_Dien']) }}"
+             src="{{ $row['Anh_Dai_Dien'] }}"
              style="width:100px; height:auto;">
     </td>
 

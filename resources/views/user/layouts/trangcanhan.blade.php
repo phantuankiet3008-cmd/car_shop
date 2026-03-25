@@ -62,7 +62,7 @@ Thông báo
 <img src="{{ asset('upload/avatar/avatar.png') }}" 
      class="avatar" id="avatarImg">
 @else
-<img src="{{ asset('upload/avatar/'.$khachhang['Avatar']) }}" 
+<img src="{{ $khachhang['Avatar'] }}" 
      class="avatar" id="avatarImg"
      style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
 @endif

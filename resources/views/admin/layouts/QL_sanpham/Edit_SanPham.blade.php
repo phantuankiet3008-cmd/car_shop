@@ -15,7 +15,7 @@
             {{-- Ảnh đại diện --}}
             <div class="vfast-col-left">
                 <h3>Ảnh đại diện hiện tại</h3>
-                <img src="{{ asset('upload/anh_dai_dien/'.$data['xe']['Anh_Dai_Dien']) }}"
+                <img src="{{ $data['xe']['Anh_Dai_Dien'] }}"
                      class="img-main-preview">
                 <p style="color:#666;font-style:italic;margin-top:10px">
                     File: {{ $data['xe']['Anh_Dai_Dien'] }}
@@ -44,7 +44,7 @@
                         @endif
 
                         <div class="img-item">
-                            <img src="{{ asset('upload/anh_xe_mau/'.$anh['Hinh_Anh_Xe_Mau']) }}"
+                            <img src="{{ $anh['Hinh_Anh_Xe_Mau'] }}"
                                  width="150" height="100"
                                  onclick="openZoom(this.src)">
                         </div>
