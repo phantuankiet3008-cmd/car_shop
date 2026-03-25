@@ -236,6 +236,93 @@ function Danh_Sach_Slider() {
     }
     return $data;
 }
+// tạo đơn hàng 
+public function tao_don_dat_coc($id_kh, $id_xe_mau)
+{
+    $id_kh = (int)$id_kh;
+    $id_xe_mau = (int)$id_xe_mau;
+
+    // ===== lấy xe =====
+    $xe = $this->lay_xe_mau($id_xe_mau);
+    if(!$xe) return false;
+
+    $gia = $xe['Gia'];
+
+    // ===== ưu đãi =====
+    $uu_dai = $this->uu_dai_cua_xe($id_xe_mau);
+
+    $max_giam = 0;
+
+    foreach($uu_dai as $ud){
+
+        $giam = 0;
+
+        if($ud['Loai'] == 'phan_tram'){
+            $giam = $gia * $ud['Gia_Tri'] / 100;
+        }
+
+        if($ud['Loai'] == 'tien'){
+            $giam = $ud['Gia_Tri'];
+        }
+
+        if($giam > $max_giam){
+            $max_giam = $giam;
+        }
+    }
+
+    $tong = $gia - $max_giam;
+    if($tong < 0) $tong = 0;
+
+    $tien_coc = $tong * 0.01;
+
+    $now = date('Y-m-d H:i:s');
+
+    // ===== insert =====
+    $sql = "INSERT INTO don_hang 
+        (id_Khach_Hang, id_Xe_Mau, Tong_Tien, Tien_Coc, payment_status, Trang_Thai, Ngay_Tao)
+        VALUES
+        ($id_kh, $id_xe_mau, $tong, $tien_coc, 'pending', 'new', '$now')";
+
+    $this->db->query($sql);
+
+    return $this->db->insert_id;
+}
+
+public function lay_don($id)
+{
+    $id = (int)$id;
+
+    $sql = "SELECT * FROM don_hang WHERE id_Don_Hang = $id";
+
+    $result = $this->db->query($sql);
+
+    return ($row = $result->fetch_assoc()) ? (object)$row : null;
+}
+public function cap_nhat_payment_status($id, $status)
+{
+    $id = (int)$id;
+    $status = $this->db->real_escape_string($status);
+
+    $sql = "UPDATE don_hang 
+            SET payment_status = '$status'
+            WHERE id_Don_Hang = $id";
+
+    return $this->db->query($sql);
+}
+public function thanh_toan_thanh_cong($id, $ma_gd)
+{
+    $id = (int)$id;
+    $now = date('Y-m-d H:i:s');
+
+    $sql = "UPDATE don_hang 
+            SET payment_status = 'paid',
+                Trang_Thai = 'da_coc',
+                Ngay_Cap_Nhat = '$now'
+            WHERE id_Don_Hang = $id
+            AND payment_status = 'pending'";
+
+    return $this->db->query($sql);
+}
 }
 ?>
 
