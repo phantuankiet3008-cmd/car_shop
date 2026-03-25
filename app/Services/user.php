@@ -6,6 +6,7 @@ class User {
     private $pass = "";
     private $dbname = "car_shop";
     private $db;
+    protected $cloudinary;
 
     public function __construct() {
         $this->db = new \mysqli($this->host, $this->user, $this->pass, $this->dbname, 3308);
@@ -13,6 +14,8 @@ class User {
             die("Kết nối thất bại: " . $this->db->connect_error);
         }
         $this->db->set_charset("utf8");
+
+        $this->cloudinary = new CloudinaryService();
     }
 
     public function dang_nhap($SDT, $MatKhau) {
@@ -93,34 +96,39 @@ class User {
     $result = $this->db->query($sql);
     return ($row = $result->fetch_assoc()) ? $row : null;
 }
- function capnhat_thong_tin_khach_hang($id_khachhang,$ten,$email,$diachi,$sdt,$avatar)
+ public function capnhat_thong_tin_khach_hang($id_khachhang, $ten, $email, $diachi, $sdt, $files)
 {
+    $id_khachhang = (int)$id_khachhang;
     $TenKH = $this->db->real_escape_string($ten);
     $Email = $this->db->real_escape_string($email);
     $DiaChi = $this->db->real_escape_string($diachi);
     $SDT = $this->db->real_escape_string($sdt);
 
-    // Nếu có avatar mới thì cập nhật
-    if($avatar){
-        $Avatar = $this->db->real_escape_string($avatar);
+    // 1. Lấy thông tin hiện tại trong DB để lấy URL Avatar cũ
+    $old_data = $this->lay_khach_hang($id_khachhang);
+    $avatar_url = $old_data['Avatar'] ?? "";
 
-        $sql = "UPDATE khach_hang 
-                SET Ho_Ten='$TenKH',
-                    Email='$Email',
-                    Dia_Chi='$DiaChi',
-                    So_Dien_Thoai='$SDT',
-                    Avatar='$Avatar'
-                WHERE id_Khach_Hang='$id_khachhang'";
-    } 
-    // Nếu không upload avatar thì giữ nguyên
-    else{
-        $sql = "UPDATE khach_hang 
-                SET Ho_Ten='$TenKH',
-                    Email='$Email',
-                    Dia_Chi='$DiaChi',
-                    So_Dien_Thoai='$SDT'
-                WHERE id_Khach_Hang='$id_khachhang'";
+    // 2. Kiểm tra nếu có upload file ảnh mới (key 'avatar' khớp với tên input trong form)
+    if (!empty($files['avatar']['name'])) {
+        
+        // Xóa ảnh cũ trên Cloudinary để tránh rác bộ nhớ
+        if (!empty($avatar_url)) {
+            $this->cloudinary->deleteImage($avatar_url);
+        }
+
+        // Upload ảnh mới lên thư mục 'avatars' trên Cloudinary
+        // Lưu ý: $files['avatar'] là mảng từ $_FILES truyền sang
+        $avatar_url = $this->cloudinary->uploadImage($files['avatar'], 'avatars');
     }
+
+    // 3. Thực hiện câu lệnh SQL update
+    $sql = "UPDATE khach_hang 
+            SET Ho_Ten = '$TenKH',
+                Email = '$Email',
+                Dia_Chi = '$DiaChi',
+                So_Dien_Thoai = '$SDT',
+                Avatar = '$avatar_url'
+            WHERE id_Khach_Hang = $id_khachhang";
 
     return $this->db->query($sql);
 }
