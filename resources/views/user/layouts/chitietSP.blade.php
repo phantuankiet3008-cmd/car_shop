@@ -23,17 +23,6 @@
 
         @if(!empty($anh_xe_mau))
                 <div class="anh_sp_lon">
-<<<<<<< HEAD
-                    <img id="mainImage" src="{{ $anh_xe_mau[0]['duong_dan'] }}">
-                </div>
-
-                <div class="anh_sp_nho">
-                    @foreach($anh_xe_mau as $index => $anh)
-                        <img src="{{ $anh['duong_dan'] }}"
-                             class="thumb"
-                             data-mau="{{ $anh['id_Xe_Mau'] }}">
-                    @endforeach
-=======
                     <img id="mainImage"
                          src="{{ $anh_xe_mau[0]['duong_dan']}}">
                 </div>
@@ -44,7 +33,6 @@
          class="thumb"
          data-mau="{{ $anh['id_Xe_Mau'] }}">
 @endforeach
->>>>>>> 282ce6086142ef3496c67f315b689ebe04b3e9ed
                 </div>
             @else
                 <div class="anh_sp_lon">
@@ -178,15 +166,15 @@
                 </strong>
                 </p>
                 
-                <p>
+       <p>
                 @if(!empty($mau_xe))
-                <form action="{{ route('momo.payment') }}" method="POST">
+              <form action="{{ route('taoDon') }}" method="POST">
                  @csrf
                 <input type="hidden" name="id_xe_mau" id="input_id_xe_mau" value="{{ $mau_xe[0]['id_Xe_Mau'] }}">
         
-                <button type="submit" class="btn-dat-hang" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px;">
-               <img src="https://developers.momo.vn/v3/assets/images/square-8c08a00f550e40a2efafea4a005b1232.png" alt="MoMo" style="width: 25px; border-radius: 4px;">
-                ĐẶT CỌC QUA MOMO
+                <button type="submit" class="btn-dat-hang" style="background-color: #d32f2f; color: white; border: none; padding: 12px; font-weight: bold; border-radius: 4px; width: 100%; display: flex; justify-content: center; align-items: center; gap: 10px; cursor: pointer;">
+                <i class="fa-solid fa-cart-arrow-down"></i>
+                TIẾN HÀNH ĐẶT CỌC
                 </button>
                 </form>
                   @endif
