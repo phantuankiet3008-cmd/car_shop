@@ -87,10 +87,10 @@ class MoMoController extends Controller
         $requestId = $orderId; 
         
         $redirectUrl = "http://127.0.0.1:8000/user/car_shop/momo-return"; 
-        $ipnUrl = "http://127.0.0.1:8000/user/car_shop/momo-return";
+        $ipnUrl = "https://postman-echo.com/post";
         $extraData = "";
 
-        $requestType = "payWithATM"; 
+       $requestType = "captureWallet";
         
         $rawHash = "accessKey=" . $accessKey . "&amount=" . $amount . "&extraData=" . $extraData . "&ipnUrl=" . $ipnUrl . "&orderId=" . $orderId . "&orderInfo=" . $orderInfo . "&partnerCode=" . $partnerCode . "&redirectUrl=" . $redirectUrl . "&requestId=" . $requestId . "&requestType=" . $requestType;
         
