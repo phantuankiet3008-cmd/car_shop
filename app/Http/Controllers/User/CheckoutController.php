@@ -51,7 +51,7 @@ class CheckoutController extends Controller
    public function selectPayment(Request $request, $id)
 {
     $request->validate([
-        'payment_method' => 'required|in:vnpay,stripe'
+        'payment_method' => 'required|in:vnpay,stripe,momo'
     ]);
 
     $service = new User();
