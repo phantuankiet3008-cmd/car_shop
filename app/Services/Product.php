@@ -405,7 +405,13 @@ public function getAllLoaiXe() {
             VALUES
             ($idKhach, $idXeMau, '$ngay', $idKhungGio, 0)";
 
-    return $this->db->query($sql);
+    $result = $this->db->query($sql);
+    if (!$result) {
+        throw new \Exception($this->db->error);
+    }
+
+    return $result;
+
 }
 public function getThongTinXeTheoXeMau($id_Xe_Mau)
 {

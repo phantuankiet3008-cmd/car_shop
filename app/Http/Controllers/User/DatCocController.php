@@ -70,6 +70,7 @@ class DatCocController extends Controller
 
     $tien_coc = $tong * 0.01;
 
+
     return view('user.layouts.Dat_coc',[
         'xe'=>$xe,
         'khach'=>$khach,
@@ -78,5 +79,29 @@ class DatCocController extends Controller
         'tong'=>$tong,
         'tien_coc'=>$tien_coc
     ]);
+    }
+    public function taoDon(Request $request)
+{
+    $id_kh = session('user_id');
+
+    if(!$id_kh){
+        return back()->with('error','Bạn chưa đăng nhập');
+    }
+
+    $service = new User();
+
+    // 👉 gọi service xử lý hết
+    $id_don = $service->tao_don_dat_coc(
+        $id_kh,
+        $request->id_xe_mau
+    );
+
+    if(!$id_don){
+        return back()->with('error','Không thể tạo đơn');
+    }
+
+    // 👉 chuyển sang checkout
+    return redirect()->route('checkout', $id_don);
 }
+    
 }

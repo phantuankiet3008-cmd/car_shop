@@ -1,0 +1,161 @@
+/* ===== RESET & CƠ BẢN ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* ===== KHUNG CHÍNH ===== */
+.checkout-container {
+    background: #ffffff;
+    width: 100%;
+    max-width: 450px;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== HEADER ===== */
+.checkout-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.checkout-header i {
+    font-size: 40px;
+    color: #3498db;
+    margin-bottom: 10px;
+}
+
+.checkout-header h3 {
+    font-size: 22px;
+    color: #2c3e50;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ===== THÔNG TIN ĐƠN ===== */
+.order-info {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #7f8c8d;
+}
+
+.info-row.highlight {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed #ddd;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.deposit {
+    color: #e74c3c;
+    font-size: 18px;
+}
+
+.section-title {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #34495e;
+}
+
+/* ===== PHƯƠNG THỨC THANH TOÁN (Ẩn radio gốc, custom lại) ===== */
+.payment-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    border: 2px solid #edf2f7;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.payment-option input {
+    position: absolute;
+    opacity: 0;
+}
+
+.option-content {
+    display: flex;
+    align-items: center;
+}
+
+.option-content img {
+    height: 30px;
+    width: 60px;
+    object-fit: contain;
+    margin-right: 15px;
+}
+
+.option-content span {
+    font-size: 14px;
+    font-weight: 500;
+    color: #4a5568;
+}
+
+.payment-option i {
+    color: #cbd5e0;
+    transition: color 0.3s;
+}
+
+/* Khi chọn radio */
+.payment-option:has(input:checked) {
+    border-color: #3498db;
+    background-color: #f0f7ff;
+}
+
+.payment-option:has(input:checked) i {
+    color: #3498db;
+}
+
+/* ===== NÚT BẤM ===== */
+.btn-checkout {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(to right, #2ecc71, #27ae60);
+    border: none;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    margin-top: 15px;
+    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-checkout:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(46, 204, 113, 0.4);
+}
+
+.footer-note {
+    text-align: center;
+    font-size: 12px;
+    color: #95a5a6;
+    margin-top: 20px;
+}

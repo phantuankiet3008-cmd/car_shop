@@ -86,7 +86,7 @@ Route::get('/trang_admin/lai_thu/cap-nhat/{id}/{trangThai}', [lichLayThuControll
 
 Route::get('/trang_admin/lai_thu/xoa/{id}', [lichLayThuController::class, 'xoa']);
 
-Route::get('/trang_admin/lai_thu/xoa/{id}', [lichLayThuController::class, 'xoa']);
+
 
 
    });

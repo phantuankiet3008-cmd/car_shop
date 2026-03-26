@@ -23,6 +23,7 @@
 
         @if(!empty($anh_xe_mau))
                 <div class="anh_sp_lon">
+<<<<<<< HEAD
                     <img id="mainImage" src="{{ $anh_xe_mau[0]['duong_dan'] }}">
                 </div>
 
@@ -32,6 +33,18 @@
                              class="thumb"
                              data-mau="{{ $anh['id_Xe_Mau'] }}">
                     @endforeach
+=======
+                    <img id="mainImage"
+                         src="{{ $anh_xe_mau[0]['duong_dan']}}">
+                </div>
+
+                <div class="anh_sp_nho">
+                   @foreach($anh_xe_mau as $index => $anh)
+    <img src="{{ $anh['duong_dan'] }}"
+         class="thumb"
+         data-mau="{{ $anh['id_Xe_Mau'] }}">
+@endforeach
+>>>>>>> 282ce6086142ef3496c67f315b689ebe04b3e9ed
                 </div>
             @else
                 <div class="anh_sp_lon">
@@ -42,7 +55,7 @@
             {{-- ===== NÚT 3D ===== --}}
             <div class="khu_anh_3d">
                 <button id="btn3D"
-                        data-model="{{ asset('upload/anh_3d/'.$chitietsp['Anh_3d']) }}">
+                        data-model="{{ $chitietsp['Anh_3d'] }}">
                     🔄 Xem mô hình xe 3D
                 </button>
             </div>

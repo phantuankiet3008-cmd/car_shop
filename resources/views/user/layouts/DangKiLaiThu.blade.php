@@ -103,18 +103,7 @@ tatCaKhungGio.forEach(input => {
 });
  
 // 2️⃣ Nếu bấm vào slot khi chưa chọn ngày
-tatCaKhungGio.forEach(input => {
-    input.addEventListener('click', function(e) {
-        if (!ngayInput.value) {
-            e.preventDefault();
-            alert("Vui lòng chọn ngày trước");
-        }
-        else if (this.disabled) {
-            e.preventDefault();
-            alert("Khung giờ này đã có người đặt, vui lòng chọn khung giờ khác");
-        }
-    });
-});
+
 
 // 3️⃣ Khi chọn ngày
 ngayInput.addEventListener('change', function() {

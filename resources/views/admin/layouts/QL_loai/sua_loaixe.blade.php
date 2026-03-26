@@ -26,9 +26,9 @@
     <label>Hình Ảnh:</label>
     <input type="file" name="hinh_anh">
     <br>
-    <img src="{{ asset('upload/anh_loai/' . $data['loai_xe']['Hinh_Anh_Loai']) }}"
+    <img src="{{  $data['loai_xe']['Hinh_Anh_Loai'] }}"
          width="120">
-
+<br>
     <label>Trạng Thái:</label>
     <select name="trang_thai">
         <option value="1" {{ $data['loai_xe']['Trang_Thai']==1?'selected':'' }}>Hiện</option>

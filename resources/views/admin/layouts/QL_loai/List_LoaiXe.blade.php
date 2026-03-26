@@ -26,7 +26,7 @@
                              <td>{{ $row['id_Loai_xe']}}</td>
                             <td><strong>{{ $row['Ten_Loai_Xe'] }}</strong></td>
                             <td>
-                                <img src="{{ asset('upload/anh_loai/' . $row['Hinh_Anh_Loai']) }}" class="thumb"  width="100">
+                                <img src="{{ $row['Hinh_Anh_Loai']}}" class="thumb"  width="100">
                             </td>
                             <td>{{ $row['Mo_Ta'] }}</td>
                             <td>

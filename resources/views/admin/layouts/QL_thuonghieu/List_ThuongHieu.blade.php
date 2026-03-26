@@ -26,8 +26,8 @@
                             <td>{{ $row['id_Thuong_Hieu'] }}</td>
 
                             <td>
-                                <img src="{{ asset('upload/thuong_hieu/' . $row['Logo']) }}"
-                                     class="thumb">
+                                <img src="{{ $row['Logo']}}"
+                                     class="thumb" width="50">
                             </td>
 
                             <td style="font-weight:bold; color:#007bff; font-size:16px;">

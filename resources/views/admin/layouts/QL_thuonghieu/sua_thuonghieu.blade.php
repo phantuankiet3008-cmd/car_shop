@@ -37,7 +37,7 @@
                         <input type="file" name="hinh_anh">
                         <br><br>
                         @if($data['thuong_hieu']['Logo'])
-                            <img src="{{ asset('upload/anh_logo/' . $data['thuong_hieu']['Logo']) }}"
+                            <img src="{{ $data['thuong_hieu']['Logo'] }}"
                                  width="120"
                                  class="thumb">
                         @endif

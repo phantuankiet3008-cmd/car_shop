@@ -1,5 +1,5 @@
 @extends('user.layouts.user_index')
-
+<link rel="stylesheet" href="{{ asset('user/css/datcoc.css') }}">
 @section('content')
 
 <div class="dat_coc_page">
@@ -51,21 +51,15 @@
 {{ number_format($tien_coc) }} đ
 </span>
 </p>
-
-<form action="{{ url('user/car_shop/xac_nhan_dat_coc') }}" method="POST">
-
+<form action="{{ route('taoDon') }}" method="POST">
 @csrf
 
 <input type="hidden" name="id_xe_mau" value="{{ $xe['id_Xe_Mau'] }}">
-<input type="hidden" name="tien_coc" value="{{ $tien_coc }}">
-<input type="hidden" name="tong_tien" value="{{ $tong }}">
-<input type="hidden" name="giam" value="{{ $giam }}">
 
 
 <button class="btn-thanh-toan">
-Xác nhận đặt cọc
+    Xác nhận đặt cọc
 </button>
-
 </form>
 
 </div>

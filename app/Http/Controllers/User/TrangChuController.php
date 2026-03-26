@@ -4,7 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Services\QL;
+use App\Services\user;
 
 class TrangChuController extends Controller
 {
@@ -14,7 +14,15 @@ class TrangChuController extends Controller
     }
     public function trangchu()
     {
-        return view('user.partials.user_trangchu');
+        $user = new User();
+        $listanh = $user->Danh_Sach_Slider();
+        return view('user.partials.user_trangchu', [
+            
+            'data' => [
+                'danh_sach_slider' => $listanh
+            ]
+        ]);
+        
     }
 }
 

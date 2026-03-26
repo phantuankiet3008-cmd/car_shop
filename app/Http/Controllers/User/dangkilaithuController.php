@@ -88,10 +88,15 @@ class DangkilaithuController extends Controller
     }
 
     
-    $sp->insertLichLaiThu($idKhach, $idXeMau, $ngay, $idKhungGio);
-
-    return redirect('/user/car_shop/lich-lai-thu-cua-toi')
-       ->with('success', 'Đặt lịch thành công!');
+   try {
+        $result = $sp->insertLichLaiThu($idKhach, $idXeMau, $ngay, $idKhungGio);
+            return redirect('/user/car_shop/lich-lai-thu-cua-toi')
+                   ->with('success', 'Đặt lịch thành công!');
+        
+    } catch (\Exception $e) {
+        // Nếu lỗi do Unique Index (thường là mã lỗi 1062 trong MySQL)
+        return back()->with('error', 'Rất tiếc! Khung giờ này vừa có người nhanh tay hơn đặt chỗ. Vui lòng chọn giờ khác.');
+    }
 }
  public function lichCuaToi()
 {
