@@ -26,8 +26,9 @@ class User extends Authenticatable
     ];
 
     
-    public function getAuthPassword()
+    function getAuthPassword()
     {
         return $this->Mat_Khau;
     }
+
 }

@@ -1,5 +1,10 @@
 <?php
+
+
 namespace App\Services;
+use Illuminate\Support\Facades\DB;
+
+
 class User {
     private $host = "localhost";
     private $user = "root";
@@ -228,8 +233,353 @@ function Danh_Sach_Slider() {
     }
     return $data;
 }
+
+
+function lay_xe_khach($idkhachhang)
+{
+    $idkhachhang = (int)$idkhachhang;
+
+    $sql = "
+        SELECT 
+            xe_mau.id_Xe_Mau,
+            san_pham_xe.Ten_Xe,
+            san_pham_xe.Anh_Dai_Dien,
+            thuong_hieu_xe.Ten_Thuong_Hieu,
+            loai_xe.Ten_Loai_Xe
+        FROM don_hang
+        JOIN xe_mau ON don_hang.id_Xe_Mau = xe_mau.id_Xe_Mau
+        JOIN san_pham_xe ON xe_mau.id_Xe = san_pham_xe.id_Xe
+        JOIN thuong_hieu_xe ON san_pham_xe.id_Thuong_Hieu = thuong_hieu_xe.id_Thuong_Hieu
+        JOIN loai_xe ON san_pham_xe.id_Loai_Xe = loai_xe.id_Loai_xe
+        WHERE don_hang.id_Khach_Hang = $idkhachhang
+        AND don_hang.Trang_Thai = 'da_giao'
+    ";
+
+    $result = $this->db->query($sql);
+
+    $data = [];
+    while ($row = $result->fetch_assoc()) {
+        $data[] = $row;
+    }
+
+    return $data;
+}
+
+function chongoi_baoduong()
+{
+    $sql = "SELECT * FROM goi_bao_duong";
+
+    $result = $this->db->query($sql);
+
+    $data = [];
+    while ($row = $result->fetch_assoc()) {
+        $data[] = (array)$row;
+    }
+
+    return $data;
+}
+
+function datlich_baoduong($id_khachhang, $id_xe_mau, $id_goi, $ngay, $ghichu)
+{
+    $id_khachhang = (int)$id_khachhang;
+    $id_xe_mau = (int)$id_xe_mau;
+    $id_goi = (int)$id_goi;
+    $ngay = $this->db->real_escape_string($ngay);
+    $ghichu = $this->db->real_escape_string($ghichu);
+
+    $sql = "
+        INSERT INTO lich_bao_duong 
+        (id_Khach_Hang, id_Xe_Mau, id_goi, ngay_bao_duong, ghi_chu)
+        VALUES 
+        ($id_khachhang, $id_xe_mau, $id_goi, '$ngay', '$ghichu')
+    ";
+
+    $result= $this->db->query($sql);
+    return $result;
+}
+
+function dem_lich_trong_ngay($ngay)
+{
+    $sql = "
+        SELECT COUNT(*) as total
+        FROM lich_bao_duong
+        WHERE ngay_bao_duong = ?
+    ";
+
+    $result = $this->db->query($sql);
+
+    return $result;
+}
 }
 ?>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function lay_xe_khach($idkhachhang)
+{
+$idkhachhang = (int)$idkhachhang;
+
+$sql = "
+SELECT
+xe_mau.id_Xe_Mau,
+san_pham_xe.Ten_Xe,
+san_pham_xe.Anh_Dai_Dien,
+thuong_hieu_xe.Ten_Thuong_Hieu,
+loai_xe.Ten_Loai_Xe
+FROM don_hang
+JOIN xe_mau ON don_hang.id_Xe_Mau = xe_mau.id_Xe_Mau
+JOIN san_pham_xe ON xe_mau.id_Xe = san_pham_xe.id_Xe
+JOIN thuong_hieu_xe ON san_pham_xe.id_Thuong_Hieu = thuong_hieu_xe.id_Thuong_Hieu
+JOIN loai_xe ON san_pham_xe.id_Loai_Xe = loai_xe.id_Loai_xe
+WHERE don_hang.id_Khach_Hang = $idkhachhang
+AND don_hang.Trang_Thai = 'da_giao'
+";
+
+$result = $this->db->query($sql);
+
+$data = [];
+while ($row = $result->fetch_assoc()) {
+$data[] = $row;
+}
+
+return $data;
+}
+
+function chongoi_baoduong()
+{
+$sql = "SELECT * FROM goi_bao_duong";
+
+$result = $this->db->query($sql);
+
+$data = [];
+while ($row = $result->fetch_assoc()) {
+$data[] = (array)$row;
+}
+
+return $data;
+}
+
+function datlich_baoduong($id_khachhang, $id_xe_mau, $id_goi, $ngay, $ghichu)
+{
+$id_khachhang = (int)$id_khachhang;
+$id_xe_mau = (int)$id_xe_mau;
+$id_goi = (int)$id_goi;
+$ngay = $this->db->real_escape_string($ngay);
+$ghichu = $this->db->real_escape_string($ghichu);
+
+$sql = "
+INSERT INTO lich_bao_duong
+(id_Khach_Hang, id_Xe_Mau, id_goi, ngay_bao_duong, ghi_chu)
+VALUES
+($id_khachhang, $id_xe_mau, $id_goi, '$ngay', '$ghichu')
+";
+
+$result= $this->db->query($sql);
+return $result;
+}
+
+function dem_lich_trong_ngay($ngay)
+{
+$sql = "
+SELECT COUNT(*) as total
+FROM lich_bao_duong
+WHERE ngay_bao_duong = ?
+";
+
+$result = $this->db->query($sql);
+
+return $result;
+}
+}

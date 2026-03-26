@@ -93,7 +93,138 @@ Route::get('/trang_admin/lai_thu/xoa/{id}', [lichLayThuController::class, 'xoa']
    });
 
    
-   // BẢO DƯỠNG XE
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // BẢO DƯỠNG XE
 Route::get('/car_shop/baoduong', function () {
     return view('user.layouts.BaoDuong');
 })->name('baoduong');
@@ -109,9 +240,9 @@ Route::get('/trang_admin/goibaoduong/them', function () {
     return view('admin.layouts.index_AD', [
         'key' => 'add_goi_bao_duong'
     ]);
+});
+    Route::post('/trang_admin/goibaoduong/them', [QLGoiBaoDuong_controller::class, 'them_goi']);
 
     Route::get('/trang_admin/goibaoduong/xoa/{id}', [QLGoiBaoDuong_controller::class,'xoa_goi']);
-});
-
 
    

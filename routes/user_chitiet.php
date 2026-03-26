@@ -1,4 +1,3 @@
-
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -14,6 +13,7 @@ use App\Http\Controllers\User\otp_controller;
 use App\Http\Controllers\User\TrangChuController;
 use App\Http\Controllers\User\donhangController;
 use App\Http\Controllers\User\DatCocController;
+use App\Http\Controllers\User\BaoDuong_controller;
 
 Route::prefix('user')->group(function () {
 // Chi tiết xe
@@ -66,9 +66,10 @@ Route::get('/car_shop/datcoc/{id}', [DatCocController::class, 'datcoc']);
 
 
 
+// ĐẶT LỊCH BẢO DƯỠNG
 
-
-
+Route::get('/car_shop/datlichbaoduong', [BaoDuong_controller::class, 'trang_baoduong'])->name('datlichbaoduong');
+Route::post('/car_shop/dat_bao_duong', [BaoDuong_controller::class, 'datlich_BaoDuong']);
 
 
 
@@ -150,5 +151,3 @@ Route::post('/car_shop/profile/update', [profileController::class, 'update'])
 
 
 });
-
-
