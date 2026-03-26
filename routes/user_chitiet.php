@@ -11,10 +11,11 @@ use App\Http\Controllers\User\DangKy_controller;
 use App\Http\Controllers\User\QuenMK_controller;
 use App\Http\Controllers\User\otp_controller;
 use App\Http\Controllers\User\TrangChuController;
-use App\Http\Controllers\User\donhangController;
 use App\Http\Controllers\User\DatCocController;
+use App\Http\Controllers\User\MoMoController;
 use App\Http\Controllers\User\VNPayController;
 use App\Http\Controllers\User\CheckoutController;
+use App\Http\Controllers\User\donhangController; // ĐÃ THÊM DÒNG NÀY ĐỂ TRÁNH LỖI
 
 // =========================================================
 // 1. ROUTE CÔNG KHAI (KHÔNG CẦN ĐĂNG NHẬP)
@@ -51,17 +52,21 @@ Route::middleware('user.auth')->prefix('user')->group(function () {
     Route::post('/car_shop/profile/update', [profileController::class, 'update'])->name('profile.update');
 
     // Đơn hàng & Đặt cọc
-    Route::get('/donhang', [donhangController::class, 'index'])->name('don-hang'); // Tên này dùng cho redirect
+    Route::get('/donhang', [donhangController::class, 'index'])->name('don-hang'); 
     Route::get('/car_shop/datcoc/{id}', [DatCocController::class, 'datcoc'])->name('datcoc');
     Route::post('/car_shop/tao-don', [DatCocController::class, 'taoDon'])->name('taoDon');
 
-    // THANH TOÁN (CHECKOUT) - QUAN TRỌNG: CHỈ ĐỂ Ở ĐÂY
+    // THANH TOÁN (CHECKOUT)
     Route::get('/car_shop/checkout/{id}', [CheckoutController::class, 'checkout'])->name('checkout');
     Route::post('/car_shop/checkout/{id}', [CheckoutController::class, 'selectPayment'])->name('selectPayment');
 
     // VNPay
     Route::get('/car_shop/vnpay/redirect/{id}', [VNPayController::class, 'redirect'])->name('vnpay.redirect');
     Route::get('/car_shop/vnpay/return', [VNPayController::class, 'return'])->name('vnpay.return');
+
+    // MoMo (ĐÃ BỔ SUNG)
+    Route::get('/car_shop/momo/redirect/{id}', [MoMoController::class, 'redirect'])->name('momo.redirect');
+    Route::get('/car_shop/momo/return', [MoMoController::class, 'return'])->name('momo.return');
 
     // Lái thử
     Route::get('/car_shop/dangkilaithu/{id}', [dangkilaithuController::class, 'index']);
