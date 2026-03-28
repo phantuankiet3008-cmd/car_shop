@@ -5,12 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\QL;
-use App\Services\CloudinaryService; // Import Service upload
+ // Import Service upload
 
 class SanPhamController extends Controller
 {
     protected $ql;
-    protected $cloudinary;
+   
 
     public function __construct()
     {

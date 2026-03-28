@@ -34,18 +34,19 @@
         @foreach($goibaoduong as $goi)
 
         <tr>
-            <td>{{ $goi->id }}</td>
-            <td>{{ $goi->ten_goi }}</td>
-            <td>{{ $goi->mo_ta }}</td>
-            <td>{{ number_format($goi->gia) }} đ</td>
+            <td>{{ $goi['id_goi'] }}</td>
+            <td>{{ $goi['ten_goi'] }}</td>
+            <td>{{ $goi['mo_ta'] }}</td>
+            <td>{{ number_format($goi['gia']) }} đ</td>
 
             <td>
 
                 {{-- nút sửa --}}
-                <a href="?edit={{ $goi->id }}">Sửa</a>
+                <a href="?edit={{ $goi['id_goi'] }}">Sửa</a>
 
                 {{-- nút xóa --}}
-                <a href="/trang_admin/goibaoduong/xoa/{{ $goi->id }}" onclick="return confirm('Bạn có chắc muốn xóa?')">
+                <a href="/trang_admin/goibaoduong/xoa/{{ $goi['id_goi'] }}"
+                    onclick="return confirm('Bạn có chắc muốn xóa?')">
                     Xóa
                 </a>
                 @endforeach

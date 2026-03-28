@@ -1,31 +1,44 @@
 <nav class="main-nav">
-<ul class="menu">
+    <ul class="menu">
 
-<li>
-<a href="{{ route('trangchu') }}">TRANG CHỦ
+        <li>
+            <a href="{{ route('trangchu') }}">TRANG CHỦ
 
-</a>
-</li>
+            </a>
+        </li>
 
-<li class="nav-product">
+        <li class="nav-product">
 
-<a href="{{ url('user/car_shop/danhsachsanpham') }}">
-🚗 SẢN PHẨM
-</a>
-
-
+            <a href="{{ url('user/car_shop/danhsachsanpham') }}">
+                🚗 SẢN PHẨM
+            </a>
 
 
 
-</li>
 
-<li>
-<a href="#">ĐƠN HÀNG</a>
-</li>
 
-<li>
-<a href="#">HỖ TRỢ VÀ DỊCH VỤ</a>
-</li>
+        </li>
+ @if(session('user_id'))
+ <li>
+        <a href="{{ url('user/car_shop/lai_thu') }}">
+            
+            ĐẶT LỊCH LÁI THỬ
+        </a>
+ </li>
+ <li>
+     <a href="{{ route('datlichbaoduong') }}">
+           
+            ĐẶT LỊCH BẢO DƯỠNG
+        </a>
+ </li>
+    @endif
+        
 
-</ul>
+        
+
+        <li>
+            <a href="#">HỖ TRỢ VÀ DỊCH VỤ</a>
+        </li>
+
+    </ul>
 </nav>
