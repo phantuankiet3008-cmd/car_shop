@@ -20,7 +20,7 @@
         </li>
 
         <li>
-            <a href="#">ĐẶT LỊCH LÁI THỬ</a>
+            <a href="">ĐẶT LỊCH LÁI THỬ</a>
         </li>
 
         <li>
