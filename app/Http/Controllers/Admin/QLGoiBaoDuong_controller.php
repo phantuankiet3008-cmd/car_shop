@@ -12,10 +12,6 @@ class QLGoiBaoDuong_controller extends Controller
     // Danh sách gói bảo dưỡng
     function index(Request $request)
     {
-        $service = new QL();
-
-        $data = $service->danh_sach_goi();
-
 
     $service = new QL();
 

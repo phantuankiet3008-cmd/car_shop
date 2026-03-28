@@ -52,7 +52,6 @@ protected $cloudinary;
 
     function check_dang_nhap_ADM() {
         if (!isset($_SESSION['admin_id'])) {
-            header("Location:index_AD.php");
             exit();
         }
     }
@@ -918,7 +917,7 @@ function TimKiem_Khach_Hang($keyword) {
 
 }
 
-public function DanhSach_LaiThu($ngay = null, $idXe = null, $trangThai = null, $tenKhach = null)
+function DanhSach_LaiThu($ngay = null, $idXe = null, $trangThai = null, $tenKhach = null)
 {
     $sql = "
         SELECT dl.id_Dat_Lich,
@@ -1063,9 +1062,11 @@ function danh_sach_goi(){
     $result = $this->db->query($sql);
 
     $data = [];
-
+    if ($result) {
     while($row = $result->fetch_assoc()){
-    }     $data[] = $row;
+             $data[] = $row;
+    }}
+    return $data;
     }
 public function list_thuong_hieu_theo_loai($MaLoai)
 {
@@ -1111,77 +1112,4 @@ public function list_thuong_hieu_theo_loai($MaLoai)
             return $this->db->query($sql);
         }
 
-
-        // SỬA XÓA BẢO DƯỠNG
-        function Get_ChiTietbaoduong($id){
-
-            $id = (int)$id;
-            
-            $sql = "SELECT 
-                        l.id_lich,
-                        l.id_Khach_Hang,
-                        l.id_Xe_Mau,
-                        l.id_goi,
-                        l.ngay_bao_duong,
-                        l.ghi_chu,
-                        l.trang_thai,
-                        k.Ho_Ten,
-                        k.So_Dien_Thoai,
-                        sp.Ten_Xe,
-                        m.Ten_Mau,
-                        g.ten_goi
-                    FROM lich_bao_duong l
-                    JOIN khach_hang k ON l.id_Khach_Hang = k.id_Khach_Hang
-                    JOIN xe_mau xm ON l.id_Xe_Mau = xm.id_Xe_Mau
-                    JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
-                    JOIN mau_xe m ON xm.id_Mau = m.id_Mau
-                    JOIN goi_bao_duong g ON l.id_goi = g.id_goi
-                    WHERE l.id_lich = $id
-                    LIMIT 1";
-            
-            $result = $this->db->query($sql);
-            
-            if($result && $result->num_rows > 0){
-                return $result->fetch_assoc();
-            }
-            
-            return false;
-            
-            }
-
-            function Update_baoduong($id, $post){
-
-                $id = (int)$id;
-                
-                $ngay = $this->db->real_escape_string($post['ngay_bao_duong']);
-                $ghi_chu = $this->db->real_escape_string($post['ghi_chu']);
-                $trang_thai = $this->db->real_escape_string($post['trang_thai']);
-                
-                $sql = "UPDATE lich_bao_duong
-                        SET 
-                            ngay_bao_duong = '$ngay',
-                            ghi_chu = '$ghi_chu',
-                            trang_thai = '$trang_thai'
-                        WHERE id_lich = $id";
-                
-                return $this->db->query($sql);
-                
-                }
-
-                function Delete_BaoDuong($id){
-
-                    $id = (int)$id;
-                    
-                    $sql = "DELETE FROM lich_bao_duong
-                            WHERE id_lich = $id";
-                    
-                    return $this->db->query($sql);
-                    
-                    }
-
-
-
-
-
-}
-
+    }

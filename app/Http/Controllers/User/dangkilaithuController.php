@@ -62,7 +62,7 @@ class DangkilaithuController extends Controller
 
     // ===== 3. Xử lý đặt lịch =====
     public function store(Request $request)
-{
+{   
     $sp = new Product();
 
     $idKhach     = session('user_id');
