@@ -302,22 +302,15 @@ function Get_Mau_Theo_Xe($id_xe){
 }
 
 // Thêm sản phẩm
-public function Add_SanPham($ten_xe, $mo_ta, $post, $files) {
+public function Add_SanPham($ten_xe, $mo_ta, $post) {
+    // 1. Lấy URLs từ các input ẩn đã được JS điền vào
+    $anh_dai_dien = $this->db->real_escape_string($post['anh_dai_dien_url'] ?? '');
+    $anh_3d       = $this->db->real_escape_string($post['anh_3d_url'] ?? '');
+    
     $ten_xe = $this->db->real_escape_string($ten_xe);
-    $mo_ta = $this->db->real_escape_string($mo_ta);
+    $mo_ta  = $this->db->real_escape_string($mo_ta);
     $id_loai = (int)$post['loai_xe']; 
     $id_thuong_hieu = (int)$post['thuong_hieu'];
-
-    // 1. Xử lý Upload Ảnh đại diện & Ảnh 3D
-    $anh_dai_dien = "";
-    if (!empty($files['anh_dai_dien']['tmp_name'])) {
-        $anh_dai_dien = $this->cloudinary->uploadImage($files['anh_dai_dien'], 'san_pham');
-    }
-
-    $anh_3d = "";
-    if (!empty($files['anh_3d']['tmp_name'])) {
-        $anh_3d = $this->cloudinary->uploadImage($files['anh_3d'], 'san_pham_3d');
-    }
 
     $sql = "INSERT INTO san_pham_xe (Ten_Xe, Mo_Ta, Anh_Dai_Dien, Anh_3d, id_Loai_Xe, id_Thuong_Hieu) 
             VALUES ('$ten_xe', '$mo_ta', '$anh_dai_dien', '$anh_3d', $id_loai, $id_thuong_hieu)";
@@ -327,60 +320,32 @@ public function Add_SanPham($ten_xe, $mo_ta, $post, $files) {
 
         if(isset($post['mau_xe'])){
             foreach($post['mau_xe'] as $i => $mau_value){
-                $is_default = ($i === 0) ? 1 : 0;
-                $gia_mau = (int) str_replace(['.', ','], '', $post['gia_mau'][$i]);
-                $so_luong = (int)$post['so_luong'][$i];
-
-                // --- LOGIC XỬ LÝ MÀU MỚI ---
                 $id_mau_final = 0;
                 if (strpos($mau_value, 'NEW|') === 0) {
-                    // Nếu là màu mới (VD: NEW|Xanh|#0000ff)
                     $parts = explode('|', $mau_value);
-                    $ten_mau_moi = $this->db->real_escape_string($parts[1]);
-                    $ma_mau_moi = $this->db->real_escape_string($parts[2]);
-
-                    // Chèn vào bảng danh mục màu sắc
-                    $this->db->query("INSERT INTO mau_xe (Ten_Mau, Ma_Mau) VALUES ('$ten_mau_moi', '$ma_mau_moi')");
+                    $ten_m = $this->db->real_escape_string($parts[1]);
+                    $ma_m  = $this->db->real_escape_string($parts[2]);
+                    $this->db->query("INSERT INTO mau_xe (Ten_Mau, Ma_Mau) VALUES ('$ten_m', '$ma_m')");
                     $id_mau_final = $this->db->insert_id;
                 } else {
-                    // Nếu là màu đã có sẵn (là ID số)
                     $id_mau_final = (int)$mau_value;
                 }
-                // ---------------------------
 
-                // Chèn vào bảng xe_mau
-                $this->db->query("
-                    INSERT INTO xe_mau (id_Xe, id_Mau, is_Default, Gia, So_Luong) 
-                    VALUES ($id_xe, $id_mau_final, $is_default, $gia_mau, $so_luong)
-                ");
+                $gia_mau = (int) str_replace(['.', ','], '', $post['gia_mau'][$i]);
+                $so_luong = (int)$post['so_luong'][$i];
+                $is_default = ($i === 0) ? 1 : 0;
 
+                $this->db->query("INSERT INTO xe_mau (id_Xe, id_Mau, is_Default, Gia, So_Luong) 
+                                 VALUES ($id_xe, $id_mau_final, $is_default, $gia_mau, $so_luong)");
                 $id_xe_mau = $this->db->insert_id;
 
-                // 2. Tự xử lý Upload mảng ảnh chi tiết theo màu
-if(isset($files['anh_mau']) && !empty($files['anh_mau']['tmp_name'][$i][0])){
-    foreach($files['anh_mau']['tmp_name'][$i] as $k => $tmp_path){
-        // Kiểm tra xem file có lỗi không trước khi đóng gói
-        if(isset($files['anh_mau']['error'][$i][$k]) && $files['anh_mau']['error'][$i][$k] == 0){
-            
-            // Đóng gói ĐẦY ĐỦ các key mà CloudinaryService yêu cầu
-            $file_payload = [
-                'tmp_name' => $tmp_path,
-                'name'     => $files['anh_mau']['name'][$i][$k],
-                'error'    => $files['anh_mau']['error'][$i][$k], // Thêm dòng này để hết lỗi Undefined key "error"
-                'size'     => $files['anh_mau']['size'][$i][$k]
-            ];
-            
-            $link_anh = $this->cloudinary->uploadImage($file_payload, 'anh_xe_mau');
-            
-            if (!empty($link_anh)) {
-                $this->db->query("
-                    INSERT INTO xe_mau_anh (id_Xe_Mau, Hinh_Anh_Xe_Mau)
-                    VALUES ($id_xe_mau, '$link_anh')
-                ");
-            }
-        }
-    }
-}
+                // 2. Lưu mảng ảnh Album (Tốc độ ánh sáng vì chỉ là chuỗi)
+                if(isset($post['anh_mau_urls'][$i])){
+                    foreach($post['anh_mau_urls'][$i] as $link_anh){
+                        $link_anh_esc = $this->db->real_escape_string($link_anh);
+                        $this->db->query("INSERT INTO xe_mau_anh (id_Xe_Mau, Hinh_Anh_Xe_Mau) VALUES ($id_xe_mau, '$link_anh_esc')");
+                    }
+                }
             }
         }
         return true;
@@ -388,90 +353,93 @@ if(isset($files['anh_mau']) && !empty($files['anh_mau']['tmp_name'][$i][0])){
     return false;
 }
 // Cập nhật sản phẩm
-public function Update_SanPham($id_xe, $post, $files) {
+// Cập nhật hàm Update_SanPham trong class QL
+public function Update_SanPham($id_xe, $post) {
     $id_xe = (int)$id_xe;
     $ten_xe = $this->db->real_escape_string($post['ten_xe']);
     $mo_ta = $this->db->real_escape_string($post['mo_ta']);
     $id_loai = (int)$post['id_loai'];
     $id_thuong_hieu = (int)$post['id_thuong_hieu'];
 
-    // 1. Cập nhật thông tin cơ bản của xe
-    $sql = "UPDATE san_pham_xe SET 
-                Ten_Xe = '$ten_xe', Mo_Ta = '$mo_ta',
-                id_Loai_Xe = $id_loai, id_Thuong_Hieu = $id_thuong_hieu
-            WHERE id_Xe = $id_xe";
-    $this->db->query($sql);
+    // 1. Cập nhật thông tin cơ bản
+    $this->db->query("UPDATE san_pham_xe SET 
+        Ten_Xe='$ten_xe', 
+        Mo_Ta='$mo_ta', 
+        id_Loai_Xe=$id_loai, 
+        id_Thuong_Hieu=$id_thuong_hieu 
+        WHERE id_Xe=$id_xe");
 
-    // 2. Xử lý Ảnh đại diện & Ảnh 3D (Giữ nguyên logic của bạn)
-    if (!empty($files['new_anh_dai_dien']['name'])) {
-        $old = $this->db->query("SELECT Anh_Dai_Dien FROM san_pham_xe WHERE id_Xe = $id_xe")->fetch_assoc();
-        if ($old && !empty($old['Anh_Dai_Dien'])) { $this->cloudinary->deleteImage($old['Anh_Dai_Dien']); }
-        $new_url = $this->cloudinary->uploadImage($files['new_anh_dai_dien'], 'anh_dai_dien');
-        $this->db->query("UPDATE san_pham_xe SET Anh_Dai_Dien = '$new_url' WHERE id_Xe = $id_xe");
+    // 2. Cập nhật URL từ Cloudinary (nếu có thay đổi)
+    if(!empty($post['new_anh_dai_dien_url'])) {
+        $url = $this->db->real_escape_string($post['new_anh_dai_dien_url']);
+        $this->db->query("UPDATE san_pham_xe SET Anh_Dai_Dien='$url' WHERE id_Xe=$id_xe");
     }
-    
-    if (!empty($files['new_anh_3d']['name'])) {
-        $old = $this->db->query("SELECT Anh_3d FROM san_pham_xe WHERE id_Xe = $id_xe")->fetch_assoc();
-        if ($old && !empty($old['Anh_3d'])) { $this->cloudinary->deleteImage($old['Anh_3d']); }
-        $new_url = $this->cloudinary->uploadImage($files['new_anh_3d'], 'anh_3d');
-        $this->db->query("UPDATE san_pham_xe SET Anh_3d = '$new_url' WHERE id_Xe = $id_xe");
+    if(!empty($post['new_anh_3d_url'])) {
+        $url = $this->db->real_escape_string($post['new_anh_3d_url']);
+        $this->db->query("UPDATE san_pham_xe SET Anh_3d='$url' WHERE id_Xe=$id_xe");
     }
 
-    // 3. Cập nhật giá và số lượng các màu ĐÃ CÓ
-    if(isset($post['gia_mau'])){
-        foreach($post['gia_mau'] as $id_xe_mau => $gia){
-            $gia_clean = (int)str_replace(['.', ','], '', $gia);
-            $so_luong = (int)$post['so_luong'][$id_xe_mau];
-            $this->db->query("UPDATE xe_mau SET So_Luong = $so_luong, Gia = $gia_clean WHERE id_Xe_Mau = $id_xe_mau");
+    // 3. Xử lý xóa ảnh trong album cũ (Dựa trên mảng delete_anh_ids gửi từ JS)
+    if(!empty($post['delete_anh_ids'])) {
+        foreach($post['delete_anh_ids'] as $id_Xe_Mau) {
+            if(!empty($id_Xe_Mau)) {
+                // Nếu muốn kỹ hơn, bạn có thể gọi CloudinaryService để deleteImage tại đây trước khi xóa DB
+                $this->db->query("DELETE FROM xe_mau_anh WHERE id_Xe_Mau_Anh= ".(int)$id_Xe_Mau);
+            }
         }
     }
 
-    // 4. CHÈN BIẾN THỂ MÀU MỚI (Đã sửa để khớp database)
-if (isset($post['new_ten_mau'])) {
-    foreach ($post['new_ten_mau'] as $index => $ten_mau_moi) {
-        $ten_mau_esc = $this->db->real_escape_string($ten_mau_moi);
-        $gia_moi = (int)str_replace(['.', ','], '', $post['new_gia_mau'][$index]);
-        $sl_moi = (int)$post['new_so_luong'][$index];
+    // 4. Cập nhật biến thể ĐANG CÓ & Thêm ảnh mới vào Album cũ
+    if(isset($post['gia_mau'])) {
+        foreach($post['gia_mau'] as $id_xm => $gia) {
+            $gia_clean = (int)str_replace(['.', ','], '', $gia);
+            $sl = (int)$post['so_luong'][$id_xm];
+            $this->db->query("UPDATE xe_mau SET So_Luong=$sl, Gia=$gia_clean WHERE id_Xe_Mau=$id_xm");
 
-        // Bước A: Tìm id_Mau từ bảng mau_xe dựa trên tên màu
-        $sql_mau = "SELECT id_Mau FROM mau_xe WHERE Ten_Mau = '$ten_mau_esc' LIMIT 1";
-        $res_mau = $this->db->query($sql_mau);
-        $row_mau = $res_mau->fetch_assoc();
-
-        if ($row_mau) {
-            $id_mau_id = $row_mau['id_Mau'];
-
-            // Bước B: Thêm vào bảng xe_mau (Sửa cột Ten_Mau thành id_Mau)
-            $this->db->query("INSERT INTO xe_mau (id_Xe, id_Mau, Gia, So_Luong, is_Default) 
-                              VALUES ($id_xe, $id_mau_id, $gia_moi, $sl_moi, 0)");
-            
-            $new_id_xe_mau = $this->db->insert_id;
-
-            // Bước C: Xử lý upload mảng ảnh chi tiết cho màu mới này
-            if (isset($files['new_anh_mau']['name'][$index])) {
-                foreach ($files['new_anh_mau']['name'][$index] as $sub_key => $name) {
-                    if ($files['new_anh_mau']['error'][$index][$sub_key] == 0) {
-                        // Tạo cấu trúc file giả lập để uploadImage nhận diện đúng
-                        $file_payload = [
-                            'tmp_name' => $files['new_anh_mau']['tmp_name'][$index][$sub_key],
-                            'name'     => $files['new_anh_mau']['name'][$index][$sub_key],
-                            'type'     => $files['new_anh_mau']['type'][$index][$sub_key],
-                            'error'    => 0,
-                            'size'     => $files['new_anh_mau']['size'][$index][$sub_key]
-                        ];
-                        
-                        // Upload lên Cloudinary
-                        $url_anh_ct = $this->cloudinary->uploadImage($file_payload, 'anh_xe_mau');
-                        
-                        // Chèn vào bảng xe_mau_anh
-                        $this->db->query("INSERT INTO xe_mau_anh (id_Xe_Mau, Hinh_Anh_Xe_Mau) 
-                                          VALUES ($new_id_xe_mau, '$url_anh_ct')");
-                    }
+            // Thêm ảnh mới vào album của màu đã tồn tại
+            if(isset($post['more_anh_mau_urls'][$id_xm])) {
+                foreach($post['more_anh_mau_urls'][$id_xm] as $u) {
+                    $u_e = $this->db->real_escape_string($u);
+                    $this->db->query("INSERT INTO xe_mau_anh (id_Xe_Mau, Hinh_Anh_Xe_Mau) VALUES ($id_xm, '$u_e')");
                 }
             }
         }
     }
-}
+
+    // 5. Thêm biến thể MỚI (Màu mới hoàn toàn cho xe này)
+    if(isset($post['new_ten_mau'])) {
+        foreach($post['new_ten_mau'] as $idx => $val_mau) {
+            $id_m = 0;
+            // Xử lý tạo nhanh màu mới (NEW|Tên|Mã)
+            if (strpos($val_mau, 'NEW|') === 0) {
+                $parts = explode('|', $val_mau);
+                $ten_m = $this->db->real_escape_string($parts[1]);
+                $ma_m = $this->db->real_escape_string($parts[2]);
+                $this->db->query("INSERT INTO mau_xe (Ten_Mau, Ma_Mau) VALUES ('$ten_m', '$ma_m')");
+                $id_m = $this->db->insert_id;
+            } else {
+                $id_m = (int)$val_mau;
+            }
+
+            if($id_m > 0) {
+                $gia_n = (int)str_replace(['.', ','], '', $post['new_gia_mau'][$idx]);
+                $sl_n = (int)$post['new_so_luong'][$idx];
+                
+                $this->db->query("INSERT INTO xe_mau (id_Xe, id_Mau, Gia, So_Luong, is_Default) 
+                                 VALUES ($id_xe, $id_m, $gia_n, $sl_n, 0)");
+                $new_id_xm = $this->db->insert_id;
+
+                // Thêm album ảnh cho màu mới này
+                if(isset($post['new_anh_mau_urls'][$idx])) {
+                    foreach($post['new_anh_mau_urls'][$idx] as $u) {
+                        $u_e = $this->db->real_escape_string($u);
+                        $this->db->query("INSERT INTO xe_mau_anh (id_Xe_Mau, Hinh_Anh_Xe_Mau) VALUES ($new_id_xm, '$u_e')");
+                    }
+                
+                }
+            }
+        }
+    }
     return true;
 }
 public function Delete_MauXe($id_Xe_Mau)
@@ -546,7 +514,8 @@ function Get_AnhTheoMau($id_xe) {
             m.id_Mau,
             m.Ten_Mau,
             m.Ma_Mau,
-            xma.Hinh_Anh_Xe_Mau
+            xma.Hinh_Anh_Xe_Mau,
+            xma.id_Xe_Mau_Anh 
         FROM xe_mau xm
         JOIN mau_xe m ON xm.id_Mau = m.id_Mau
         LEFT JOIN xe_mau_anh xma ON xm.id_Xe_Mau = xma.id_Xe_Mau

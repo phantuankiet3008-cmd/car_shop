@@ -306,7 +306,7 @@ function list_anh_xe_mau($id) {
     function list_mau_xe($id) {
     $id = (int)$id;
     // Lấy thêm Ma_Mau và Gia từ bảng xe_mau và mau_xe
-    $sql = "SELECT xm.id_Xe_Mau, m.Ten_Mau, m.Ma_Mau, xm.Gia 
+    $sql = "SELECT xm.id_Xe_Mau, m.Ten_Mau, m.Ma_Mau, xm.Gia ,xm.So_Luong
             FROM xe_mau xm
             JOIN mau_xe m ON xm.id_Mau = m.id_Mau
             WHERE xm.id_Xe = $id";
@@ -346,6 +346,7 @@ public function getAllLoaiXe() {
     $sql = "SELECT 
                 xm.id_Xe_Mau,
                 xm.Gia,
+                xm.So_Luong,
                 xm.is_Default,
                 m.id_Mau,
                 m.Ten_Mau,
@@ -488,6 +489,12 @@ public function kiemTraSlotDaDat($idXeMau, $ngay, $idKhungGio)
             AND id_Khung_Gio = $idKhungGio
             LIMIT 1";
 
+    return $this->db->query($sql);
+}
+public function kiemtraxedo($id_xe_mau) {
+    $id_xe_mau = (int)$id_xe_mau;
+    // Lấy ra số lượng của biến thể xe cụ thể đó
+    $sql = "SELECT So_Luong FROM xe_mau WHERE id_Xe_Mau = $id_xe_mau";
     return $this->db->query($sql);
 }
 }

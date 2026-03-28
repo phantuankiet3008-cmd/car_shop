@@ -53,7 +53,7 @@ Route::middleware('user.auth')->prefix('user')->group(function () {
 
     // Đơn hàng & Đặt cọc
     Route::get('/donhang', [donhangController::class, 'index'])->name('don-hang'); 
-    Route::get('/car_shop/datcoc/{id}', [DatCocController::class, 'datcoc'])->name('datcoc');
+    Route::post('/car_shop/datcoc/', [DatCocController::class, 'datcoc'])->name('datcoc');
     Route::post('/car_shop/tao-don', [DatCocController::class, 'taoDon'])->name('taoDon');
 
     // THANH TOÁN (CHECKOUT)
@@ -69,7 +69,7 @@ Route::middleware('user.auth')->prefix('user')->group(function () {
     Route::get('/car_shop/momo/return', [MoMoController::class, 'return'])->name('momo.return');
 
     // Lái thử
-    Route::get('/car_shop/dangkilaithu/{id}', [dangkilaithuController::class, 'index']);
+    Route::get('/car_shop/dangkilaithu/{id}', [dangkilaithuController::class, 'index'])->name('datlaithu');
     Route::post('/car_shop/lay_gio_da_dat', [dangkilaithuController::class, 'layGioDaDat'])->name('dangkilaithu');
     Route::post('/car_shop/dat_lich_lai_thu', [dangkilaithuController::class, 'store']);
     Route::get('/car_shop/lich-lai-thu-cua-toi', [dangkilaithuController::class, 'lichCuaToi']);

@@ -181,7 +181,7 @@ public function dem_don_cho_duyet($idXeMau){
     $sql = "SELECT COUNT(*) as tong
             FROM don_hang
             WHERE id_Xe_Mau = $idXeMau
-            AND Trang_Thai = 'cho_duyet'";
+            AND Trang_Thai = 'da_coc'";
 
     $result = $this->db->query($sql);
 
