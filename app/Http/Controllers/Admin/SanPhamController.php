@@ -72,6 +72,7 @@ class SanPhamController extends Controller
                 'ds_mau' => $this->ql->Get_Mau_Theo_Xe($id),
                 'List_Loai' => $this->ql->DS_Loai_Xe(),
                 'List_ThuongHieu' => $this->ql->DS_Thuong_Hieu_Xe(),
+                'ds_mau_xe'         => $this->ql->List_MauXe(),
             ]
         ]);
     }

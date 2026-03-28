@@ -11,6 +11,7 @@ class User {
     private $pass = "";
     private $dbname = "car_shop";
     private $db;
+    protected $cloudinary;
 
     public function __construct() {
         $this->db = new \mysqli($this->host, $this->user, $this->pass, $this->dbname, 3308);
@@ -18,6 +19,8 @@ class User {
             die("Kết nối thất bại: " . $this->db->connect_error);
         }
         $this->db->set_charset("utf8");
+
+        $this->cloudinary = new CloudinaryService();
     }
 
     public function dang_nhap($SDT, $MatKhau) {
@@ -98,34 +101,39 @@ class User {
     $result = $this->db->query($sql);
     return ($row = $result->fetch_assoc()) ? $row : null;
 }
- function capnhat_thong_tin_khach_hang($id_khachhang,$ten,$email,$diachi,$sdt,$avatar)
+ public function capnhat_thong_tin_khach_hang($id_khachhang, $ten, $email, $diachi, $sdt, $files)
 {
+    $id_khachhang = (int)$id_khachhang;
     $TenKH = $this->db->real_escape_string($ten);
     $Email = $this->db->real_escape_string($email);
     $DiaChi = $this->db->real_escape_string($diachi);
     $SDT = $this->db->real_escape_string($sdt);
 
-    // Nếu có avatar mới thì cập nhật
-    if($avatar){
-        $Avatar = $this->db->real_escape_string($avatar);
+    // 1. Lấy thông tin hiện tại trong DB để lấy URL Avatar cũ
+    $old_data = $this->lay_khach_hang($id_khachhang);
+    $avatar_url = $old_data['Avatar'] ?? "";
 
-        $sql = "UPDATE khach_hang 
-                SET Ho_Ten='$TenKH',
-                    Email='$Email',
-                    Dia_Chi='$DiaChi',
-                    So_Dien_Thoai='$SDT',
-                    Avatar='$Avatar'
-                WHERE id_Khach_Hang='$id_khachhang'";
-    } 
-    // Nếu không upload avatar thì giữ nguyên
-    else{
-        $sql = "UPDATE khach_hang 
-                SET Ho_Ten='$TenKH',
-                    Email='$Email',
-                    Dia_Chi='$DiaChi',
-                    So_Dien_Thoai='$SDT'
-                WHERE id_Khach_Hang='$id_khachhang'";
+    // 2. Kiểm tra nếu có upload file ảnh mới (key 'avatar' khớp với tên input trong form)
+    if (!empty($files['avatar']['name'])) {
+        
+        // Xóa ảnh cũ trên Cloudinary để tránh rác bộ nhớ
+        if (!empty($avatar_url)) {
+            $this->cloudinary->deleteImage($avatar_url);
+        }
+
+        // Upload ảnh mới lên thư mục 'avatars' trên Cloudinary
+        // Lưu ý: $files['avatar'] là mảng từ $_FILES truyền sang
+        $avatar_url = $this->cloudinary->uploadImage($files['avatar'], 'avatars');
     }
+
+    // 3. Thực hiện câu lệnh SQL update
+    $sql = "UPDATE khach_hang 
+            SET Ho_Ten = '$TenKH',
+                Email = '$Email',
+                Dia_Chi = '$DiaChi',
+                So_Dien_Thoai = '$SDT',
+                Avatar = '$avatar_url'
+            WHERE id_Khach_Hang = $id_khachhang";
 
     return $this->db->query($sql);
 }
@@ -234,7 +242,6 @@ function Danh_Sach_Slider() {
     return $data;
 }
 
-
 function lay_xe_khach($idkhachhang)
 {
     $idkhachhang = (int)$idkhachhang;
@@ -264,6 +271,95 @@ function lay_xe_khach($idkhachhang)
 
     return $data;
 }
+// tạo đơn hàng 
+public function tao_don_dat_coc($id_kh, $id_xe_mau)
+{
+    $id_kh = (int)$id_kh;
+    $id_xe_mau = (int)$id_xe_mau;
+
+    // ===== lấy xe =====
+    $xe = $this->lay_xe_mau($id_xe_mau);
+    if(!$xe) return false;
+
+    $gia = $xe['Gia'];
+
+    // ===== ưu đãi =====
+    $uu_dai = $this->uu_dai_cua_xe($id_xe_mau);
+
+    $max_giam = 0;
+
+    foreach($uu_dai as $ud){
+
+        $giam = 0;
+
+        if($ud['Loai'] == 'phan_tram'){
+            $giam = $gia * $ud['Gia_Tri'] / 100;
+        }
+
+        if($ud['Loai'] == 'tien'){
+            $giam = $ud['Gia_Tri'];
+        }
+
+        if($giam > $max_giam){
+            $max_giam = $giam;
+        }
+    }
+
+    $tong = $gia - $max_giam;
+    if($tong < 0) $tong = 0;
+
+    $tien_coc = $tong * 0.01;
+
+    $now = date('Y-m-d H:i:s');
+
+    // ===== insert =====
+    $sql = "INSERT INTO don_hang 
+        (id_Khach_Hang, id_Xe_Mau, Tong_Tien, Tien_Coc, payment_status, Trang_Thai, Ngay_Tao)
+        VALUES
+        ($id_kh, $id_xe_mau, $tong, $tien_coc, 'pending', 'new', '$now')";
+
+    $this->db->query($sql);
+
+    return $this->db->insert_id;
+}
+
+public function lay_don($id)
+{
+    $id = (int)$id;
+
+    $sql = "SELECT * FROM don_hang WHERE id_Don_Hang = $id";
+
+    $result = $this->db->query($sql);
+
+    return ($row = $result->fetch_assoc()) ? (object)$row : null;
+}
+public function cap_nhat_payment_status($id, $status)
+{
+    $id = (int)$id;
+    $status = $this->db->real_escape_string($status);
+
+    $sql = "UPDATE don_hang 
+            SET payment_status = '$status'
+            WHERE id_Don_Hang = $id";
+
+    return $this->db->query($sql);
+}
+public function thanh_toan_thanh_cong($id, $ma_gd)
+{
+    $id = (int)$id;
+    $now = date('Y-m-d H:i:s');
+
+    $sql = "UPDATE don_hang 
+            SET payment_status = 'paid',
+                Trang_Thai = 'da_coc',
+                Ngay_Cap_Nhat = '$now'
+            WHERE id_Don_Hang = $id
+            AND payment_status = 'pending'";
+
+    return $this->db->query($sql);
+}
+
+
 
 function chongoi_baoduong()
 {

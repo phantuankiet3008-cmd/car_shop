@@ -10,7 +10,7 @@ class Product {
     private $db;
 
     public function __construct() {
-        $this->db = new \mysqli($this->host, $this->user, $this->pass, $this->dbname, 3308);
+       $this->db = new \mysqli($this->host, $this->user, $this->pass, $this->dbname, 3308);
         if ($this->db->connect_error) {
             die("Kết nối thất bại: " . $this->db->connect_error);
         }
@@ -405,7 +405,13 @@ public function getAllLoaiXe() {
             VALUES
             ($idKhach, $idXeMau, '$ngay', $idKhungGio, 0)";
 
-    return $this->db->query($sql);
+    $result = $this->db->query($sql);
+    if (!$result) {
+        throw new \Exception($this->db->error);
+    }
+
+    return $result;
+
 }
 public function getThongTinXeTheoXeMau($id_Xe_Mau)
 {
