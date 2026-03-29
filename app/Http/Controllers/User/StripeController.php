@@ -3,77 +3,75 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Stripe\Stripe;
 use Stripe\Checkout\Session;
 use App\Services\User;
+use Illuminate\Http\Request;
 
 class StripeController extends Controller
 {
     public function checkout($id)
     {
+        $id_kh = session('user_id');
+        if (!$id_kh) return redirect()->route('dangnhap')->with('error', 'Bạn chưa đăng nhập');
+
         $service = new User();
         $don = $service->lay_don($id);
 
-        if(!$don){
-            return back()->with('error','Đơn không tồn tại');
+        if (!$don || $don->id_Khach_Hang != $id_kh) {
+            return back()->with('error', 'Đơn hàng không hợp lệ');
         }
 
-        return view('user.layouts.stripe', compact('don'));
-    }
-
-    public function pay($id)
-    {
-        $service = new User();
-        $don = $service->lay_don($id);
-
-        if(!$don){
-            return back()->with('error','Đơn không tồn tại');
+        if ($don->payment_status !== 'pending') {
+            return back()->with('error', 'Đơn hàng này đã được xử lý hoặc đã thanh toán');
         }
 
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        try {
+            // Lấy Secret Key từ file .env
+            Stripe::setApiKey(env('STRIPE_SECRET'));
 
-        // ⚠️ convert VNĐ -> USD (tạm)
-        $usd = $don->Tien_Coc / 24000;
-
-        $session = Session::create([
-            'payment_method_types' => ['card'],
-            'line_items' => [[
-                'price_data' => [
-                    'currency' => 'usd',
-                    'product_data' => [
-                        'name' => 'Thanh toán đơn #' . $id,
+            // Tạo Session thanh toán
+            $session = Session::create([
+                'payment_method_types' => ['card'],
+                'line_items' => [[
+                    'price_data' => [
+                        'currency'     => 'vnd', // Stripe hỗ trợ VND trực tiếp
+                        'product_data' => [
+                            'name' => 'Đặt cọc xe - Đơn hàng #' . $don->id_Don_Hang,
+                            'description' => 'Thanh toán tiền cọc 1% giá trị xe',
+                        ],
+                        // Quan trọng: Phải là số nguyên và tối thiểu ~12,000 VND
+                        'unit_amount'  => (int)round($don->Tien_Coc), 
                     ],
-                    'unit_amount' => $usd * 100, // cent
-                ],
-                'quantity' => 1,
-            ]],
-            'mode' => 'payment',
+                    'quantity' => 1,
+                ]],
+                'mode'        => 'payment',
+                // Chú ý: Route name phải khớp với web.php
+                'success_url' => route('stripe.success', ['id' => $id]),
+                'cancel_url'  => route('stripe.cancel', ['id' => $id]),
+            ]);
 
-            'success_url' => route('stripe.success', $id),
-            'cancel_url' => route('stripe.cancel', $id),
-        ]);
+            return redirect($session->url);
 
-        return redirect($session->url);
+        } catch (\Exception $e) {
+            return back()->with('error', 'Lỗi Stripe: ' . $e->getMessage());
+        }
     }
 
     public function success($id)
     {
-        // ✅ gọi service (đúng yêu cầu bạn)
         $service = new User();
+        // Gọi hàm cập nhật DB đã có trong User.php
+        $result = $service->thanh_toan_thanh_cong($id, 'STRIPE_' . strtoupper(bin2hex(random_bytes(4))));
 
-        $service->thanh_toan_thanh_cong(
-            $id,
-            'stripe_' . time()
-        );
-
-        return redirect()->route('don-hang')
-            ->with('success','Thanh toán Stripe thành công');
+        if ($result) {
+            return redirect()->route('don-hang')->with('success', 'Thanh toán tiền cọc thành công!');
+        }
+        return redirect()->route('don-hang')->with('error', 'Thanh toán thành công nhưng lỗi cập nhật dữ liệu');
     }
 
     public function cancel($id)
     {
-        return redirect()->route('checkout', $id)
-            ->with('error','Bạn đã hủy thanh toán');
+        return redirect()->route('checkout', ['id' => $id])->with('error', 'Bạn đã hủy thanh toán Stripe');
     }
 }

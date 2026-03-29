@@ -15,6 +15,7 @@ use App\Http\Controllers\User\donhangController;
 use App\Http\Controllers\User\DatCocController;
 use App\Http\Controllers\User\VNPayController;
 use App\Http\Controllers\User\CheckoutController;
+use App\Http\Controllers\User\StripeController;
 
 // =========================================================
 // 1. ROUTE CÔNG KHAI (KHÔNG CẦN ĐĂNG NHẬP)
@@ -62,7 +63,11 @@ Route::middleware('user.auth')->prefix('user')->group(function () {
     // VNPay
     Route::get('/car_shop/vnpay/redirect/{id}', [VNPayController::class, 'redirect'])->name('vnpay.redirect');
     Route::get('/car_shop/vnpay/return', [VNPayController::class, 'return'])->name('vnpay.return');
-
+    
+     // Stripe 
+     Route::get('/stripe/checkout/{id}', [StripeController::class, 'checkout'])->name('stripe.checkout');
+     Route::get('/stripe/success/{id}', [StripeController::class, 'success'])->name('stripe.success');
+     Route::get('/stripe/cancel/{id}', [StripeController::class, 'cancel'])->name('stripe.cancel');
     // Lái thử
     Route::get('/car_shop/dangkilaithu/{id}', [dangkilaithuController::class, 'index']);
     Route::post('/car_shop/lay_gio_da_dat', [dangkilaithuController::class, 'layGioDaDat'])->name('dangkilaithu');
