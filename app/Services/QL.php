@@ -241,23 +241,44 @@ protected $cloudinary;
 // =========================
 
 // Lấy danh sách sản phẩm
-function DanhSach_SanPham () {
-    $sql = "
-            SELECT
-                sp.id_Xe,
-                sp.Ten_Xe,
-               
-                sp.Anh_Dai_Dien,
-                sp.Trang_Thai,
-                lx.Ten_Loai_Xe,
-                th.Ten_Thuong_Hieu
-            FROM san_pham_xe sp
-            LEFT JOIN loai_xe lx ON sp.id_Loai_Xe = lx.id_Loai_xe
-            LEFT JOIN thuong_hieu_xe th ON sp.id_Thuong_Hieu = th.id_Thuong_Hieu
-            ORDER BY sp.id_Xe DESC
-        ";
-        return $this->db->query($sql);
+function DanhSach_SanPham($filters = []) {
+    $where = " WHERE 1=1 "; // Điều kiện mặc định luôn đúng
+
+    // Lọc theo tên (Tìm kiếm gần đúng)
+    if (!empty($filters['ten'])) {
+        $ten = addslashes($filters['ten']);
+        $where .= " AND sp.Ten_Xe LIKE '%$ten%' ";
     }
+
+    // Lọc theo loại xe
+    if (!empty($filters['id_loai'])) {
+        $id_loai = (int)$filters['id_loai'];
+        $where .= " AND sp.id_Loai_Xe = $id_loai ";
+    }
+
+    // Lọc theo thương hiệu
+    if (!empty($filters['id_thương_hieu'])) {
+        $id_th = (int)$filters['id_thương_hieu'];
+        $where .= " AND sp.id_Thuong_Hieu = $id_th ";
+    }
+
+    $sql = "
+        SELECT
+            sp.id_Xe,
+            sp.Ten_Xe,
+            sp.Anh_Dai_Dien,
+            sp.Trang_Thai,
+            lx.Ten_Loai_Xe,
+            th.Ten_Thuong_Hieu
+        FROM san_pham_xe sp
+        LEFT JOIN loai_xe lx ON sp.id_Loai_Xe = lx.id_Loai_xe
+        LEFT JOIN thuong_hieu_xe th ON sp.id_Thuong_Hieu = th.id_Thuong_Hieu
+        $where
+        ORDER BY sp.id_Xe DESC
+    ";
+    
+    return $this->db->query($sql);
+}
 function ten_sanpham(){
     $sql = "SELECT id_Xe, Ten_Xe FROM san_pham_xe ORDER BY id_Xe DESC";
     $result = $this->db->query($sql);

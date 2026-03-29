@@ -27,7 +27,7 @@ Route::post('/trang_admin/DangNhapADM', [AdminAuthController::class, 'login'])
     ->name('admin.login');
 
 // ====== KHU VỰC ADMIN ======
-Route::middleware('admin.auth')->group(function () {
+// Route::middleware('admin.auth')->group(function () {
 
     // ===== DASHBOARD =====
     Route::get('/trang_admin', function () {
@@ -90,7 +90,7 @@ Route::get('/trang_admin/lai_thu/xoa/{id}', [lichLayThuController::class, 'xoa']
 
 
 
-   });
+ //  });
 
    
    
