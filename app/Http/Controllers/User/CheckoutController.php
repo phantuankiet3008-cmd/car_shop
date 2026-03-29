@@ -5,7 +5,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\User;
 use App\Http\Controllers\User\VNPayController;
+
+use App\Http\Controllers\User\StripeController;
+
 // Có thể thêm use App\Http\Controllers\User\MoMoController; nếu cần, nhưng chuyển hướng bằng route thì không bắt buộc.
+
 
 class CheckoutController extends Controller
 {
