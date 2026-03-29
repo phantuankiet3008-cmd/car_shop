@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\User;
 use App\Http\Controllers\User\VNPayController;
+use App\Http\Controllers\User\StripeController;
 
 class CheckoutController extends Controller
 {
