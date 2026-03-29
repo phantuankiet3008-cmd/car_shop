@@ -47,7 +47,8 @@
             <i class="fa-solid fa-circle-check"></i>
         </label>
 
-        <label class="payment-option">
+          <label class="payment-option">
+
             <input type="radio" name="payment_method" value="momo" required>
             <div class="option-content">
                 <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-MoMo-Transparent-768x768.png" alt="Momo">
