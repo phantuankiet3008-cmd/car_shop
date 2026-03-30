@@ -5,18 +5,20 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\User;
-
+use App\Services\Product;
 class DatCocController extends Controller
 {
-    public function datcoc($id){
-
-    $id = (int)$id;
+    public function datcoc(Request $request){
+    $id = $request->id_xe_mau;
 
     $id_kh = session('user_id');
 
-    
+    $sp = new Product();
     $service = new User();
-
+$checksoluong = $sp->kiemtraxedo($id);
+    if($checksoluong && $checksoluong->num_rows <0){
+        return back()->with('error','màu xe bạn chọn này đã bán hết hãy chọn lại xe khác');
+    }
     // Lấy thông tin xe
     $xe = $service->lay_xe_mau($id);
 
@@ -70,6 +72,7 @@ class DatCocController extends Controller
 
     $tien_coc = $tong * 0.01;
 
+
     return view('user.layouts.Dat_coc',[
         'xe'=>$xe,
         'khach'=>$khach,
@@ -78,5 +81,29 @@ class DatCocController extends Controller
         'tong'=>$tong,
         'tien_coc'=>$tien_coc
     ]);
+    }
+    public function taoDon(Request $request)
+{
+    $id_kh = session('user_id');
+
+    if(!$id_kh){
+        return back()->with('error','Bạn chưa đăng nhập');
+    }
+
+    $service = new User();
+
+    // 👉 gọi service xử lý hết
+    $id_don = $service->tao_don_dat_coc(
+        $id_kh,
+        $request->id_xe_mau
+    );
+
+    if(!$id_don){
+        return back()->with('error','Không thể tạo đơn');
+    }
+
+    // 👉 chuyển sang checkout
+    return redirect()->route('checkout', $id_don);
 }
+    
 }

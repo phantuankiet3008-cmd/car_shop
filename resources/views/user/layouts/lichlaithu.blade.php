@@ -1,4 +1,4 @@
-@extends('user.layouts.user_index')
+
     <style>
         .user_table {
     width: 100%;
@@ -20,7 +20,7 @@
  
 
     
-@section('content')
+
 <h2>Lịch lái thử của tôi</h2>
 
 <table class="user_table">
@@ -68,4 +68,4 @@
     </div>
 @endif
 
-@endsection
+

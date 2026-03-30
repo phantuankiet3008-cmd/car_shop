@@ -16,7 +16,10 @@ class DangkilaithuController extends Controller
 {
     $sp = new Product();
     $id_Xe_Mau = (int)$id_Xe_Mau;
-
+    $checksoluong = $sp->kiemtraxedo($id_Xe_Mau);
+    if($checksoluong && $checksoluong->num_rows <0){
+        return back()->with('error','màu xe bạn chọn này đã bán hết hãy chọn lại xe khác');
+    }
     // ===== 1. Lấy thông tin xe theo id_Xe_Mau =====
     $thongTinXe = $sp->getThongTinXeTheoXeMau($id_Xe_Mau);
 
@@ -62,7 +65,7 @@ class DangkilaithuController extends Controller
 
     // ===== 3. Xử lý đặt lịch =====
     public function store(Request $request)
-{
+{   
     $sp = new Product();
 
     $idKhach     = session('user_id');
@@ -72,7 +75,7 @@ class DangkilaithuController extends Controller
     $idXeMau     = (int)$request->id_xe_mau;
     $ngay        = $request->ngay_lai_thu;
     $idKhungGio  = (int)$request->id_Khung_Gio;
-
+    
     
     $checkKhach = $sp->kiemTraKhachDaDat($idKhach, $idXeMau, $ngay);
 
@@ -88,10 +91,15 @@ class DangkilaithuController extends Controller
     }
 
     
-    $sp->insertLichLaiThu($idKhach, $idXeMau, $ngay, $idKhungGio);
-
-    return redirect('/user/car_shop/lich-lai-thu-cua-toi')
-       ->with('success', 'Đặt lịch thành công!');
+   try {
+        $result = $sp->insertLichLaiThu($idKhach, $idXeMau, $ngay, $idKhungGio);
+            return redirect('/user/car_shop/trangcanhan')
+                   ->with('success', 'Đặt lịch thành công!');
+        
+    } catch (\Exception $e) {
+        // Nếu lỗi do Unique Index (thường là mã lỗi 1062 trong MySQL)
+        return back()->with('error', 'Rất tiếc! Khung giờ này vừa có người nhanh tay hơn đặt chỗ. Vui lòng chọn giờ khác.');
+    }
 }
  public function lichCuaToi()
 {

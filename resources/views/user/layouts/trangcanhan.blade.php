@@ -28,7 +28,7 @@ Thông tin khách hàng
 </button>
 
 <button class="nav-link" data-bs-toggle="pill" data-bs-target="#donhang">
-Đơn hàng & Đặt cọc
+Đơn hàng của bạn
 </button>
 
 <button class="nav-link" data-bs-toggle="pill" data-bs-target="#baoduong">
@@ -36,7 +36,7 @@ Thông tin khách hàng
 </button>
 
 <button class="nav-link" data-bs-toggle="pill" data-bs-target="#giaodich">
-Lịch sử giao dịch
+lịch lái thử của bạn
 </button>
 
 <button class="nav-link" data-bs-toggle="pill" data-bs-target="#thongbao">
@@ -59,10 +59,10 @@ Thông báo
 <div class="avatar-wrapper">
 
 @if(empty($khachhang['Avatar']))
-<img src="{{ asset('upload/avatar/avatar.png') }}" 
-     class="avatar" id="avatarImg">
+<img src=" https://i.pinimg.com/736x/bc/43/98/bc439871417621836a0eeea768d60944.jpg"
+     class="avatar" id="avatarImg" style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
 @else
-<img src="{{ asset('upload/avatar/'.$khachhang['Avatar']) }}" 
+<img src="{{ $khachhang['Avatar'] }}" 
      class="avatar" id="avatarImg"
      style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
 @endif
@@ -100,7 +100,7 @@ Thông báo
 
 <div class="tab-pane fade" id="giaodich">
     <div class="p-3">
-        Nội dung lịch sử giao dịch
+        <iframe src="{{ url('user/car_shop/lich-lai-thu-cua-toi') }}" width="100%" height="600" style="border:none;"></iframe>
     </div>
 </div>
 

@@ -14,13 +14,15 @@ class QL {
     public $password = "";
     public $database = "car_shop";
     public $db;
-
+protected $cloudinary;
     public function __construct(){
         $this->db = new \mysqli($this->hostname, $this->username, $this->password, $this->database,3308);
         if($this->db->connect_error){
             die("Connection failed: " . $this->db->connect_error);
         }
         $this->db->set_charset("utf8");
+    
+    $this->cloudinary = new CloudinaryService();
     }
 
     // =========================
@@ -50,7 +52,6 @@ class QL {
 
     function check_dang_nhap_ADM() {
         if (!isset($_SESSION['admin_id'])) {
-            header("Location:index_AD.php");
             exit();
         }
     }
@@ -84,22 +85,22 @@ class QL {
     }
 
     // Thêm loại xe
-    function Them_Loai_Xe( $ten_loai_xe,
-            $slug,
-            $mo_ta,
-            $hinh_anh,
-            $trang_thai) {
-        $ten_loai_xe = $this->db->real_escape_string($ten_loai_xe);
-        $slug        = $this->db->real_escape_string($slug);
-        $mo_ta       = $this->db->real_escape_string($mo_ta);
-        $hinh_anh    = $this->db->real_escape_string($hinh_anh);
-        $trang_thai  = (int)$trang_thai;
+    function Them_Loai_Xe($ten_loai_xe, $slug, $mo_ta, $trang_thai, $files) {
+    $ten_loai_xe = $this->db->real_escape_string($ten_loai_xe);
+    $slug        = $this->db->real_escape_string($slug);
+    $mo_ta       = $this->db->real_escape_string($mo_ta);
+    $trang_thai  = (int)$trang_thai;
 
-        $sql = "INSERT INTO loai_xe (Ten_Loai_Xe, Slug, Mo_Ta, Hinh_Anh_Loai, Trang_Thai)
-                VALUES ('$ten_loai_xe', '$slug', '$mo_ta', '$hinh_anh', $trang_thai)";
-        return $this->db->query($sql);
+    // Tự xử lý upload ảnh nếu có file
+    $hinh_anh = "";
+    if (!empty($files['hinh_anh']['tmp_name'])) {
+        $hinh_anh = $this->cloudinary->uploadImage($files['hinh_anh'], 'loai_xe');
     }
 
+    $sql = "INSERT INTO loai_xe (Ten_Loai_Xe, Slug, Mo_Ta, Hinh_Anh_Loai, Trang_Thai)
+            VALUES ('$ten_loai_xe', '$slug', '$mo_ta', '$hinh_anh', $trang_thai)";
+    return $this->db->query($sql);
+}
     // Lấy 1 loại xe theo ID
     function Lay_Loai_Xe_Theo_ID($id) {
         $id = (int)$id;
@@ -109,30 +110,49 @@ class QL {
     }
 
     // Cập nhật loại xe
-    function Cap_Nhat_Loai_Xe($id, $rten_loai, $rslug, $rmo_ta, $hinh_anh, $trang_thai) {
-        $id          = (int)$id;
-        $ten_loai_xe = $this->db->real_escape_string($rten_loai);
-        $slug        = $this->db->real_escape_string($rslug);
-        $hinh_anh    = $this->db->real_escape_string($hinh_anh);
-        $trang_thai  = (int)$trang_thai;
-        $mo_ta       = $this->db->real_escape_string($rmo_ta);
+    function Cap_Nhat_Loai_Xe($id, $ten_loai, $slug, $mo_ta, $trang_thai, $files) {
+    $id          = (int)$id;
+    $ten_loai_xe = $this->db->real_escape_string($ten_loai);
+    $slug        = $this->db->real_escape_string($slug);
+    $trang_thai  = (int)$trang_thai;
+    $mo_ta       = $this->db->real_escape_string($mo_ta);
 
-        $sql = "UPDATE loai_xe
-                SET Ten_Loai_Xe = '$ten_loai_xe',
-                    Slug = '$slug',
-                    Hinh_Anh_Loai = '$hinh_anh',
-                    Trang_Thai = $trang_thai,
-                    Mo_Ta = '$mo_ta'
-                WHERE id_Loai_Xe = $id";
-        return $this->db->query($sql);
+    // Lấy dữ liệu cũ để xem có ảnh cũ không
+    $old_data = $this->Lay_Loai_Xe_Theo_ID($id);
+    $hinh_anh = $old_data['Hinh_Anh_Loai'] ?? "";
+
+    // Nếu người dùng có chọn file mới
+    if (!empty($files['hinh_anh']['name'])) {
+        // Xóa ảnh cũ trên Cloudinary
+        if (!empty($hinh_anh)) {
+            $this->cloudinary->deleteImage($hinh_anh);
+        }
+        // Upload ảnh mới
+        $hinh_anh = $this->cloudinary->uploadImage($files['hinh_anh'], 'loai_xe');
     }
+
+    $sql = "UPDATE loai_xe
+            SET Ten_Loai_Xe = '$ten_loai_xe',
+                Slug = '$slug',
+                Hinh_Anh_Loai = '$hinh_anh',
+                Trang_Thai = $trang_thai,
+                Mo_Ta = '$mo_ta'
+            WHERE id_Loai_Xe = $id";
+    return $this->db->query($sql);
+}
 
     // Xóa loại xe
     function Xoa_Loai_Xe($id) {
-        $id = (int)$id;
-        $sql = "DELETE FROM loai_xe WHERE id_Loai_Xe = $id";
-        return $this->db->query($sql);
+    $id = (int)$id;
+    $data = $this->Lay_Loai_Xe_Theo_ID($id);
+    
+    if ($data && !empty($data['Hinh_Anh_Loai'])) {
+        $this->cloudinary->deleteImage($data['Hinh_Anh_Loai']);
     }
+
+    $sql = "DELETE FROM loai_xe WHERE id_Loai_Xe = $id";
+    return $this->db->query($sql);
+}
     // =========================
     // THƯƠNG HIỆU XE
     // =========================
@@ -152,19 +172,20 @@ class QL {
     }
 
     // Thêm thương hiệu
-    function Them_Thuong_Hieu_Xe($ten_th,
-            $ma_th,
-            $hinh_anh,
-            $trang_thai) {
-        $ten_thuong_hieu = $this->db->real_escape_string($ten_th);
-        $ma_thuong_hieu = $this->db->real_escape_string($ma_th);
-        $hinh_anh        = $this->db->real_escape_string($hinh_anh);
-        $trang_thai      = (int)$trang_thai;
+    function Them_Thuong_Hieu_Xe($ten_th, $ma_th, $trang_thai, $files) {
+    $ten_thuong_hieu = $this->db->real_escape_string($ten_th);
+    $ma_thuong_hieu = $this->db->real_escape_string($ma_th);
+    $trang_thai      = (int)$trang_thai;
 
-        $sql = "INSERT INTO thuong_hieu_xe (Ten_Thuong_Hieu, Ma_Thuong_Hieu, Logo, Trang_Thai)
-                VALUES ('$ten_thuong_hieu', '$ma_thuong_hieu', '$hinh_anh', $trang_thai)";
-        return $this->db->query($sql);
+    $hinh_anh = "";
+    if (!empty($files['hinh_anh']['tmp_name'])) {
+        $hinh_anh = $this->cloudinary->uploadImage($files['hinh_anh'], 'anh_logo');
     }
+
+    $sql = "INSERT INTO thuong_hieu_xe (Ten_Thuong_Hieu, Ma_Thuong_Hieu, Logo, Trang_Thai)
+            VALUES ('$ten_thuong_hieu', '$ma_thuong_hieu', '$hinh_anh', $trang_thai)";
+    return $this->db->query($sql);
+}
 
     // Lấy thương hiệu theo ID
     function Lay_Thuong_Hieu_Xe_Theo_ID($id) {
@@ -175,41 +196,46 @@ class QL {
     }
 
     // Cập nhật thương hiệu
-    function Cap_Nhat_Thuong_Hieu_Xe( $id,
-        $ten_thuong_hieu,
-        $ma_thuong_hieu,
-        $hinh_anh,
-        $trang_thai) {
-        $id              = (int)$id;
-        $ten_thuong_hieu = $this->db->real_escape_string($ten_thuong_hieu);
-        $ma_thuong_hieu = $this->db->real_escape_string($ma_thuong_hieu);
-        $hinh_anh        = $this->db->real_escape_string($hinh_anh);
-        $trang_thai      = (int)$trang_thai;
+    function Cap_Nhat_Thuong_Hieu_Xe_V2($id, $ten_th, $ma_th, $trang_thai, $files) {
+    $id              = (int)$id;
+    $ten_thuong_hieu = $this->db->real_escape_string($ten_th);
+    $ma_thuong_hieu  = $this->db->real_escape_string($ma_th);
+    $trang_thai      = (int)$trang_thai;
 
-        if ($hinh_anh != "") {
-            $sql = "UPDATE thuong_hieu_xe
-                    SET Ten_Thuong_Hieu = '$ten_thuong_hieu',
-                        Ma_Thuong_Hieu = '$ma_thuong_hieu',
-                        Logo = '$hinh_anh',
-                        Trang_Thai = $trang_thai
-                    WHERE id_Thuong_Hieu = $id";
-        } else {
-            $sql = "UPDATE thuong_hieu_xe
-                    SET Ten_Thuong_Hieu = '$ten_thuong_hieu',
-                        Ma_Thuong_Hieu = '$ma_thuong_hieu',
-                        Trang_Thai = $trang_thai
-                    WHERE id_Thuong_Hieu = $id";
+    // Lấy thông tin cũ để xử lý ảnh
+    $old = $this->Lay_Thuong_Hieu_Xe_Theo_ID($id);
+    $hinh_anh = $old['Logo'] ?? "";
+
+    if (!empty($files['hinh_anh']['name'])) {
+        // Xóa ảnh cũ nếu tồn tại
+        if (!empty($hinh_anh)) {
+            $this->cloudinary->deleteImage($hinh_anh);
         }
-
-        return $this->db->query($sql);
+        // Upload ảnh mới
+        $hinh_anh = $this->cloudinary->uploadImage($files['hinh_anh'], 'anh_logo');
     }
+
+    $sql = "UPDATE thuong_hieu_xe
+            SET Ten_Thuong_Hieu = '$ten_thuong_hieu',
+                Ma_Thuong_Hieu = '$ma_thuong_hieu',
+                Logo = '$hinh_anh',
+                Trang_Thai = $trang_thai
+            WHERE id_Thuong_Hieu = $id";
+    return $this->db->query($sql);
+}
 
     // Xóa thương hiệu
     function Xoa_Thuong_Hieu_Xe($id) {
-        $id = (int)$id;
-        $sql = "DELETE FROM thuong_hieu_xe WHERE id_Thuong_Hieu = $id";
-        return $this->db->query($sql);
+    $id = (int)$id;
+    $data = $this->Lay_Thuong_Hieu_Xe_Theo_ID($id);
+
+    if ($data && !empty($data['Logo'])) {
+        $this->cloudinary->deleteImage($data['Logo']);
     }
+
+    $sql = "DELETE FROM thuong_hieu_xe WHERE id_Thuong_Hieu = $id";
+    return $this->db->query($sql);
+}
     // =========================
 // SẢN PHẨM / XE
 // =========================
@@ -275,69 +301,48 @@ function Get_Mau_Theo_Xe($id_xe){
 }
 
 // Thêm sản phẩm
-function Add_SanPham($ten_xe, $mo_ta, $anh_dai_dien, $anh_3d, $post, $files) {
-    $ten_xe = $this->db->real_escape_string($ten_xe);
-    $mo_ta = $this->db->real_escape_string($mo_ta);
+public function Add_SanPham($ten_xe, $mo_ta, $post) {
+    // 1. Lấy URLs từ các input ẩn đã được JS điền vào
+    $anh_dai_dien = $this->db->real_escape_string($post['anh_dai_dien_url'] ?? '');
+    $anh_3d       = $this->db->real_escape_string($post['anh_3d_url'] ?? '');
     
-    // Lấy ID từ mảng $post truyền vào
+    $ten_xe = $this->db->real_escape_string($ten_xe);
+    $mo_ta  = $this->db->real_escape_string($mo_ta);
     $id_loai = (int)$post['loai_xe']; 
     $id_thuong_hieu = (int)$post['thuong_hieu'];
 
-    // Upload ảnh chính
-    $pathAnhDaiDien = public_path('upload/anh_dai_dien');
-
-move_uploaded_file(
-    $files['anh_dai_dien']['tmp_name'],
-    $pathAnhDaiDien . '/' . $anh_dai_dien
-);
-    if (!empty($anh_3d)) {
-    $pathAnh3D = public_path('upload/anh_3d');
-
-    move_uploaded_file(
-        $files['anh_3d']['tmp_name'],
-        $pathAnh3D . '/' . $anh_3d
-    );
-}
-
     $sql = "INSERT INTO san_pham_xe (Ten_Xe, Mo_Ta, Anh_Dai_Dien, Anh_3d, id_Loai_Xe, id_Thuong_Hieu) 
-VALUES ('$ten_xe', '$mo_ta', '$anh_dai_dien', '$anh_3d', $id_loai, $id_thuong_hieu)";
+            VALUES ('$ten_xe', '$mo_ta', '$anh_dai_dien', '$anh_3d', $id_loai, $id_thuong_hieu)";
 
-    
     if($this->db->query($sql)){
         $id_xe = $this->db->insert_id;
 
         if(isset($post['mau_xe'])){
-            foreach($post['mau_xe'] as $i => $id_mau){
-     $is_default = ($i === 0) ? 1 : 0;
-    $gia_mau = (int) str_replace(['.', ','], '', $post['gia_mau'][$i]);
-    $so_luong = (int)$post['so_luong'][$i];
+            foreach($post['mau_xe'] as $i => $mau_value){
+                $id_mau_final = 0;
+                if (strpos($mau_value, 'NEW|') === 0) {
+                    $parts = explode('|', $mau_value);
+                    $ten_m = $this->db->real_escape_string($parts[1]);
+                    $ma_m  = $this->db->real_escape_string($parts[2]);
+                    $this->db->query("INSERT INTO mau_xe (Ten_Mau, Ma_Mau) VALUES ('$ten_m', '$ma_m')");
+                    $id_mau_final = $this->db->insert_id;
+                } else {
+                    $id_mau_final = (int)$mau_value;
+                }
 
-    $this->db->query("
-        INSERT INTO xe_mau (id_Xe, id_Mau, is_Default, Gia, So_Luong) 
-        VALUES ($id_xe, $id_mau, $is_default, $gia_mau, $so_luong)
-    ");
+                $gia_mau = (int) str_replace(['.', ','], '', $post['gia_mau'][$i]);
+                $so_luong = (int)$post['so_luong'][$i];
+                $is_default = ($i === 0) ? 1 : 0;
 
+                $this->db->query("INSERT INTO xe_mau (id_Xe, id_Mau, is_Default, Gia, So_Luong) 
+                                 VALUES ($id_xe, $id_mau_final, $is_default, $gia_mau, $so_luong)");
                 $id_xe_mau = $this->db->insert_id;
 
-                // Xử lý upload mảng ảnh chi tiết
-                if(!empty($files['anh_mau']['name'][$i])){
-                    foreach($files['anh_mau']['name'][$i] as $k => $name){
-                        if($files['anh_mau']['error'][$i][$k] == 0){
-                            $ext = pathinfo($name, PATHINFO_EXTENSION);
-                            $ten_anh_mau = time() . "_" . uniqid() . "." . $ext;
-                            
-                            $pathAnhXeMau = public_path('upload/anh_xe_mau');
-
-                if (move_uploaded_file(
-                    $files['anh_mau']['tmp_name'][$i][$k],
-                     $pathAnhXeMau . '/' . $ten_anh_mau)) {    
-                    $this->db->query("
-                    INSERT INTO xe_mau_anh (id_Xe_Mau, Hinh_Anh_Xe_Mau)
-                    VALUES ($id_xe_mau, '$ten_anh_mau')
-                    ");
-                        }
-
-                        }
+                // 2. Lưu mảng ảnh Album (Tốc độ ánh sáng vì chỉ là chuỗi)
+                if(isset($post['anh_mau_urls'][$i])){
+                    foreach($post['anh_mau_urls'][$i] as $link_anh){
+                        $link_anh_esc = $this->db->real_escape_string($link_anh);
+                        $this->db->query("INSERT INTO xe_mau_anh (id_Xe_Mau, Hinh_Anh_Xe_Mau) VALUES ($id_xe_mau, '$link_anh_esc')");
                     }
                 }
             }
@@ -347,72 +352,101 @@ VALUES ('$ten_xe', '$mo_ta', '$anh_dai_dien', '$anh_3d', $id_loai, $id_thuong_hi
     return false;
 }
 // Cập nhật sản phẩm
-function Update_SanPham($id_xe, $post, $files) {
-
+// Cập nhật hàm Update_SanPham trong class QL
+public function Update_SanPham($id_xe, $post) {
     $id_xe = (int)$id_xe;
     $ten_xe = $this->db->real_escape_string($post['ten_xe']);
     $mo_ta = $this->db->real_escape_string($post['mo_ta']);
     $id_loai = (int)$post['id_loai'];
     $id_thuong_hieu = (int)$post['id_thuong_hieu'];
 
-    /* ================= CẬP NHẬT THÔNG TIN XE ================= */
+    // 1. Cập nhật thông tin cơ bản
+    $this->db->query("UPDATE san_pham_xe SET 
+        Ten_Xe='$ten_xe', 
+        Mo_Ta='$mo_ta', 
+        id_Loai_Xe=$id_loai, 
+        id_Thuong_Hieu=$id_thuong_hieu 
+        WHERE id_Xe=$id_xe");
 
-    $sql = "UPDATE san_pham_xe SET 
-                Ten_Xe = '$ten_xe',
-                Mo_Ta = '$mo_ta',
-                id_Loai_Xe = $id_loai,
-                id_Thuong_Hieu = $id_thuong_hieu
-            WHERE id_Xe = $id_xe";
-
-    $result = $this->db->query($sql);
-    if(!$result) return false;
-
-    /* ================= CẬP NHẬT GIÁ THEO MÀU ================= */
-
-   // === CẬP NHẬT GIÁ THEO MÀU (LUÔN CHẠY) ===
-if(isset($post['gia_mau'])){
-    foreach($post['gia_mau'] as $id_xe_mau => $gia){
-        $gia = (int)str_replace(['.', ','], '', $gia);
-        $so_luong = (int)$post['so_luong'][$id_xe_mau];
-
-         $this->db->query("UPDATE xe_mau SET So_Luong = $so_luong WHERE id_Xe_Mau = $id_xe_mau");
-         
-        $this->db->query("UPDATE xe_mau SET Gia = $gia WHERE id_Xe_Mau = $id_xe_mau");
+    // 2. Cập nhật URL từ Cloudinary (nếu có thay đổi)
+    if(!empty($post['new_anh_dai_dien_url'])) {
+        $url = $this->db->real_escape_string($post['new_anh_dai_dien_url']);
+        $this->db->query("UPDATE san_pham_xe SET Anh_Dai_Dien='$url' WHERE id_Xe=$id_xe");
     }
-}
+    if(!empty($post['new_anh_3d_url'])) {
+        $url = $this->db->real_escape_string($post['new_anh_3d_url']);
+        $this->db->query("UPDATE san_pham_xe SET Anh_3d='$url' WHERE id_Xe=$id_xe");
+    }
 
-
-    /* ================= CẬP NHẬT ẢNH ĐẠI DIỆN ================= */
-
-    if (!empty($files['new_anh_dai_dien']['name'])) {
-
-        // Lấy ảnh cũ
-        $old = $this->db->query("SELECT Anh_Dai_Dien FROM san_pham_xe WHERE id_Xe = $id_xe")->fetch_assoc();
-        if ($old && file_exists("../upload/anh_dai_dien/" . $old['Anh_Dai_Dien'])) {
-            unlink("../upload/anh_dai_dien/" . $old['Anh_Dai_Dien']);
+    // 3. Xử lý xóa ảnh trong album cũ (Dựa trên mảng delete_anh_ids gửi từ JS)
+    if(!empty($post['delete_anh_ids'])) {
+        foreach($post['delete_anh_ids'] as $id_Xe_Mau) {
+            if(!empty($id_Xe_Mau)) {
+                // Nếu muốn kỹ hơn, bạn có thể gọi CloudinaryService để deleteImage tại đây trước khi xóa DB
+                $this->db->query("DELETE FROM xe_mau_anh WHERE id_Xe_Mau_Anh= ".(int)$id_Xe_Mau);
+            }
         }
-
-        // Upload ảnh mới
-        $new_name = time() . "_" . preg_replace('/\s+/', '_', $files['new_anh_dai_dien']['name']);
-        $path = public_path('upload/anh_dai_dien');
-
-if ($old && file_exists($path.'/'.$old['Anh_Dai_Dien'])) {
-    unlink($path.'/'.$old['Anh_Dai_Dien']);
-}
-
-move_uploaded_file(
-    $files['anh_dai_dien']['tmp_name'],
-    $path.'/'.$new_name
-);
     }
 
+    // 4. Cập nhật biến thể ĐANG CÓ & Thêm ảnh mới vào Album cũ
+    if(isset($post['gia_mau'])) {
+        foreach($post['gia_mau'] as $id_xm => $gia) {
+            $gia_clean = (int)str_replace(['.', ','], '', $gia);
+            $sl = (int)$post['so_luong'][$id_xm];
+            $this->db->query("UPDATE xe_mau SET So_Luong=$sl, Gia=$gia_clean WHERE id_Xe_Mau=$id_xm");
+
+            // Thêm ảnh mới vào album của màu đã tồn tại
+            if(isset($post['more_anh_mau_urls'][$id_xm])) {
+                foreach($post['more_anh_mau_urls'][$id_xm] as $u) {
+                    $u_e = $this->db->real_escape_string($u);
+                    $this->db->query("INSERT INTO xe_mau_anh (id_Xe_Mau, Hinh_Anh_Xe_Mau) VALUES ($id_xm, '$u_e')");
+                }
+            }
+        }
+    }
+
+    // 5. Thêm biến thể MỚI (Màu mới hoàn toàn cho xe này)
+    if(isset($post['new_ten_mau'])) {
+        foreach($post['new_ten_mau'] as $idx => $val_mau) {
+            $id_m = 0;
+            // Xử lý tạo nhanh màu mới (NEW|Tên|Mã)
+            if (strpos($val_mau, 'NEW|') === 0) {
+                $parts = explode('|', $val_mau);
+                $ten_m = $this->db->real_escape_string($parts[1]);
+                $ma_m = $this->db->real_escape_string($parts[2]);
+                $this->db->query("INSERT INTO mau_xe (Ten_Mau, Ma_Mau) VALUES ('$ten_m', '$ma_m')");
+                $id_m = $this->db->insert_id;
+            } else {
+                $id_m = (int)$val_mau;
+            }
+
+            if($id_m > 0) {
+                $gia_n = (int)str_replace(['.', ','], '', $post['new_gia_mau'][$idx]);
+                $sl_n = (int)$post['new_so_luong'][$idx];
+                
+                $this->db->query("INSERT INTO xe_mau (id_Xe, id_Mau, Gia, So_Luong, is_Default) 
+                                 VALUES ($id_xe, $id_m, $gia_n, $sl_n, 0)");
+                $new_id_xm = $this->db->insert_id;
+
+                // Thêm album ảnh cho màu mới này
+                if(isset($post['new_anh_mau_urls'][$idx])) {
+                    foreach($post['new_anh_mau_urls'][$idx] as $u) {
+                        $u_e = $this->db->real_escape_string($u);
+                        $this->db->query("INSERT INTO xe_mau_anh (id_Xe_Mau, Hinh_Anh_Xe_Mau) VALUES ($new_id_xm, '$u_e')");
+                    }
+                
+                }
+            }
+        }
+    }
     return true;
 }
-function Delete_MauXe($id_Xe_Mau)
+public function Delete_MauXe($id_Xe_Mau)
 {
     $id_Xe_Mau = (int)$id_Xe_Mau;
+    $cloudinary = new \App\Services\CloudinaryService();
 
-    // ===== 1. Lấy danh sách ảnh của màu =====
+    // ===== 1. Lấy danh sách ảnh của màu này trên Cloudinary =====
     $res = $this->db->query("
         SELECT Hinh_Anh_Xe_Mau 
         FROM xe_mau_anh 
@@ -421,22 +455,20 @@ function Delete_MauXe($id_Xe_Mau)
 
     if ($res) {
         while ($row = $res->fetch_assoc()) {
-
-            $path = public_path('upload/anh_xe_mau/' . $row['Hinh_Anh_Xe_Mau']);
-
-            if (!empty($row['Hinh_Anh_Xe_Mau']) && file_exists($path)) {
-                unlink($path);
+            // Xóa từng ảnh màu trên Cloudinary
+            if (!empty($row['Hinh_Anh_Xe_Mau'])) {
+                $cloudinary->deleteImage($row['Hinh_Anh_Xe_Mau']);
             }
         }
     }
 
-    // ===== 2. Xóa ảnh trong DB =====
+    // ===== 2. Xóa dữ liệu ảnh trong DB (Bảng xe_mau_anh) =====
     $this->db->query("
         DELETE FROM xe_mau_anh 
         WHERE id_Xe_Mau = $id_Xe_Mau
     ");
 
-    // ===== 3. Xóa màu xe =====
+    // ===== 3. Xóa bản ghi màu xe (Bảng xe_mau) =====
     return $this->db->query("
         DELETE FROM xe_mau 
         WHERE id_Xe_Mau = $id_Xe_Mau
@@ -481,7 +513,8 @@ function Get_AnhTheoMau($id_xe) {
             m.id_Mau,
             m.Ten_Mau,
             m.Ma_Mau,
-            xma.Hinh_Anh_Xe_Mau
+            xma.Hinh_Anh_Xe_Mau,
+            xma.id_Xe_Mau_Anh 
         FROM xe_mau xm
         JOIN mau_xe m ON xm.id_Mau = m.id_Mau
         LEFT JOIN xe_mau_anh xma ON xm.id_Xe_Mau = xma.id_Xe_Mau
@@ -495,32 +528,27 @@ function Get_AnhTheoMau($id_xe) {
 public function Delete_SanPham($id_xe)
 {
     $id_xe = (int)$id_xe;
+    $cloudinary = new \App\Services\CloudinaryService();
 
-    // ===== 1. Lấy thông tin xe =====
+    // ===== 1. Lấy thông tin xe (Ảnh chính & Ảnh 3D) =====
     $res = $this->db->query("
         SELECT Anh_Dai_Dien, Anh_3d 
         FROM san_pham_xe 
         WHERE id_Xe = $id_xe
     ");
 
-    if (!$res || $res->num_rows == 0) {
-        return false; // không có xe
-    }
-
+    if (!$res || $res->num_rows == 0) return false;
     $xe = $res->fetch_assoc();
 
-    // ===== 2. Xóa ảnh đại diện & ảnh 3D =====
-    $pathAnhDaiDien = public_path('upload/anh_dai_dien/' . $xe['Anh_Dai_Dien']);
-    if (!empty($xe['Anh_Dai_Dien']) && file_exists($pathAnhDaiDien)) {
-        unlink($pathAnhDaiDien);
+    // ===== 2. Xóa ảnh đại diện & ảnh 3D trên Cloudinary =====
+    if (!empty($xe['Anh_Dai_Dien'])) {
+        $cloudinary->deleteImage($xe['Anh_Dai_Dien']);
+    }
+    if (!empty($xe['Anh_3d'])) {
+        $cloudinary->deleteImage($xe['Anh_3d']);
     }
 
-    $pathAnh3D = public_path('upload/anh_3d/' . $xe['Anh_3d']);
-    if (!empty($xe['Anh_3d']) && file_exists($pathAnh3D)) {
-        unlink($pathAnh3D);
-    }
-
-    // ===== 3. Xóa ảnh xe màu =====
+    // ===== 3. Xóa toàn bộ ảnh chi tiết (xe_mau_anh) trên Cloudinary =====
     $res_anh = $this->db->query("
         SELECT xma.Hinh_Anh_Xe_Mau
         FROM xe_mau_anh xma
@@ -530,14 +558,13 @@ public function Delete_SanPham($id_xe)
 
     if ($res_anh) {
         while ($anh = $res_anh->fetch_assoc()) {
-            $pathAnhXeMau = public_path('upload/anh_xe_mau/' . $anh['Hinh_Anh_Xe_Mau']);
-            if (!empty($anh['Hinh_Anh_Xe_Mau']) && file_exists($pathAnhXeMau)) {
-                unlink($pathAnhXeMau);
+            if (!empty($anh['Hinh_Anh_Xe_Mau'])) {
+                $cloudinary->deleteImage($anh['Hinh_Anh_Xe_Mau']);
             }
         }
     }
 
-    // ===== 4. Xóa DB (ON DELETE CASCADE xử lý bảng con) =====
+    // ===== 4. Xóa Database (ON DELETE CASCADE sẽ tự xóa các bảng con) =====
     return $this->db->query("
         DELETE FROM san_pham_xe 
         WHERE id_Xe = $id_xe
@@ -859,7 +886,7 @@ function TimKiem_Khach_Hang($keyword) {
 
 }
 
-public function DanhSach_LaiThu($ngay = null, $idXe = null, $trangThai = null, $tenKhach = null)
+function DanhSach_LaiThu($ngay = null, $idXe = null, $trangThai = null, $tenKhach = null)
 {
     $sql = "
         SELECT dl.id_Dat_Lich,
@@ -918,80 +945,56 @@ public function Xoa_LaiThu($id)
 
 
 // BẢO DƯỠNG ADMIN
-function danh_sach_lich($request){
+function danh_sach_lich($request) {
+    // 1. Lọc dữ liệu đầu vào
+    $ten_khach = $this->db->real_escape_string($request->ten_khach);
+    $sdt       = $this->db->real_escape_string($request->sdt);
+    $ten_xe    = $this->db->real_escape_string($request->ten_xe);
+    $goi       = $this->db->real_escape_string($request->goi);
+    $ngay      = $this->db->real_escape_string($request->ngay_bao_duong);
+    $trang_thai= $this->db->real_escape_string($request->trang_thai);
 
-    $sql = "SELECT 
-                l.id_lich,
-                k.Ho_Ten,
-                k.So_Dien_Thoai,
-                sp.Ten_Xe,
-                g.ten_goi,
-                g.gia,
-                l.ngay_bao_duong,
-                l.ghi_chu,
-                l.trang_thai
-            FROM lich_bao_duong l
+    // 2. SQL chuẩn theo cấu trúc database của bạn
+    $sql = "
+        SELECT 
+            dl.id_lich,
+            kh.Ho_Ten,
+            kh.So_Dien_Thoai,
+            dl.ngay_bao_duong,
+            dl.ghi_chu,
+            dl.trang_thai,
+            dl.ngay_tao,
+            dl.ngay_cap_nhat,
+            sp.Ten_Xe AS ten_xe,
+            mx.Ten_Mau AS mau_xe,
+            gbd.ten_goi,
+            gbd.gia
+        FROM lich_bao_duong dl
+        LEFT JOIN khach_hang kh ON dl.id_Khach_Hang = kh.id_Khach_Hang
+        LEFT JOIN xe_mau xm ON dl.id_Xe_Mau = xm.id_Xe_Mau
+        LEFT JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+        LEFT JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau
+        LEFT JOIN goi_bao_duong gbd ON dl.id_goi = gbd.id_goi
+        WHERE 1=1
+    ";
 
-            JOIN khach_hang k 
-                ON l.id_Khach_Hang = k.id_Khach_Hang
+    // 3. Điều kiện lọc (Sửa lại alias dl. hoặc kh. cho đúng bảng)
+    if (!empty($ten_khach)) { $sql .= " AND kh.Ho_Ten LIKE '%$ten_khach%'"; }
+    if (!empty($sdt))       { $sql .= " AND kh.So_Dien_Thoai LIKE '%$sdt%'"; }
+    if (!empty($ten_xe))    { $sql .= " AND sp.Ten_Xe LIKE '%$ten_xe%'"; }
+    if (!empty($goi))       { $sql .= " AND gbd.ten_goi LIKE '%$goi%'"; }
+    if (!empty($ngay))      { $sql .= " AND dl.ngay_bao_duong = '$ngay'"; }
+    if (!empty($trang_thai)){ $sql .= " AND dl.trang_thai = '$trang_thai'"; }
 
-            JOIN xe_mau xm 
-                ON l.id_Xe_Mau = xm.id_Xe_Mau
-
-            JOIN san_pham_xe sp 
-                ON xm.id_Xe = sp.id_Xe
-
-            JOIN goi_bao_duong g 
-                ON l.id_goi = g.id_goi
-
-            WHERE 1=1";
-
-    // lọc tên khách
-    if(!empty($request->ten_khach)){
-        $ten = $this->db->real_escape_string($request->ten_khach);
-        $sql .= " AND k.Ho_Ten LIKE '%$ten%'";
-    }
-
-    // lọc số điện thoại
-    if(!empty($request->sdt)){
-        $sdt = $this->db->real_escape_string($request->sdt);
-        $sql .= " AND k.So_Dien_Thoai LIKE '%$sdt%'";
-    }
-
-    // lọc tên xe
-    if(!empty($request->ten_xe)){
-        $xe = $this->db->real_escape_string($request->ten_xe);
-        $sql .= " AND sp.Ten_Xe LIKE '%$xe%'";
-    }
-
-    // lọc gói bảo dưỡng
-    if(!empty($request->goi)){
-        $goi = $this->db->real_escape_string($request->goi);
-        $sql .= " AND g.ten_goi LIKE '%$goi%'";
-    }
-
-    // lọc ngày
-    if(!empty($request->ngay)){
-        $ngay = $this->db->real_escape_string($request->ngay);
-        $sql .= " AND l.ngay_bao_duong = '$ngay'";
-    }
-
-    // lọc trạng thái
-    if(!empty($request->trang_thai)){
-        $tt = $this->db->real_escape_string($request->trang_thai);
-        $sql .= " AND l.trang_thai = '$tt'";
-    }
+    $sql .= " ORDER BY dl.id_lich DESC";
 
     $result = $this->db->query($sql);
-
     $data = [];
-
-    if($result){
-        while($row = $result->fetch_assoc()){
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
             $data[] = $row;
         }
     }
-
     return $data;
 }
 
@@ -1004,9 +1007,11 @@ function danh_sach_goi(){
     $result = $this->db->query($sql);
 
     $data = [];
-
+    if ($result) {
     while($row = $result->fetch_assoc()){
-    }     $data[] = $row;
+             $data[] = $row;
+    }}
+    return $data;
     }
 public function list_thuong_hieu_theo_loai($MaLoai)
 {
@@ -1052,77 +1057,4 @@ public function list_thuong_hieu_theo_loai($MaLoai)
             return $this->db->query($sql);
         }
 
-
-        // SỬA XÓA BẢO DƯỠNG
-        function Get_ChiTietbaoduong($id){
-
-            $id = (int)$id;
-            
-            $sql = "SELECT 
-                        l.id_lich,
-                        l.id_Khach_Hang,
-                        l.id_Xe_Mau,
-                        l.id_goi,
-                        l.ngay_bao_duong,
-                        l.ghi_chu,
-                        l.trang_thai,
-                        k.Ho_Ten,
-                        k.So_Dien_Thoai,
-                        sp.Ten_Xe,
-                        m.Ten_Mau,
-                        g.ten_goi
-                    FROM lich_bao_duong l
-                    JOIN khach_hang k ON l.id_Khach_Hang = k.id_Khach_Hang
-                    JOIN xe_mau xm ON l.id_Xe_Mau = xm.id_Xe_Mau
-                    JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
-                    JOIN mau_xe m ON xm.id_Mau = m.id_Mau
-                    JOIN goi_bao_duong g ON l.id_goi = g.id_goi
-                    WHERE l.id_lich = $id
-                    LIMIT 1";
-            
-            $result = $this->db->query($sql);
-            
-            if($result && $result->num_rows > 0){
-                return $result->fetch_assoc();
-            }
-            
-            return false;
-            
-            }
-
-            function Update_baoduong($id, $post){
-
-                $id = (int)$id;
-                
-                $ngay = $this->db->real_escape_string($post['ngay_bao_duong']);
-                $ghi_chu = $this->db->real_escape_string($post['ghi_chu']);
-                $trang_thai = $this->db->real_escape_string($post['trang_thai']);
-                
-                $sql = "UPDATE lich_bao_duong
-                        SET 
-                            ngay_bao_duong = '$ngay',
-                            ghi_chu = '$ghi_chu',
-                            trang_thai = '$trang_thai'
-                        WHERE id_lich = $id";
-                
-                return $this->db->query($sql);
-                
-                }
-
-                function Delete_BaoDuong($id){
-
-                    $id = (int)$id;
-                    
-                    $sql = "DELETE FROM lich_bao_duong
-                            WHERE id_lich = $id";
-                    
-                    return $this->db->query($sql);
-                    
-                    }
-
-
-
-
-
-}
-
+    }

@@ -32,6 +32,7 @@ public function capNhatTrangThai($id, $trangThai)
     $ql = new QL();
     $ql->CapNhatTrangThai_LaiThu($id, $trangThai);
 
+  
     return redirect('/trang_admin/lai_thu')
         ->with('success', 'Cập nhật trạng thái thành công!');
 }
