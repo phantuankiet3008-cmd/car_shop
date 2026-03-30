@@ -70,20 +70,6 @@
     </div>
   </div>
 </div>
-  <div class="banner">
-  <!-- FORD Tab -->
-  <div id="FORD" class="tab-content active">
-    <div class="tab-image-container">
-        <img src="https://thanglongford.com.vn/wp-content/uploads/2019/06/19DRangerWildtrak039VNLHD_2001-637159932732125070.jpg" alt="Ford Ranger">
-        <div class="overlay-content">
-            <h1>Dòng xe bán tải mạnh mẽ</h1>
-            <div class="buttons">
-                <a href="#" class="btn-overlay">Xem chi tiết</a>
-                <a href="#" class="btn-overlay">Đặt xe ngay</a>
-            </div>
-        </div>
-    </div>
-  </div>
 
   <!-- TOYOTA Tab -->
   <div id="TOYOTA" class="tab-content">
