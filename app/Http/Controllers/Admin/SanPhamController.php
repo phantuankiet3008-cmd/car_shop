@@ -5,17 +5,17 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\QL;
-use App\Services\CloudinaryService; // Import Service upload
+ // Import Service upload
 
 class SanPhamController extends Controller
 {
     protected $ql;
-    protected $cloudinary;
+   
 
     public function __construct()
     {
         $this->ql = new QL();
-        $this->cloudinary = new CloudinaryService();
+       
     }
 
     // Danh sách sản phẩm xe
@@ -77,18 +77,16 @@ class SanPhamController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
-    {
-        // Lưu ý: Trong hàm update, bạn cần chỉnh sửa file QL.php 
-        // để nó nhận link Cloudinary thay vì lưu file cục bộ.
-        $ok = $this->ql->Update_SanPham($id, $request->all(), $_FILES);
+   public function update(Request $request, $id)
+{
+    // Không cần truyền $_FILES nữa vì ảnh đã lên Cloud từ lúc ở trình duyệt
+    $ok = $this->ql->Update_SanPham($id, $request->all()); 
 
-        if ($ok) {
-            return redirect('/trang_admin/san_pham')->with('success', 'Cập nhật sản phẩm thành công');
-        }
-
-        return back()->with('error', 'Có lỗi khi cập nhật');
+    if ($ok) {
+        return redirect('/trang_admin/san_pham')->with('success', 'Cập nhật thành công');
     }
+    return back()->with('error', 'Có lỗi xảy ra');
+}
 
     public function destroy($id)
     {
