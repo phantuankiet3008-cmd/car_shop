@@ -16,7 +16,6 @@ Route::prefix('trang_admin')->group(function () {
     // ================= LOGIN =================
     Route::get('DangNhapADM', [DangNhapADM_controller::class, 'showLogin'])
         ->name('admin.login.form');
-
     Route::post('DangNhapADM', [DangNhapADM_controller::class, 'login'])
         ->name('admin.login');
 
