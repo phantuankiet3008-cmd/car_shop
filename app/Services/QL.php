@@ -28,44 +28,49 @@ protected $cloudinary;
     // =========================
     // Tài khoản Admin
     // =========================
-    function dang_nhap_ADM($TenDangNhap, $MatKhau) {
+    function DangNhap($username, $password)
+{
+    $stmt = $this->db->prepare("
+        SELECT id_Ad, UserName, PassWord, role_id 
+        FROM admin 
+        WHERE UserName = ? AND Trang_Thai = 1
+        LIMIT 1
+    ");
 
-        $TenDangNhap = $this->db->real_escape_string($TenDangNhap);
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
 
-        $sql = "SELECT * FROM admin WHERE UserName = '$TenDangNhap' LIMIT 1";
-        $result = $this->db->query($sql);
+    $result = $stmt->get_result();
 
-        if ($result && $result->num_rows == 1) {
-            $row = $result->fetch_assoc();
-
-            // ✔ So sánh bằng password_verify
-            if (password_verify($MatKhau, $row['PassWord'])) {
-
-                $_SESSION['admin_id']   = $row['id_Ad'];
-                $_SESSION['admin_name'] = $row['UserName'];
-
-                return true;
-            }
-        }
+    if (!$result || $result->num_rows == 0) {
         return false;
     }
 
-    function check_dang_nhap_ADM() {
-        if (!isset($_SESSION['admin_id'])) {
-            exit();
-        }
+    $row = $result->fetch_assoc();
+
+    if (password_verify($password, $row['PassWord'])) {
+        return [
+            'id_Ad' => $row['id_Ad'],
+            'UserName' => $row['UserName'],
+            'role_id' => $row['role_id']
+        ];
     }
 
-    function TKAD($username, $password, $trang_thai)
-    {
-        $username   = $this->db->real_escape_string($username);
-        $trang_thai = (int)$trang_thai;
-        $password   = password_hash($password, PASSWORD_DEFAULT);
+    return false;
+}
 
-        $sql = "INSERT INTO admin (UserName, PassWord, Trang_Thai)
-                VALUES ('$username', '$password', $trang_thai)";
-        return $this->db->query($sql);
-    }
+function TKAD($username, $password, $role_id, $trang_thai = 1)
+{
+    $username   = $this->db->real_escape_string($username);
+    $role_id    = (int)$role_id;
+    $trang_thai = (int)$trang_thai;
+    $password   = password_hash($password, PASSWORD_DEFAULT);
+
+    $sql = "INSERT INTO admin (UserName, PassWord, role_id, Trang_Thai)
+            VALUES ('$username', '$password', '$role_id', '$trang_thai')";
+
+    return $this->db->query($sql);
+}
         // =========================
     // LOẠI XE
     // =========================
@@ -1042,4 +1047,129 @@ public function list_thuong_hieu_theo_loai($MaLoai)
             return $this->db->query($sql);
         }
 
+
+// QUẢN LÝ NHÂN VIÊN
+function DanhSach_Nhan_Vien($filters = []) {
+    $where = " WHERE 1=1 ";
+
+    if (!empty($filters['ten'])) {
+        $ten = addslashes($filters['ten']);
+        $where .= " AND ad.Ho_Ten LIKE '%$ten%' ";
     }
+
+    if (!empty($filters['role_id'])) {
+        $role = (int)$filters['role_id'];
+        $where .= " AND ad.role_id = $role ";
+    }
+
+    $sql = "
+        SELECT 
+            ad.id_Ad,
+            ad.UserName,
+            ad.Ho_Ten,
+            ad.Email,
+            ad.So_Dien_Thoai,
+            ad.Trang_Thai,
+            ad.created_at,
+            r.ten_role,
+            ad.role_id
+        FROM admin ad
+        LEFT JOIN roles r ON ad.role_id = r.id
+        $where
+        ORDER BY ad.id_Ad DESC
+    ";
+
+    $result = $this->db->query($sql);
+
+    $data = [];
+    while ($row = $result->fetch_assoc()) {
+        $data[] = $row;
+    }
+
+    return $data;
+}
+
+function ChiTiet_Nhan_Vien($id) {
+    $id = (int)$id;
+
+    $sql = "SELECT * FROM admin WHERE id_Ad = $id";
+    $result = $this->db->query($sql);
+
+    return $result->fetch_assoc();
+}
+
+
+
+function Them_Nhan_Vien($request)
+{
+    
+    $hoTen  = addslashes($request->Ho_Ten);
+    $user   = addslashes($request->UserName);
+    $email  = addslashes($request->Email);
+    $sdt    = addslashes($request->So_Dien_Thoai);
+    $role   = (int)$request->role_id;
+    $status = (int)$request->Trang_Thai;
+
+    $password = password_hash($request->MatKhau, PASSWORD_DEFAULT);
+
+    $sql = "
+        INSERT INTO admin 
+        (Ho_Ten, UserName, Email, So_Dien_Thoai, PassWord, role_id, Trang_Thai, created_at)
+        VALUES 
+        ('$hoTen', '$user', '$email', '$sdt', '$password', $role, $status, NOW())
+    ";
+
+    return $this->db->query($sql);
+}
+
+
+
+function CapNhat_Nhan_Vien($request, $id)
+{
+    $hoTen  = addslashes($request->Ho_Ten);
+    $user   = addslashes($request->UserName);
+    $email  = addslashes($request->Email);
+    $sdt    = addslashes($request->So_Dien_Thoai);
+    $role   = (int)$request->role_id;
+    $status = (int)$request->Trang_Thai;
+
+    if (!empty($request->MatKhau)) {
+        $password = password_hash($request->MatKhau, PASSWORD_DEFAULT);
+
+        $sql = "
+            UPDATE admin SET
+                Ho_Ten = '$hoTen',
+                UserName = '$user',
+                Email = '$email',
+                So_Dien_Thoai = '$sdt',
+                PassWord = '$password',
+                role_id = $role,
+                Trang_Thai = $status
+            WHERE id_Ad = $id
+        ";
+    } else {
+        // Không đổi mật khẩu
+        $sql = "
+            UPDATE admin SET
+                Ho_Ten = '$hoTen',
+                UserName = '$user',
+                Email = '$email',
+                So_Dien_Thoai = '$sdt',
+                role_id = $role,
+                Trang_Thai = $status
+            WHERE id_Ad = $id
+        ";
+    }
+
+    return $this->db->query($sql);
+}
+
+function Xoa_Nhan_Vien($id)
+{
+    $id = (int)$id;
+
+    $sql = "DELETE FROM admin WHERE id_Ad = $id";
+
+    return $this->db->query($sql);
+}
+}

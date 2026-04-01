@@ -20,7 +20,7 @@
             <h2 class="title_trang">TRANG QUẢN TRỊ</h2>
             Chào mừng bạn đến với trang quản trị.
             Hãy chọn một mục từ menu bên trái để bắt đầu quản lý.
-            <a href="{{ url('/admin/dang_xuat') }}" class="logout">Đăng xuất</a>
+            <a href="{{ route('admin.logout') }}" class="logout">Đăng xuất</a>
         </div>
 
         <!-- BODY -->
@@ -38,6 +38,7 @@
                     <li class="menu_item"><a href="{{ url('/trang_admin/lai_thu') }}">Đặt Lịch Lái Thử</a></li>
                     <li class="menu_item"><a href="{{ url('/trang_admin/baoduong') }}">Đặt Lịch Bảo Dưỡng</a></li>
                     <li class="menu_item"><a href="{{ url('/trang_admin/kiem_ke') }}">Kiểm Kê</a></li>
+                    <li class="menu_item"><a href="{{ url('/trang_admin/nhan_vien') }}">Nhân Viên</a></li>
                 </ul>
             </div>
 
@@ -169,6 +170,18 @@
 
                 @case('kiem_ke')
                 @include('admin.layouts.Kiem_Ke')
+                @break
+
+                @case('nhan_vien')
+                @include('admin.layouts.QL_nhanvien.ListNhanVien')
+                @break
+
+                @case('add_nhan_vien')
+                @include('admin.layouts.QL_nhanvien.AddNhanVien')
+                @break
+
+                @case('edit_nhan_vien')
+                @include('admin.layouts.QL_nhanvien.EditNhanVien')
                 @break
 
                 @endswitch
