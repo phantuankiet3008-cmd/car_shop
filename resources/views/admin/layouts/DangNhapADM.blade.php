@@ -10,13 +10,27 @@
 </head>
 
 <body>
+
+    @if(session('error'))
+    <div class="alert-error">
+        {{ session('error') }}
+    </div>
+    @endif
+
+    @if ($errors->any())
+    <div class="alert-error">
+        @foreach ($errors->all() as $error)
+        <div>{{ $error }}</div>
+        @endforeach
+    </div>
+    @endif
     <div class="auth-page">
         <div class="auth-container">
             <h2>Đăng nhập Admin</h2>
             <div class="auth-box">
-                <form method="POST" action="{{ route('admin.login') }}">
+                <form method="POST" action="/trang_admin/DangNhapADM">
                     @csrf
-                    <div class="form-group">
+                    <div class=" form-group">
                         <input type="text" name="TenDangNhap" placeholder="Tên đăng nhập" required>
                     </div>
                     <div class="form-group">
@@ -24,7 +38,6 @@
                     </div>
                     <button type="submit" class="btn">Đăng nhập</button>
                 </form>
-                <p><a href="route:"></a>Đăng nhập nhân viên</p>
             </div>
         </div>
     </div>
