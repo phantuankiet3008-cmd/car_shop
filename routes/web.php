@@ -12,6 +12,7 @@ use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\User\BaoDuong_controller;
 use App\Http\Controllers\Admin\QLBaoDuong_controller;
 use App\Http\Controllers\Admin\QLGoiBaoDuong_controller;
+use App\Http\Controllers\Admin\DonHang_Controller;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,7 +28,7 @@ Route::post('/trang_admin/DangNhapADM', [AdminAuthController::class, 'login'])
     ->name('admin.login');
 
 // ====== KHU VỰC ADMIN ======
-Route::middleware('admin.auth')->group(function () {
+// Route::middleware('admin.auth')->group(function () {
 
     // ===== DASHBOARD =====
     Route::get('/trang_admin', function () {
@@ -60,7 +61,7 @@ Route::middleware('admin.auth')->group(function () {
     Route :: post('/trang_admin/san_pham/them', [SanPhamController::class, 'store']);
     Route :: get('/trang_admin/san_pham/sua/{id}', [SanPhamController::class, 'edit']);
     Route :: post('/trang_admin/san_pham/sua/{id}', [SanPhamController::class, 'update']);
-    Route :: delete('/trang_admin/san_pham/xoa_mau/{id}', [SanPhamController::class, 'destroyMau']);
+Route :: delete('/trang_admin/san_pham/xoa_mau/{id}', [SanPhamController::class, 'destroyMau']);
     Route :: get('/trang_admin/san_pham/xoa/{id}', [SanPhamController::class, 'destroy']);
     //===== khách hàng =====
 Route :: get('/trang_admin/khach_hang',[KhachHangController::class,'index']);
@@ -86,14 +87,178 @@ Route :: get('/trang_admin/khach_hang/them',[KhachHangController::class,'create'
 Route::get('/trang_admin/lai_thu/cap-nhat/{id}/{trangThai}', [lichLayThuController::class, 'capNhatTrangThai']);
 
 Route::get('/trang_admin/lai_thu/xoa/{id}', [lichLayThuController::class, 'xoa']);
+// ====== đơn hàng ====
+   // ====== ĐƠN HÀNG ======
+Route::prefix('trang_admin/don_hang')->group(function () {
+    Route::get('/', [DonHang_Controller::class, 'index'])->name('admin.donhang.index');          // Danh sách & Lọc
+    Route::get('/them', [DonHang_Controller::class, 'create']);    // Form thêm mới
+    Route::post('/them', [DonHang_Controller::class, 'store'])->name('admin.donhang.store');     // Lưu mới
+    Route::get('/sua/{id}', [DonHang_Controller::class, 'edit']);   // Form sửa
+    Route::post('/cap-nhat/{id}', [DonHang_Controller::class, 'update']); // Cập nhật
+    Route::delete('/xoa/{id}', [DonHang_Controller::class, 'destroy']);   // Xóa đơn hàng
+});
+
+// Các API cho Dropdown động (giữ nguyên của bạn)
+Route::get('/api/get-san-pham', [DonHang_Controller::class, 'getSanPhamByFilter']);
+Route::get('/api/get-mau-xe', [DonHang_Controller::class, 'getMauBySanPham']);
 
 
-
-
-   });
+ //  });
 
    
    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // BẢO DƯỠNG XE
+Route::get('/car_shop/baoduong', function () {
+    return view('user.layouts.BaoDuong');
+})->name('baoduong');
+Route::get('/car_shop/baoduong', [BaoDuong_controller::class, 'trang_baoduong']);
+Route::post('/car_shop/datlichbaoduong', [BaoDuong_controller::class, 'datlich_baoduong']);
+
+// BẢO DƯỠNG ADMIN
+Route::get('/trang_admin/baoduong', [QLBaoDuong_controller::class, 'index']);
+
+// GÓI BẢO DƯỠNG
+Route::get('/trang_admin/goibaoduong', [QLGoiBaoDuong_controller::class,'index']);
+Route::get('/trang_admin/goibaoduong/them', function () {
+    return view('admin.layouts.index_AD', [
+        'key' => 'add_goi_bao_duong'
+    ]);
+});
+    Route::post('/trang_admin/goibaoduong/them', [QLGoiBaoDuong_controller::class, 'them_goi']);
+
+    Route::get('/trang_admin/goibaoduong/xoa/{id}', [QLGoiBaoDuong_controller::class,'xoa_goi']);
+   
+   // == thống kê tiêu dùng ==//
 
 
 

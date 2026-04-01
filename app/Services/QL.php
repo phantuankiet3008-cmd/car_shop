@@ -1056,5 +1056,49 @@ public function list_thuong_hieu_theo_loai($MaLoai)
         
             return $this->db->query($sql);
         }
+        
+        // 1. Tính tổng doanh thu thực tế (Chỉ tính các đơn đã cọc hoặc hoàn tất)
+public function tinh_tong_doanh_thu() {
+    $sql = "SELECT SUM(Tong_Tien) as total FROM don_hang WHERE Trang_Thai IN ('da_coc', 'hoan_tat')";
+    $result = $this->db->query($sql);
+    $row = $result->fetch_assoc();
+    return $row['total'] ?? 0;
+}
 
+// 2. Thống kê doanh thu theo từng tháng trong năm hiện tại (Dùng cho biểu đồ)
+public function doanh_thu_theo_thang($nam) {
+    $nam = (int)$nam;
+    $sql = "SELECT MONTH(Ngay_Tao) as thang, SUM(Tong_Tien) as doanh_thu 
+            FROM don_hang 
+            WHERE YEAR(Ngay_Tao) = $nam AND Trang_Thai IN ('da_coc', 'hoan_tat')
+            GROUP BY MONTH(Ngay_Tao)
+            ORDER BY MONTH(Ngay_Tao) ASC";
+    
+    $result = $this->db->query($sql);
+    $data = [];
+    while($row = $result->fetch_assoc()) {
+        $data[$row['thang']] = $row['doanh_thu'];
+    }
+    return $data; // Trả về mảng: [1 => 500000, 2 => 1200000, ...]
+}
+
+// 3. Đếm số lượng xe đã bán được (theo từng mẫu xe)
+public function top_xe_ban_chay($limit = 5) {
+    $sql = "SELECT sp.Ten_Xe, mx.Ten_Mau, COUNT(dh.id_Don_Hang) as so_luong
+            FROM don_hang dh
+            JOIN xe_mau xm ON dh.id_Xe_Mau = xm.id_Xe_Mau
+            JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+            JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau
+            WHERE dh.Trang_Thai IN ('da_coc', 'hoan_tat')
+            GROUP BY dh.id_Xe_Mau
+            ORDER BY so_luong DESC
+            LIMIT $limit";
+            
+    $result = $this->db->query($sql);
+    $data = [];
+    while($row = $result->fetch_assoc()) {
+        $data[] = $row;
+    }
+    return $data;
+}
     }
