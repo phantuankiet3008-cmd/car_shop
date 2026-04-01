@@ -1085,7 +1085,6 @@ public function list_thuong_hieu_theo_loai($MaLoai)
 function DanhSach_DonHang($filters = []) {
     $where = " WHERE 1=1 ";
 
-<<<<<<< HEAD
     if (!empty($filters['keyword'])) {
         $kw = $this->db->real_escape_string($filters['keyword']);
         $where .= " AND (kh.Ho_Ten LIKE '%$kw%' OR dh.id_Don_Hang = '$kw')";
@@ -1099,26 +1098,10 @@ function DanhSach_DonHang($filters = []) {
     if (!empty($filters['trang_thai'])) {
         $tt = $this->db->real_escape_string($filters['trang_thai']);
         $where .= " AND dh.Trang_Thai = '$tt'";
-=======
-
-// QUẢN LÝ NHÂN VIÊN
-function DanhSach_Nhan_Vien($filters = []) {
-    $where = " WHERE 1=1 ";
-
-    if (!empty($filters['ten'])) {
-        $ten = addslashes($filters['ten']);
-        $where .= " AND ad.Ho_Ten LIKE '%$ten%' ";
-    }
-
-    if (!empty($filters['role_id'])) {
-        $role = (int)$filters['role_id'];
-        $where .= " AND ad.role_id = $role ";
->>>>>>> abdddd41db3174becc8ce29224af38661e9e8aa9
     }
 
     $sql = "
         SELECT 
-<<<<<<< HEAD
             dh.*, 
             kh.Ho_Ten, 
             kh.So_Dien_Thoai, 
@@ -1195,7 +1178,7 @@ function Delete_DonHang($id) {
     return $this->db->query($sql);
 }
 
-// 6. Lấy danh sách xe kèm màu (để đổ vào dropdown khi tạo đơn)
+// 6. Các hàm hỗ trợ xe & kho
 function List_XeKemMau() {
     $sql = "
         SELECT xm.id_Xe_Mau, sp.Ten_Xe, mx.Ten_Mau, xm.Gia, xm.So_Luong
@@ -1206,17 +1189,38 @@ function List_XeKemMau() {
     ";
     return $this->db->query($sql);
 }
+
 function list_sanpham(){
     $sql =" SELECT * FROM san_pham_xe ";
      return $this->db->query($sql);
 }
+
 function Tru_So_Luong_Xe($id_xe_mau) {
     $id_xe_mau = (int)$id_xe_mau;
     $sql = "UPDATE xe_mau SET So_Luong = So_Luong - 1 WHERE id_Xe_Mau = $id_xe_mau AND So_Luong > 0";
     return $this->db->query($sql);
 }
+
+
+// ==========================================================================
+// NHÓM CHỨC NĂNG: QUẢN LÝ NHÂN VIÊN
+// ==========================================================================
+
+function DanhSach_Nhan_Vien($filters = []) {
+    $where = " WHERE 1=1 ";
+
+    if (!empty($filters['ten'])) {
+        $ten = addslashes($filters['ten']);
+        $where .= " AND ad.Ho_Ten LIKE '%$ten%' ";
     }
-=======
+
+    if (!empty($filters['role_id'])) {
+        $role = (int)$filters['role_id'];
+        $where .= " AND ad.role_id = $role ";
+    }
+
+    $sql = "
+        SELECT 
             ad.id_Ad,
             ad.UserName,
             ad.Ho_Ten,
@@ -1233,36 +1237,27 @@ function Tru_So_Luong_Xe($id_xe_mau) {
     ";
 
     $result = $this->db->query($sql);
-
     $data = [];
     while ($row = $result->fetch_assoc()) {
         $data[] = $row;
     }
-
     return $data;
 }
 
 function ChiTiet_Nhan_Vien($id) {
     $id = (int)$id;
-
     $sql = "SELECT * FROM admin WHERE id_Ad = $id";
     $result = $this->db->query($sql);
-
     return $result->fetch_assoc();
 }
 
-
-
-function Them_Nhan_Vien($request)
-{
-    
+function Them_Nhan_Vien($request) {
     $hoTen  = addslashes($request->Ho_Ten);
     $user   = addslashes($request->UserName);
     $email  = addslashes($request->Email);
     $sdt    = addslashes($request->So_Dien_Thoai);
     $role   = (int)$request->role_id;
     $status = (int)$request->Trang_Thai;
-
     $password = password_hash($request->MatKhau, PASSWORD_DEFAULT);
 
     $sql = "
@@ -1271,14 +1266,10 @@ function Them_Nhan_Vien($request)
         VALUES 
         ('$hoTen', '$user', '$email', '$sdt', '$password', $role, $status, NOW())
     ";
-
     return $this->db->query($sql);
 }
 
-
-
-function CapNhat_Nhan_Vien($request, $id)
-{
+function CapNhat_Nhan_Vien($request, $id) {
     $hoTen  = addslashes($request->Ho_Ten);
     $user   = addslashes($request->UserName);
     $email  = addslashes($request->Email);
@@ -1288,7 +1279,6 @@ function CapNhat_Nhan_Vien($request, $id)
 
     if (!empty($request->MatKhau)) {
         $password = password_hash($request->MatKhau, PASSWORD_DEFAULT);
-
         $sql = "
             UPDATE admin SET
                 Ho_Ten = '$hoTen',
@@ -1301,7 +1291,6 @@ function CapNhat_Nhan_Vien($request, $id)
             WHERE id_Ad = $id
         ";
     } else {
-        // Không đổi mật khẩu
         $sql = "
             UPDATE admin SET
                 Ho_Ten = '$hoTen',
@@ -1313,17 +1302,12 @@ function CapNhat_Nhan_Vien($request, $id)
             WHERE id_Ad = $id
         ";
     }
-
     return $this->db->query($sql);
 }
 
-function Xoa_Nhan_Vien($id)
-{
+function Xoa_Nhan_Vien($id) {
     $id = (int)$id;
-
     $sql = "DELETE FROM admin WHERE id_Ad = $id";
-
     return $this->db->query($sql);
 }
 }
->>>>>>> abdddd41db3174becc8ce29224af38661e9e8aa9

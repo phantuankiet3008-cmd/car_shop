@@ -27,8 +27,8 @@ Route::prefix('trang_admin')->group(function () {
 
     // ================= LOGIN =================
     // Sử dụng AdminAuthController để đồng bộ với các chức năng mới
-    Route::get('DangNhapADM', [AdminAuthController::class, 'showLogin'])->name('admin.login.form');
-    Route::post('DangNhapADM', [AdminAuthController::class, 'login'])->name('admin.login');
+    Route::get('DangNhapADM', [DangNhapADM_controller::class, 'showLogin'])->name('admin.login.form');
+    Route::post('DangNhapADM', [DangNhapADM_controller::class, 'login'])->name('admin.login');
     Route::get('logout', [DangNhapADM_controller::class, 'logout'])->name('admin.logout');
 
 
@@ -125,6 +125,8 @@ Route::prefix('trang_admin')->group(function () {
                 Route::get('/sua/{id}', [DonHang_Controller::class, 'edit']);
                 Route::post('/cap-nhat/{id}', [DonHang_Controller::class, 'update']);
                 Route::delete('/xoa/{id}', [DonHang_Controller::class, 'destroy']);
+                Route::get('/api/get-san-pham', [DonHang_Controller::class, 'getSanPhamByFilter']);
+                Route::get('/api/get-mau-xe', [DonHang_Controller::class, 'getMauBySanPham']);
             });
         });
 
@@ -163,11 +165,3 @@ Route::prefix('trang_admin')->group(function () {
 */
 
 // Bảo dưỡng phía User
-Route::prefix('car_shop')->group(function () {
-    Route::get('baoduong', [UserBaoDuongController::class, 'trang_baoduong'])->name('baoduong');
-    Route::post('datlichbaoduong', [UserBaoDuongController::class, 'datlich_baoduong']);
-});
-
-// Các API bổ trợ cho Frontend
-Route::get('/api/get-san-pham', [DonHang_Controller::class, 'getSanPhamByFilter']);
-Route::get('/api/get-mau-xe', [DonHang_Controller::class, 'getMauBySanPham']);

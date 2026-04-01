@@ -51,9 +51,7 @@
     <div class="auth-page">
         <div class="auth-container">
             <h2>Đăng nhập Admin</h2>
-            <div class="auth-box">
-<<<<<<< HEAD
-                
+            <div class="auth-box"> 
                 @if(session('error'))
                     <div class="alert alert-danger">
                         {{ session('error') }}
@@ -74,12 +72,6 @@
                         @error('TenDangNhap')
                             <span class="error-text">{{ $message }}</span>
                         @enderror
-=======
-                <form method="POST" action="/trang_admin/DangNhapADM">
-                    @csrf
-                    <div class=" form-group">
-                        <input type="text" name="TenDangNhap" placeholder="Tên đăng nhập" required>
->>>>>>> abdddd41db3174becc8ce29224af38661e9e8aa9
                     </div>
 
                     <div class="form-group">
@@ -91,11 +83,7 @@
 
                     <button type="submit" class="btn">Đăng nhập</button>
                 </form>
-<<<<<<< HEAD
 
-                
-=======
->>>>>>> abdddd41db3174becc8ce29224af38661e9e8aa9
             </div>
         </div>
     </div>
