@@ -63,8 +63,7 @@ Route::prefix('trang_admin')->group(function () {
                 Route::post('sua/{id}', [ThuongHieuXeController::class, 'update']);
                 Route::get('xoa/{id}', [ThuongHieuXeController::class, 'destroy']);
             });
-
-            // Nhân viên
+// Nhân viên
             Route::prefix('nhan_vien')->group(function () {
                 Route::get('', [NhanVien_controller::class, 'index']);
                 Route::get('tim', [NhanVien_controller::class, 'index']); // Giữ lại route tìm kiếm
@@ -143,19 +142,43 @@ Route::prefix('trang_admin')->group(function () {
 
         // ===== NHÓM KỸ THUẬT / BẢO DƯỠNG (Role 1,4) =====
         Route::middleware(['role:1,4'])->group(function () {
-            Route::get('baoduong', [QLBaoDuong_controller::class, 'index']);
 
+            // BẢO DƯỠNG
+            Route::prefix('baoduong')->group(function () {
+
+                Route::get('', [QLBaoDuong_controller::class, 'index']);
+        
+                Route::get('sua/{id}', [QLBaoDuong_controller::class, 'edit']);
+        
+                Route::post('update/{id}', [QLBaoDuong_controller::class, 'update']);
+        
+                Route::get('xoa/{id}', [QLBaoDuong_controller::class, 'destroy']);
+            });
+
+
+            // GÓI BẢO DƯỠNG
             Route::prefix('goibaoduong')->group(function () {
-                Route::get('', [QLGoiBaoDuong_controller::class, 'index']);
+                Route::get('', [QLGoiBaoDuong_controller::class, 'index'])
+                ->name('goibaoduong.index');
+
                 Route::get('them', function () {
                     return view('admin.layouts.index_AD', ['key' => 'add_goi_bao_duong']);
                 });
                 Route::post('them', [QLGoiBaoDuong_controller::class, 'them_goi']);
+
+                Route::get('sua/{id}', [QLGoiBaoDuong_controller::class, 'edit'])
+                ->name('goibaoduong.edit');
+                Route::post('sua/{id}', [QLGoiBaoDuong_controller::class, 'update'])
+                ->name('goibaoduong.update');
+                
                 Route::get('xoa/{id}', [QLGoiBaoDuong_controller::class, 'xoa_goi']);
             });
         });
 
     });
+<<<<<<< feature-DangNhapQL
+});
+=======
 });
 
 /*
@@ -165,3 +188,4 @@ Route::prefix('trang_admin')->group(function () {
 */
 
 // Bảo dưỡng phía User
+>>>>>>> main

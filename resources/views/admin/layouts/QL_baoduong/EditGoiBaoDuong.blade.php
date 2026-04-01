@@ -8,45 +8,36 @@
 </head>
 
 <body>
-    @extends('admin.layouts.main')
-
-    @section('content')
 
     <h2>Sửa gói bảo dưỡng</h2>
 
-    <form action="{{ route('goibaoduong.update',$goi->id) }}" method="POST">
+    <form action="{{ route('goibaoduong.update',$goi ['id_goi']) }}" method="POST">
 
         @csrf
-        @method('PUT')
 
         <p>
             Tên gói <br>
-            <input type="text" name="ten_goi" value="{{ $goi->ten_goi }}" required>
+            <input type="text" name="ten_goi" value="{{ $goi ['ten_goi'] }}" required>
         </p>
 
         <p>
             Mô tả <br>
-            <textarea name="mo_ta">{{ $goi->mo_ta }}</textarea>
+            <textarea name="mo_ta">{{ $goi ['mo_ta'] }}</textarea>
         </p>
 
         <p>
             Giá <br>
-            <input type="number" name="gia" value="{{ $goi->gia }}" required>
+            <input type="number" name="gia" value="{{ $goi ['gia'] }}" required>
         </p>
 
         <button type="submit">
             Cập nhật
         </button>
 
-        <a href="{{ route('goibaoduong.index') }}">
-            <button type="button">
-                Quay lại
-            </button>
-        </a>
+        <a href="{{ route('goibaoduong.index') }}">Quay lại</a>
 
     </form>
 
-    @endsection
 </body>
 
 </html>

@@ -970,59 +970,6 @@ public function Xoa_LaiThu($id)
 
 
 
-// BẢO DƯỠNG ADMIN
-function danh_sach_lich($request) {
-    // 1. Lọc dữ liệu đầu vào
-    $ten_khach = $this->db->real_escape_string($request->ten_khach);
-    $sdt       = $this->db->real_escape_string($request->sdt);
-    $ten_xe    = $this->db->real_escape_string($request->ten_xe);
-    $goi       = $this->db->real_escape_string($request->goi);
-    $ngay      = $this->db->real_escape_string($request->ngay_bao_duong);
-    $trang_thai= $this->db->real_escape_string($request->trang_thai);
-
-    // 2. SQL chuẩn theo cấu trúc database của bạn
-    $sql = "
-        SELECT 
-            dl.id_lich,
-            kh.Ho_Ten,
-            kh.So_Dien_Thoai,
-            dl.ngay_bao_duong,
-            dl.ghi_chu,
-            dl.trang_thai,
-            dl.ngay_tao,
-            dl.ngay_cap_nhat,
-            sp.Ten_Xe AS ten_xe,
-            mx.Ten_Mau AS mau_xe,
-            gbd.ten_goi,
-            gbd.gia
-        FROM lich_bao_duong dl
-        LEFT JOIN khach_hang kh ON dl.id_Khach_Hang = kh.id_Khach_Hang
-        LEFT JOIN xe_mau xm ON dl.id_Xe_Mau = xm.id_Xe_Mau
-        LEFT JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
-        LEFT JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau
-        LEFT JOIN goi_bao_duong gbd ON dl.id_goi = gbd.id_goi
-        WHERE 1=1
-    ";
-
-    // 3. Điều kiện lọc (Sửa lại alias dl. hoặc kh. cho đúng bảng)
-    if (!empty($ten_khach)) { $sql .= " AND kh.Ho_Ten LIKE '%$ten_khach%'"; }
-    if (!empty($sdt))       { $sql .= " AND kh.So_Dien_Thoai LIKE '%$sdt%'"; }
-    if (!empty($ten_xe))    { $sql .= " AND sp.Ten_Xe LIKE '%$ten_xe%'"; }
-    if (!empty($goi))       { $sql .= " AND gbd.ten_goi LIKE '%$goi%'"; }
-    if (!empty($ngay))      { $sql .= " AND dl.ngay_bao_duong = '$ngay'"; }
-    if (!empty($trang_thai)){ $sql .= " AND dl.trang_thai = '$trang_thai'"; }
-
-    $sql .= " ORDER BY dl.id_lich DESC";
-
-    $result = $this->db->query($sql);
-    $data = [];
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            $data[] = $row;
-        }
-    }
-    return $data;
-}
 
 
 // QL GÓI BẢO DƯỠNG
@@ -1073,15 +1020,45 @@ public function list_thuong_hieu_theo_loai($MaLoai)
             return $this->db->query($sql);
         }
 
-        // xóa gói
-        function xoa_goi($id){
+        // Sửa gói
+    function lay_goi_id($id){
+        $id = (int)$id;
+        $sql = "SELECT * FROM goi_bao_duong WHERE id_goi = $id";
+        $result = $this->db->query($sql);
+        return $result->fetch_assoc();
+    }
 
-            $id = (int)$id;
+    // cập nhật
+    function update_goi($id, $ten, $mo_ta, $gia){
+        $id = (int)$id;
+        $ten = $this->db->real_escape_string($ten);
+        $mo_ta = $this->db->real_escape_string($mo_ta);
+        $gia = $this->db->real_escape_string($gia);
+
+        $sql = "UPDATE goi_bao_duong 
+                SET ten_goi='$ten', mo_ta='$mo_ta', gia='$gia'
+                WHERE id_goi = $id";
+
+        return $this->db->query($sql);
+    }
+    
+        // xóa gói
+        public function xoa_goi($id)
+{
+    $ql = new QL();
+
+    $check = $ql->db->query("SELECT 1 FROM lich_bao_duong WHERE id_goi = $id LIMIT 1");
+
+    if ($check && $check->num_rows > 0) {
+        return redirect()->back()->with('error', 'Có xe đang sử dụng gói này, không thể xóa!');
+    }
+
+    $ql->xoa_goi($id);
+
+    return redirect()->route('goibaoduong.index')
+        ->with('success', 'Xóa thành công');
+}
         
-            $sql = "DELETE FROM goi_bao_duong WHERE id_goi = $id";
-        
-            return $this->db->query($sql);
-        }
 function DanhSach_DonHang($filters = []) {
     $where = " WHERE 1=1 ";
 
@@ -1212,6 +1189,7 @@ function DanhSach_Nhan_Vien($filters = []) {
     if (!empty($filters['ten'])) {
         $ten = addslashes($filters['ten']);
         $where .= " AND ad.Ho_Ten LIKE '%$ten%' ";
+<<<<<<< feature-DangNhapQL
     }
 
     if (!empty($filters['role_id'])) {
@@ -1219,6 +1197,15 @@ function DanhSach_Nhan_Vien($filters = []) {
         $where .= " AND ad.role_id = $role ";
     }
 
+=======
+    }
+
+    if (!empty($filters['role_id'])) {
+        $role = (int)$filters['role_id'];
+        $where .= " AND ad.role_id = $role ";
+    }
+
+>>>>>>> main
     $sql = "
         SELECT 
             ad.id_Ad,
@@ -1302,6 +1289,7 @@ function CapNhat_Nhan_Vien($request, $id) {
             WHERE id_Ad = $id
         ";
     }
+<<<<<<< feature-DangNhapQL
     return $this->db->query($sql);
 }
 
@@ -1310,4 +1298,185 @@ function Xoa_Nhan_Vien($id) {
     $sql = "DELETE FROM admin WHERE id_Ad = $id";
     return $this->db->query($sql);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// BẢO DƯỠNG ADMIN
+function danh_sach_lich($request) {
+    // 1. Lọc dữ liệu đầu vào
+    $ten_khach = $this->db->real_escape_string($request->ten_khach);
+    $sdt       = $this->db->real_escape_string($request->sdt);
+    $ten_xe    = $this->db->real_escape_string($request->ten_xe);
+    $goi       = $this->db->real_escape_string($request->goi);
+    $ngay      = $this->db->real_escape_string($request->ngay_bao_duong);
+    $trang_thai= $this->db->real_escape_string($request->trang_thai);
+
+    // 2. SQL chuẩn theo cấu trúc database của bạn
+    $sql = "
+        SELECT 
+            dl.id_lich,
+            kh.Ho_Ten,
+            kh.So_Dien_Thoai,
+            dl.ngay_bao_duong,
+            dl.ghi_chu,
+            dl.trang_thai,
+            dl.ngay_tao,
+            dl.ngay_cap_nhat,
+            sp.Ten_Xe AS ten_xe,
+            mx.Ten_Mau AS mau_xe,
+            gbd.ten_goi,
+            gbd.gia
+        FROM lich_bao_duong dl
+        LEFT JOIN khach_hang kh ON dl.id_Khach_Hang = kh.id_Khach_Hang
+        LEFT JOIN xe_mau xm ON dl.id_Xe_Mau = xm.id_Xe_Mau
+        LEFT JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+        LEFT JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau
+        LEFT JOIN goi_bao_duong gbd ON dl.id_goi = gbd.id_goi
+        WHERE 1=1
+    ";
+
+    // 3. Điều kiện lọc (Sửa lại alias dl. hoặc kh. cho đúng bảng)
+    if (!empty($ten_khach)) { $sql .= " AND kh.Ho_Ten LIKE '%$ten_khach%'"; }
+    if (!empty($sdt))       { $sql .= " AND kh.So_Dien_Thoai LIKE '%$sdt%'"; }
+    if (!empty($ten_xe))    { $sql .= " AND sp.Ten_Xe LIKE '%$ten_xe%'"; }
+    if (!empty($goi))       { $sql .= " AND gbd.ten_goi LIKE '%$goi%'"; }
+    if (!empty($ngay))      { $sql .= " AND dl.ngay_bao_duong = '$ngay'"; }
+    if (!empty($trang_thai)){ $sql .= " AND dl.trang_thai = '$trang_thai'"; }
+
+    $sql .= " ORDER BY dl.id_lich DESC";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+    // Sửa
+    function Get_ChiTietbaoduong($id)
+{
+    $stmt = $this->db->prepare("
+        SELECT 
+            lbd.*,
+            kh.Ho_Ten,
+            kh.So_Dien_Thoai,
+            sp.Ten_Xe,
+            m.Ten_Mau,
+            g.ten_goi
+        FROM lich_bao_duong lbd
+
+        JOIN khach_hang kh 
+            ON lbd.id_Khach_Hang = kh.id_Khach_Hang
+
+        JOIN xe_mau xm 
+            ON lbd.id_Xe_Mau = xm.id_Xe_Mau
+
+        JOIN san_pham_xe sp 
+            ON xm.id_Xe = sp.id_Xe
+
+        JOIN mau_xe m 
+            ON xm.id_Mau = m.id_Mau
+
+        JOIN goi_bao_duong g 
+            ON lbd.id_goi = g.id_goi
+
+        WHERE lbd.id_lich = ?
+    ");
+
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+
+    return $stmt->get_result()->fetch_assoc();
+}
+
+function Get_All_GoiBaoDuong()
+{
+    $sql = "SELECT id_goi, ten_goi FROM goi_bao_duong";
+
+    $result = $this->db->query($sql);
+
+    $data = [];
+
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+
+    return $data;
+}
+
+function Update_baoduong($id, $data)
+{
+    $id_goi = $data['id_goi'];
+    $ngay = $data['ngay_bao_duong'];
+    $trang_thai = $data['trang_thai'];
+    $ghi_chu = $data['ghi_chu'];
+
+    $stmt = $this->db->prepare("
+        UPDATE lich_bao_duong 
+        SET id_goi = ?, ngay_bao_duong = ?, trang_thai = ?, ghi_chu = ?
+        WHERE id_lich = ?
+    ");
+
+    $stmt->bind_param("isssi", $id_goi, $ngay, $trang_thai, $ghi_chu, $id);
+
+    return $stmt->execute();
+}
+
+
+    // Xóa
+    function Delete_BaoDuong($id)
+{
+    $stmt = $this->db->prepare("
+        DELETE FROM lich_bao_duong 
+        WHERE id_lich = ?
+    ");
+
+    $stmt->bind_param("i", $id);
+
+    return $stmt->execute();
+}
+=======
+    return $this->db->query($sql);
+}
+
+function Xoa_Nhan_Vien($id) {
+    $id = (int)$id;
+    $sql = "DELETE FROM admin WHERE id_Ad = $id";
+    return $this->db->query($sql);
+}
+>>>>>>> main
 }
