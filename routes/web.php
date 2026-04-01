@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 // Import Controllers
 use App\Http\Controllers\Admin\DangNhapADM_controller;
-use App\Http\Controllers\AdminAuthController; // File 2 dùng cái này cho Login
+use App\Http\Controllers\AdminAuthController; 
 use App\Http\Controllers\Admin\LoaiXeController;
 use App\Http\Controllers\Admin\ThuongHieuXeController;
 use App\Http\Controllers\Admin\SanPhamController;
@@ -25,7 +25,8 @@ use App\Http\Controllers\User\BaoDuong_controller as UserBaoDuongController;
 
 Route::prefix('trang_admin')->group(function () {
 
-    // ================= LOGIN (Sử dụng AdminAuthController từ file 2) =================
+    // ================= LOGIN =================
+    // Sử dụng AdminAuthController để đồng bộ với các chức năng mới
     Route::get('DangNhapADM', [AdminAuthController::class, 'showLogin'])->name('admin.login.form');
     Route::post('DangNhapADM', [AdminAuthController::class, 'login'])->name('admin.login');
     Route::get('logout', [DangNhapADM_controller::class, 'logout'])->name('admin.logout');
@@ -66,6 +67,7 @@ Route::prefix('trang_admin')->group(function () {
             // Nhân viên
             Route::prefix('nhan_vien')->group(function () {
                 Route::get('', [NhanVien_controller::class, 'index']);
+                Route::get('tim', [NhanVien_controller::class, 'index']); // Giữ lại route tìm kiếm
                 Route::get('them', [NhanVien_controller::class, 'create']);
                 Route::post('them', [NhanVien_controller::class, 'store']);
                 Route::get('sua/{id}', [NhanVien_controller::class, 'edit']);
@@ -73,7 +75,7 @@ Route::prefix('trang_admin')->group(function () {
                 Route::get('xoa/{id}', [NhanVien_controller::class, 'destroy']);
             });
 
-            // Ưu đãi (Mới từ file 2)
+            // Ưu đãi
             Route::prefix('uu_dai')->group(function () {
                 Route::get('', [UuDaiController::class, 'index']);
                 Route::get('them', [UuDaiController::class, 'create']);
@@ -90,7 +92,7 @@ Route::prefix('trang_admin')->group(function () {
         });
 
 
-        // ===== NHÓM BÁN HÀNG (Role 1,2) =====
+        // ===== NHÓM NHÂN VIÊN / BÁN HÀNG (Role 1,2) =====
         Route::middleware(['role:1,2'])->group(function () {
             
             // Sản phẩm (Xe)
@@ -115,7 +117,7 @@ Route::prefix('trang_admin')->group(function () {
                 Route::get('xoa/{id}', [KhachHangController::class, 'destroy']);
             });
 
-            // Đơn hàng (Mới từ file 2)
+            // Đơn hàng
             Route::prefix('don_hang')->group(function () {
                 Route::get('/', [DonHang_Controller::class, 'index'])->name('admin.donhang.index');
                 Route::get('/them', [DonHang_Controller::class, 'create']);
@@ -127,7 +129,7 @@ Route::prefix('trang_admin')->group(function () {
         });
 
 
-        // ===== NHÓM LÁI THỬ / KẾ TOÁN (Role 1,3) =====
+        // ===== NHÓM KẾ TOÁN / LÁI THỬ (Role 1,3) =====
         Route::middleware(['role:1,3'])->group(function () {
             Route::prefix('lai_thu')->group(function () {
                 Route::get('', [lichlaythuController::class, 'index']);
@@ -166,6 +168,6 @@ Route::prefix('car_shop')->group(function () {
     Route::post('datlichbaoduong', [UserBaoDuongController::class, 'datlich_baoduong']);
 });
 
-// Các API cho đơn hàng
+// Các API bổ trợ cho Frontend
 Route::get('/api/get-san-pham', [DonHang_Controller::class, 'getSanPhamByFilter']);
 Route::get('/api/get-mau-xe', [DonHang_Controller::class, 'getMauBySanPham']);

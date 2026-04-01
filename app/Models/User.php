@@ -4,31 +4,16 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Authenticatable
+class Admin extends Authenticatable
 {
-    protected $table = 'khach_hang'; 
+    protected $table = 'admin';        // tên bảng
+    protected $primaryKey = 'id_Ad';   // khóa chính
+    public $timestamps = false;        // nếu bảng không có created_at/updated_at
+    protected $fillable = ['UserName', 'PassWord', 'role_id'];
+    protected $hidden = ['PassWord'];
 
-    protected $primaryKey = 'id_Khach_Hang';
-
-    public $timestamps = false; 
-
-    protected $fillable = [
-        'Ho_Ten',
-        'Email',
-        'So_Dien_Thoai',
-        'Mat_Khau',
-        'Dia_Chi',
-        'Trang_Thai'
-    ];
-
-    protected $hidden = [
-        'Mat_Khau'
-    ];
-
-    
-    function getAuthPassword()
+    public function getAuthPassword()
     {
-        return $this->Mat_Khau;
+        return $this->PassWord; 
     }
-
 }
