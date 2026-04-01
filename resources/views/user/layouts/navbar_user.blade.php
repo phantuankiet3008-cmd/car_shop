@@ -2,7 +2,7 @@
     <ul class="menu">
 
         <li>
-            <a href="{{ route('trangchu') }}">TRANG CHỦ
+            <a href="{{ route('trangchu') }}">🏠TRANG CHỦ
 
             </a>
         </li>
@@ -20,15 +20,15 @@
         </li>
  @if(session('user_id'))
  <li>
-        <a href="{{ url('user/car_shop/lai_thu') }}">
+        <a href="{{ route('tranglaithu') }}">
             
-            ĐẶT LỊCH LÁI THỬ
+            🗓️ĐẶT LỊCH LÁI THỬ
         </a>
  </li>
  <li>
      <a href="{{ route('datlichbaoduong') }}">
            
-            ĐẶT LỊCH BẢO DƯỠNG
+            🛠️ĐẶT LỊCH BẢO DƯỠNG
         </a>
  </li>
     @endif
@@ -37,7 +37,7 @@
         
 
         <li>
-            <a href="#">HỖ TRỢ VÀ DỊCH VỤ</a>
+            <a href="#">🙋‍♂️ / 🙋‍♀️HỖ TRỢ VÀ DỊCH VỤ</a>
         </li>
 
     </ul>

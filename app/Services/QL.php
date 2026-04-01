@@ -1077,5 +1077,120 @@ public function list_thuong_hieu_theo_loai($MaLoai)
         
             return $this->db->query($sql);
         }
+function DanhSach_DonHang($filters = []) {
+    $where = " WHERE 1=1 ";
 
+    if (!empty($filters['keyword'])) {
+        $kw = $this->db->real_escape_string($filters['keyword']);
+        $where .= " AND (kh.Ho_Ten LIKE '%$kw%' OR dh.id_Don_Hang = '$kw')";
+    }
+
+    if (!empty($filters['payment_status'])) {
+        $ps = $this->db->real_escape_string($filters['payment_status']);
+        $where .= " AND dh.payment_status = '$ps'";
+    }
+
+    if (!empty($filters['trang_thai'])) {
+        $tt = $this->db->real_escape_string($filters['trang_thai']);
+        $where .= " AND dh.Trang_Thai = '$tt'";
+    }
+
+    $sql = "
+        SELECT 
+            dh.*, 
+            kh.Ho_Ten, 
+            kh.So_Dien_Thoai, 
+            sp.Ten_Xe,
+            mx.Ten_Mau
+        FROM don_hang dh
+        LEFT JOIN khach_hang kh ON dh.id_Khach_Hang = kh.id_Khach_Hang
+        LEFT JOIN xe_mau xm ON dh.id_Xe_Mau = xm.id_Xe_Mau
+        LEFT JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+        LEFT JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau
+        $where
+        ORDER BY dh.id_Don_Hang DESC
+    ";
+    
+    return $this->db->query($sql);
+}
+
+// 2. Lấy chi tiết 1 đơn hàng
+function Get_ChiTietDonHang($id) {
+    $id = (int)$id;
+    $sql = "SELECT * FROM don_hang WHERE id_Don_Hang = $id LIMIT 1";
+    $result = $this->db->query($sql);
+    return $result ? $result->fetch_assoc() : null;
+}
+
+// 3. Thêm mới đơn hàng
+function Add_DonHang($data, $tong_tien) {
+    $id_kh = (int)$data['id_khach_hang'];
+    $id_xm = (int)$data['id_xe_mau'];
+    $gia_goc = (int)$data['gia_goc'];
+    $gia_giam = (int)($data['gia_giam'] ?? 0);
+    $tien_coc = (int)($data['tien_coc'] ?? 0);
+    $p_status = $this->db->real_escape_string($data['payment_status'] ?? 'pending');
+    $trang_thai = $this->db->real_escape_string($data['trang_thai'] ?? 'new');
+    $ngay = date('Y-m-d H:i:s');
+
+    $sql = "INSERT INTO don_hang (id_Khach_Hang, id_Xe_Mau, Gia_Goc, Gia_Giam, Tong_Tien, Tien_Coc, payment_status, Trang_Thai, Ngay_Tao)
+            VALUES ($id_kh, $id_xm, $gia_goc, $gia_giam, $tong_tien, $tien_coc, '$p_status', '$trang_thai', '$ngay')";
+    
+    return $this->db->query($sql);
+}
+
+// 4. Cập nhật đơn hàng
+function Update_DonHang($id, $data, $tong_tien) {
+    $id = (int)$id;
+    $id_kh = (int)$data['id_khach_hang'];
+    $id_xm = (int)$data['id_xe_mau'];
+    $gia_goc = (int)$data['gia_goc'];
+    $gia_giam = (int)($data['gia_giam'] ?? 0);
+    $tien_coc = (int)($data['tien_coc'] ?? 0);
+    $p_status = $this->db->real_escape_string($data['payment_status']);
+    $trang_thai = $this->db->real_escape_string($data['trang_thai']);
+    $ngay_up = date('Y-m-d H:i:s');
+
+    $sql = "UPDATE don_hang SET 
+                id_Khach_Hang = $id_kh, 
+                id_Xe_Mau = $id_xm, 
+                Gia_Goc = $gia_goc, 
+                Gia_Giam = $gia_giam, 
+                Tong_Tien = $tong_tien, 
+                Tien_Coc = $tien_coc, 
+                payment_status = '$p_status', 
+                Trang_Thai = '$trang_thai',
+                Ngay_Cap_Nhat = '$ngay_up'
+            WHERE id_Don_Hang = $id";
+            
+    return $this->db->query($sql);
+}
+
+// 5. Xóa đơn hàng
+function Delete_DonHang($id) {
+    $id = (int)$id;
+    $sql = "DELETE FROM don_hang WHERE id_Don_Hang = $id";
+    return $this->db->query($sql);
+}
+
+// 6. Lấy danh sách xe kèm màu (để đổ vào dropdown khi tạo đơn)
+function List_XeKemMau() {
+    $sql = "
+        SELECT xm.id_Xe_Mau, sp.Ten_Xe, mx.Ten_Mau, xm.Gia, xm.So_Luong
+        FROM xe_mau xm
+        JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+        JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau
+        WHERE sp.Trang_Thai = 1 AND xm.So_Luong > 0
+    ";
+    return $this->db->query($sql);
+}
+function list_sanpham(){
+    $sql =" SELECT * FROM san_pham_xe ";
+     return $this->db->query($sql);
+}
+function Tru_So_Luong_Xe($id_xe_mau) {
+    $id_xe_mau = (int)$id_xe_mau;
+    $sql = "UPDATE xe_mau SET So_Luong = So_Luong - 1 WHERE id_Xe_Mau = $id_xe_mau AND So_Luong > 0";
+    return $this->db->query($sql);
+}
     }

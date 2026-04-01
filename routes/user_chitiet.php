@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\User\StripeController;
 use App\Http\Controllers\User\{
     TrangChuController,
     chitietxeController,
@@ -19,6 +20,7 @@ use App\Http\Controllers\User\{
     BaoDuong_controller,
     donhangController
 };
+
 
 // =========================================================
 // 1. ROUTE CÔNG KHAI (KHÔNG CẦN ĐĂNG NHẬP)
@@ -70,14 +72,25 @@ Route::middleware('user.auth')->prefix('user')->group(function () {
     // VNPay & MoMo
     Route::get('/car_shop/vnpay/redirect/{id}', [VNPayController::class, 'redirect'])->name('vnpay.redirect');
     Route::get('/car_shop/vnpay/return', [VNPayController::class, 'return'])->name('vnpay.return');
+
+    
+     // Stripe 
+     Route::get('/stripe/checkout/{id}', [StripeController::class, 'checkout'])->name('stripe.checkout');
+     Route::get('/stripe/success/{id}', [StripeController::class, 'success'])->name('stripe.success');
+     Route::get('/stripe/cancel/{id}', [StripeController::class, 'cancel'])->name('stripe.cancel');
+    // Lái thử
+    Route::get('/car_shop/dangkilaithu/{id}', [dangkilaithuController::class, 'index']);
     Route::get('/car_shop/momo/redirect/{id}', [MoMoController::class, 'redirect'])->name('momo.redirect');
     Route::get('/car_shop/momo/return', [MoMoController::class, 'return'])->name('momo.return');
 
-    // Lái thử (Giữ nguyên name dangkilaithu và datlaithu)
+    // Lái thử 
     Route::get('/car_shop/dangkilaithu/{id}', [dangkilaithuController::class, 'index'])->name('datlaithu');
     Route::post('/car_shop/lay_gio_da_dat', [dangkilaithuController::class, 'layGioDaDat'])->name('dangkilaithu');
     Route::post('/car_shop/dat_lich_lai_thu', [dangkilaithuController::class, 'store']);
     Route::get('/car_shop/lich-lai-thu-cua-toi', [dangkilaithuController::class, 'lichCuaToi']);
+    // trang lái thử
+    Route::get('/car_shop/lai_thu/{IDloai?}/{IDTH?}', [dangkilaithuController::class,'tranglaithu'])->name('tranglaithu');
+    Route::get('/car_shop/chitietxelaithu/{id}', [dangkilaithuController::class,'chitietxelaithu'])->name('xelaithu');
 
     // BẢO DƯỠNG XE
     Route::get('/car_shop/datlichbaoduong', [BaoDuong_controller::class, 'trang_baoduong'])->name('datlichbaoduong');
