@@ -27,8 +27,8 @@ Route::prefix('trang_admin')->group(function () {
 
     // ================= LOGIN =================
     // Sử dụng AdminAuthController để đồng bộ với các chức năng mới
-    Route::get('DangNhapADM', [AdminAuthController::class, 'showLogin'])->name('admin.login.form');
-    Route::post('DangNhapADM', [AdminAuthController::class, 'login'])->name('admin.login');
+    Route::get('DangNhapADM', [DangNhapADM_controller::class, 'showLogin'])->name('admin.login.form');
+    Route::post('DangNhapADM', [DangNhapADM_controller::class, 'login'])->name('admin.login');
     Route::get('logout', [DangNhapADM_controller::class, 'logout'])->name('admin.logout');
 
 
@@ -63,8 +63,7 @@ Route::prefix('trang_admin')->group(function () {
                 Route::post('sua/{id}', [ThuongHieuXeController::class, 'update']);
                 Route::get('xoa/{id}', [ThuongHieuXeController::class, 'destroy']);
             });
-
-            // Nhân viên
+// Nhân viên
             Route::prefix('nhan_vien')->group(function () {
                 Route::get('', [NhanVien_controller::class, 'index']);
                 Route::get('tim', [NhanVien_controller::class, 'index']); // Giữ lại route tìm kiếm
@@ -125,6 +124,8 @@ Route::prefix('trang_admin')->group(function () {
                 Route::get('/sua/{id}', [DonHang_Controller::class, 'edit']);
                 Route::post('/cap-nhat/{id}', [DonHang_Controller::class, 'update']);
                 Route::delete('/xoa/{id}', [DonHang_Controller::class, 'destroy']);
+                Route::get('/api/get-san-pham', [DonHang_Controller::class, 'getSanPhamByFilter']);
+                Route::get('/api/get-mau-xe', [DonHang_Controller::class, 'getMauBySanPham']);
             });
         });
 
@@ -141,33 +142,38 @@ Route::prefix('trang_admin')->group(function () {
 
         // ===== NHÓM KỸ THUẬT / BẢO DƯỠNG (Role 1,4) =====
         Route::middleware(['role:1,4'])->group(function () {
-            Route::get('baoduong', [QLBaoDuong_controller::class, 'index']);
 
+            // BẢO DƯỠNG
+            Route::prefix('baoduong')->group(function () {
+
+                Route::get('', [QLBaoDuong_controller::class, 'index']);
+        
+                Route::get('sua/{id}', [QLBaoDuong_controller::class, 'edit']);
+        
+                Route::post('update/{id}', [QLBaoDuong_controller::class, 'update']);
+        
+                Route::get('xoa/{id}', [QLBaoDuong_controller::class, 'destroy']);
+            });
+
+
+            // GÓI BẢO DƯỠNG
             Route::prefix('goibaoduong')->group(function () {
-                Route::get('', [QLGoiBaoDuong_controller::class, 'index']);
+                Route::get('', [QLGoiBaoDuong_controller::class, 'index'])
+                ->name('goibaoduong.index');
+
                 Route::get('them', function () {
                     return view('admin.layouts.index_AD', ['key' => 'add_goi_bao_duong']);
                 });
                 Route::post('them', [QLGoiBaoDuong_controller::class, 'them_goi']);
+
+                Route::get('sua/{id}', [QLGoiBaoDuong_controller::class, 'edit'])
+                ->name('goibaoduong.edit');
+                Route::post('sua/{id}', [QLGoiBaoDuong_controller::class, 'update'])
+                ->name('goibaoduong.update');
+                
                 Route::get('xoa/{id}', [QLGoiBaoDuong_controller::class, 'xoa_goi']);
             });
         });
 
     });
 });
-
-/*
-|--------------------------------------------------------------------------
-| USER & API ROUTES
-|--------------------------------------------------------------------------
-*/
-
-// Bảo dưỡng phía User
-Route::prefix('car_shop')->group(function () {
-    Route::get('baoduong', [UserBaoDuongController::class, 'trang_baoduong'])->name('baoduong');
-    Route::post('datlichbaoduong', [UserBaoDuongController::class, 'datlich_baoduong']);
-});
-
-// Các API bổ trợ cho Frontend
-Route::get('/api/get-san-pham', [DonHang_Controller::class, 'getSanPhamByFilter']);
-Route::get('/api/get-mau-xe', [DonHang_Controller::class, 'getMauBySanPham']);
