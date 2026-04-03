@@ -2,124 +2,130 @@
 @section('content')
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-<meta charset="UTF-8">
-<title>Trang khách hàng</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="{{ asset('css/profie.css') }}">
-<link rel="stylesheet" href="{{ asset('css/user.css') }}">
+<head>
+    <meta charset="UTF-8">
+    <title>Trang khách hàng</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/profie.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/user.css') }}">
 
 </head>
 
 <body>
 
-<div class="container-fluid mt-4">
-<div class="row">
+    <div class="container-fluid mt-4">
+        <div class="row">
 
-<!-- MENU BÊN TRÁI -->
-<div class="col-md-3">
-<div class="card p-3 mb-3">
+            <!-- MENU BÊN TRÁI -->
+            <div class="col-md-3">
+                <div class="card p-3 mb-3">
 
-<div class="nav flex-column nav-pills">
+                    <div class="nav flex-column nav-pills">
 
-<button class="nav-link active" data-bs-toggle="pill" data-bs-target="#thongtin">
-Thông tin khách hàng
-</button>
+                        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#thongtin">
+                            Thông tin khách hàng
+                        </button>
 
-<button class="nav-link" data-bs-toggle="pill" data-bs-target="#donhang">
-Đơn hàng của bạn
-</button>
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#donhang">
+                            Đơn hàng của bạn
+                        </button>
 
-<button class="nav-link" data-bs-toggle="pill" data-bs-target="#baoduong">
-Đặt lịch bảo dưỡng
-</button>
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#baoduong">
+                            Đặt lịch bảo dưỡng
+                        </button>
 
-<button class="nav-link" data-bs-toggle="pill" data-bs-target="#giaodich">
-lịch lái thử của bạn
-</button>
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#giaodich">
+                            lịch lái thử của bạn
+                        </button>
 
-<button class="nav-link" data-bs-toggle="pill" data-bs-target="#thongbao">
-Thông báo
-</button>
+                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#thongbao">
+                            Thông báo
+                        </button>
 
-</div>
+                    </div>
 
-</div>
-</div>
-
-
-<!-- NỘI DUNG -->
-<div class="col-md-9">
-
-<div class="card p-4 mb-3">
-
-<div class="text-center">
-
-<div class="avatar-wrapper">
-
-@if(empty($khachhang['Avatar']))
-<img src=" https://i.pinimg.com/736x/bc/43/98/bc439871417621836a0eeea768d60944.jpg"
-     class="avatar" id="avatarImg" style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
-@else
-<img src="{{ $khachhang['Avatar'] }}" 
-     class="avatar" id="avatarImg"
-     style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
-@endif
-
-<p style="text-align:center;font-weight:600;font-size:20px;color:#000;">
-    {{ $khachhang['Ho_Ten'] ?? '' }}
-</p>
-<p style="text-align:center;font-weight:600;font-size:18px;color:#000;">
-    {{ $khachhang['So_Dien_Thoai'] ?? '' }}
-</p>
-
-</div>
-
-</div>
+                </div>
+            </div>
 
 
-<!-- TAB CONTENT -->
-<div class="tab-content mt-4">
+            <!-- NỘI DUNG -->
+            <div class="col-md-9">
 
-<div class="tab-pane fade show active" id="thongtin">
-    <iframe src="{{ url('user/car_shop/profile') }}" width="100%" height="600" style="border:none;"></iframe>
-</div>
+                <div class="card p-4 mb-3">
 
-<div class="tab-pane fade" id="donhang">
-    <div class="p-3">
-        Nội dung đơn hàng
+                    <div class="text-center">
+
+                        <div class="avatar-wrapper">
+
+                            @if(empty($khachhang['Avatar']))
+                            <img src=" https://i.pinimg.com/736x/bc/43/98/bc439871417621836a0eeea768d60944.jpg"
+                                class="avatar" id="avatarImg"
+                                style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
+                            @else
+                            <img src="{{ $khachhang['Avatar'] }}" class="avatar" id="avatarImg"
+                                style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
+                            @endif
+
+                            <p style="text-align:center;font-weight:600;font-size:20px;color:#000;">
+                                {{ $khachhang['Ho_Ten'] ?? '' }}
+                            </p>
+                            <p style="text-align:center;font-weight:600;font-size:18px;color:#000;">
+                                {{ $khachhang['So_Dien_Thoai'] ?? '' }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- TAB CONTENT -->
+                    <div class="tab-content mt-4">
+
+                        <div class="tab-pane fade show active" id="thongtin">
+                            <iframe src="{{ url('user/car_shop/profile') }}" width="100%" height="600"
+                                style="border:none;"></iframe>
+                        </div>
+
+                        <div class="tab-pane fade" id="donhang">
+                            <div class="p-3">
+                                Nội dung đơn hàng
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="baoduong">
+                            <div class="p-3">
+                                <iframe src="{{ url('user/car_shop/lich_bao_duong_cua_toi') }}" width="100%"
+                                    height="600" style="border:none;"></iframe>
+
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="giaodich">
+                            <div class="p-3">
+                                <iframe src="{{ url('user/car_shop/lich-lai-thu-cua-toi') }}" width="100%" height="600"
+                                    style="border:none;"></iframe>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="thongbao">
+                            <div class="p-3">
+                                Nội dung thông báo
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
     </div>
-</div>
-
-<div class="tab-pane fade" id="baoduong">
-    <div class="p-3">
-        Nội dung bảo dưỡng
-    </div>
-</div>
-
-<div class="tab-pane fade" id="giaodich">
-    <div class="p-3">
-        <iframe src="{{ url('user/car_shop/lich-lai-thu-cua-toi') }}" width="100%" height="600" style="border:none;"></iframe>
-    </div>
-</div>
-
-<div class="tab-pane fade" id="thongbao">
-    <div class="p-3">
-        Nội dung thông báo
-    </div>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-</div>
 
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
+
 </html>
 @endsection

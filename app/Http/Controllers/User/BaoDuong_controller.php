@@ -58,4 +58,32 @@ function datlich_BaoDuong(Request $request)
         return back()->with('error', 'Có lỗi xảy ra trong quá trình lưu dữ liệu.');
     }
 }
+
+
+
+function lichbaoduongcuatoi()
+{
+    $service = new User();
+    $idkhachhang = session('user_id');
+
+    $data = $service->lay_lich_bao_duong($idkhachhang);
+
+    return view('user.layouts.LichBaoDuong', [
+        'danh_sach' => $data
+    ]);
+}
+
+function huyBaoDuong($id)
+{
+    $service = new User();
+    $userId = session('user_id');
+
+    $result = $service->huy_lich_bao_duong($id, $userId);
+
+    if ($result) {
+        return back()->with('success', 'Hủy lịch thành công!');
+    } else {
+        return back()->with('error', 'Không thể hủy lịch.');
+    }
+}
     }

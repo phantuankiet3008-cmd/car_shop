@@ -414,5 +414,79 @@ function dem_lich_trong_ngay($ngay)
 
     return (int)$row['total'];
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function lay_lich_bao_duong($id_khach){
+    $id_khach = (int)$id_khach;
+
+    $sql = "SELECT l.id_lich, sp.Ten_Xe, m.Ten_Mau, g.ten_goi, g.gia, 
+                   l.ngay_bao_duong, l.trang_thai
+            FROM lich_bao_duong l
+            JOIN xe_mau xm ON l.id_Xe_Mau = xm.id_Xe_Mau
+            JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+            JOIN mau_xe m ON xm.id_Mau = m.id_Mau
+            JOIN goi_bao_duong g ON l.id_goi = g.id_goi
+            WHERE l.id_Khach_Hang = $id_khach
+            ORDER BY l.id_lich DESC";
+
+    return $this->db->query($sql);
+}
+
+function huy_lich_bao_duong($id_lich, $user_id)
+{
+    $sql = "UPDATE lich_bao_duong 
+            SET trang_thai = 'da_huy' 
+            WHERE id_lich = ? AND id_khach_hang = ? 
+            AND trang_thai = 'cho_xac_nhan'";
+
+    $stmt = $this->db->prepare($sql);
+    $stmt->bind_param("ii", $id_lich, $user_id);
+
+    return $stmt->execute();
+}
 }
 ?>

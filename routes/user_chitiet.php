@@ -95,5 +95,6 @@ Route::middleware('user.auth')->prefix('user')->group(function () {
     // BẢO DƯỠNG XE
     Route::get('/car_shop/datlichbaoduong', [BaoDuong_controller::class, 'trang_baoduong'])->name('datlichbaoduong');
     Route::post('/car_shop/dat_bao_duong', [BaoDuong_controller::class, 'datlich_BaoDuong']);
-
+    Route::get('/car_shop/lich_bao_duong_cua_toi', [BaoDuong_controller::class, 'lichbaoduongcuatoi']);
+    Route::post('/car_shop/huy_bao_duong/{id}', [BaoDuong_controller::class, 'huyBaoDuong']);
 });
