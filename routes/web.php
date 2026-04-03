@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\UuDaiController;
 use App\Http\Controllers\Admin\SanPhamController;
 use App\Http\Controllers\Admin\KhachHangController;
 use App\Http\Controllers\Admin\lichlaythuController;
+use App\Http\Controllers\Admin\ThongKeController;
 use Illuminate\Support\Facades\Route;
 use App\Services\QL;
 use App\Http\Controllers\AdminAuthController;
@@ -36,6 +37,11 @@ Route::post('/trang_admin/DangNhapADM', [AdminAuthController::class, 'login'])
             'key' => 'dashboard'
         ]);
     });
+
+    // ===== KIỂM KÊ =====
+    Route::get('/trang_admin/kiem_ke/{tab?}', [ThongKeController::class, 'index']);
+    Route::get('/trang_admin/kiem_ke/khunggio-theongay', [ThongKeController::class, 'khungGioTheoNgay']);
+    Route::get('/trang_admin/kiem_ke/bao-duong-theongay', [ThongKeController::class, 'baoDuongTheoNgay']);
 
     // ===== LOẠI XE =====
     Route ::get('/trang_admin/loai_xe', [LoaiXeController::class, 'index']);

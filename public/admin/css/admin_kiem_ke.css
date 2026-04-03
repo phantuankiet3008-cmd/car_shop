@@ -1,0 +1,149 @@
+:root {
+    --bg: #f5f7fb;
+    --card: #ffffff;
+    --text: #1f2a44;
+    --muted: #6e7d90;
+    --border: #e1e8f2;
+    --accent: #2f80ed;
+    --accent-soft: rgba(47, 128, 237, 0.12);
+}
+
+.admin-kiem-ke {
+    background: var(--bg);
+    color: var(--text);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(19, 33, 66, 0.08);
+    max-width: 1200px;
+    margin: 20px auto;
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+.admin-kiem-ke h2 {
+    margin-bottom: 14px;
+    color: #253858;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.kiem_ke-sidebar {
+    display: inline-flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.kiem_ke-sidebar a {
+    padding: 10px 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 600;
+    background: var(--card);
+}
+
+.kiem_ke-sidebar a.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px rgba(47, 128, 237, 0.25);
+}
+
+.thong-ke-tieu-dung {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.thong-ke-tieu-dung form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    align-items: end;
+    margin-bottom: 22px;
+}
+
+.thong-ke-tieu-dung label {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.92rem;
+    color: var(--muted);
+}
+
+.thong-ke-tieu-dung input,
+.thong-ke-tieu-dung select,
+.thong-ke-tieu-dung button {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 0.95rem;
+}
+
+.thong-ke-tieu-dung button {
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    border-color: var(--accent);
+}
+
+.thong-ke-tieu-dung button:hover {
+    opacity: 0.95;
+}
+
+.thong-ke-tieu-dung h3 {
+    margin-top: 26px;
+    margin-bottom: 10px;
+    color: #2c3e50;
+    font-size: 1.1rem;
+    letter-spacing: 0.2px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+table th,
+table td {
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 0.92rem;
+}
+
+table th {
+    background: var(--accent-soft);
+    color: var(--text);
+    font-weight: 700;
+}
+
+table tr:nth-child(even) {
+    background: #f7f9fc;
+}
+
+#chartLichTheoThoiGian {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 960px) {
+    .admin-kiem-ke {
+        padding: 14px;
+    }
+    .thong-ke-tieu-dung form {
+        grid-template-columns: 1fr;
+    }
+    .thong-ke-tieu-dung table {
+        font-size: 0.84rem;
+    }
+}

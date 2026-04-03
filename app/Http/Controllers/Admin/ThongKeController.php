@@ -1,3 +1,5 @@
+<?php
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -6,36 +8,60 @@ use App\Services\QL;
 
 class ThongKeController extends Controller
 {
-public function index($tab = 'tieu-dung') 
-{
-    // 1. Lấy dữ liệu biểu đồ: Số lượng đơn hàng (khách mua) theo từng tháng
-    // Để biết tháng nào cao nhất
-    $bieuDoTieuDung = DB::table('don_hang')
-        ->select(
-            DB::raw('MONTH(created_at) as thang'), 
-            DB::raw('COUNT(id_Don_Hang) as so_luong_don'),
-            DB::raw('SUM(Tien_Coc) as doanh_thu_thang')
-        )
-        ->where('payment_status', 'paid')
-        ->groupBy('thang')
-        ->orderBy('thang', 'asc')
-        ->get();
+    public function index(Request $request, $tab = 'tieu-dung')
+    {
+        $service = new QL();
 
-    // 2. Lấy danh sách khách hàng tiêu dùng (Bảng chi tiết)
-    $dsKhachHang = DB::table('don_hang')
-        ->join('khach_hang', 'don_hang.id_Khach_Hang', '=', 'khach_hang.id_Khach_Hang')
-        ->select('khach_hang.Ho_Ten', 'khach_hang.SDT', 
-                DB::raw('SUM(don_hang.Tien_Coc) as tong_chi'), 
-                DB::raw('COUNT(don_hang.id_Don_Hang) as so_don'))
-        ->where('don_hang.payment_status', 'paid')
-        ->groupBy('khach_hang.id_Khach_Hang', 'khach_hang.Ho_Ten', 'khach_hang.SDT')
-        ->orderBy('tong_chi', 'desc')
-        ->get();
+        $from = $request->query('from');
+        $to = $request->query('to');
+        $group = $request->query('group', 'ngay');
 
-    return view('admin.layouts.index_AD', [
-        'key' => 'kiem_ke',
-        'tab' => $tab,
-        'bieuDo' => $bieuDoTieuDung,
-        'khachHang' => $dsKhachHang
-    ]);
+        $khungGio = $service->thongKeKhungGioLaiThu($from, $to);
+        $topXe = $service->thongKeXeLaiThu(10);
+        $topThuongHieu = $service->thongKeThuongHieuLaiThu(10);
+        $topLoaiXeMua = $service->thongKeLoaiXeMuaNhieu(10);
+        $topThuongHieuMua = $service->thongKeThuongHieuMuaNhieu(10);
+        $bieuDo = $service->thongKeLichTheoThoiGian($from, $to, $group);
+        $bieuDoBaoDuong = $service->thongKeLichBaoDuongTheoThoiGian($from, $to, $group);
+
+        return view('admin.layouts.index_AD', [
+            'key' => 'kiem_ke',
+            'tab' => $tab,
+            'khungGio' => $khungGio,
+            'topXe' => $topXe,
+            'topThuongHieu' => $topThuongHieu,
+            'topLoaiXeMua' => $topLoaiXeMua,
+            'topThuongHieuMua' => $topThuongHieuMua,
+            'bieuDo' => $bieuDo,
+            'bieuDoBaoDuong' => $bieuDoBaoDuong,
+            'group' => $group,
+            'from' => $from,
+            'to' => $to,  
+        ]);
+    }
+
+    public function khungGioTheoNgay(Request $request)
+    {
+        $ngay = $request->query('ngay');
+        if (!$ngay) {
+            return response()->json(['error' => 'Chưa truyền ngày'], 400);
+        }
+
+        $service = new QL();
+        $data = $service->thongKeChiTietNgay($ngay);
+        return response()->json(['date' => $ngay, 'khungGio' => $data]);
+    }
+
+    public function baoDuongTheoNgay(Request $request)
+    {
+        $ngay = $request->query('ngay');
+        if (!$ngay) {
+            return response()->json(['error' => 'Chưa truyền ngày'], 400);
+        }
+
+        $service = new QL();
+        $data = $service->thongKeChiTietBaoDuongTheoNgay($ngay);
+        return response()->json(['date' => $ngay, 'baoDuong' => $data]);
+    }
 }
+
