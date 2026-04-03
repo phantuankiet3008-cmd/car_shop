@@ -36,7 +36,7 @@
             <div id="chiTietKhungGio" style="display:none; margin-top:16px;">
                 <h4 id="tieuDeKhungGio">Chi tiết khung giờ của ngày </h4>
                 <table id="bangChiTietKhungGio" border="1" cellpadding="8" cellspacing="0" width="100%">
-                    <thead><tr><th>Khung giờ</th><th>Loại xe</th><th>Thương hiệu</th><th>Số lần đặt</th></tr></thead>
+                    <thead><tr><th>Khung giờ</th><th>Loại xe</th><th>Tên xe</th><th>Thương hiệu</th><th>Màu xe</th><th>Số lần đặt</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
@@ -130,18 +130,22 @@
         bangChiTietBody.innerHTML = '';
 
         if (!items || items.length === 0) {
-            bangChiTietBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Không có dữ liệu khung giờ</td></tr>';
+            bangChiTietBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Không có dữ liệu khung giờ</td></tr>';
         } else {
             items.forEach(function(item) {
                 const row = document.createElement('tr');
                 const td1 = document.createElement('td'); td1.textContent = item.khung_gio;
-                const td2 = document.createElement('td'); td2.textContent = item.ten_xe || '-';
-                const td3 = document.createElement('td'); td3.textContent = item.ten_thuong_hieu || '-';
-                const td4 = document.createElement('td'); td4.textContent = item.so_lan_dat;
+                const td2 = document.createElement('td'); td2.textContent = item.loai_xe || '-';
+                const td3 = document.createElement('td'); td3.textContent = item.ten_xe || '-';
+                const td4 = document.createElement('td'); td4.textContent = item.ten_thuong_hieu || '-';
+                const td5 = document.createElement('td'); td5.textContent = item.ten_mau || '-';
+                const td6 = document.createElement('td'); td6.textContent = item.so_lan_dat;
                 row.appendChild(td1);
                 row.appendChild(td2);
                 row.appendChild(td3);
                 row.appendChild(td4);
+                row.appendChild(td5);
+                row.appendChild(td6);
                 bangChiTietBody.appendChild(row);
             });
         }

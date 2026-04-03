@@ -38,10 +38,7 @@ Route::post('/trang_admin/DangNhapADM', [AdminAuthController::class, 'login'])
         ]);
     });
 
-    // ===== KIỂM KÊ =====
-    Route::get('/trang_admin/kiem_ke/{tab?}', [ThongKeController::class, 'index']);
-    Route::get('/trang_admin/kiem_ke/khunggio-theongay', [ThongKeController::class, 'khungGioTheoNgay']);
-    Route::get('/trang_admin/kiem_ke/bao-duong-theongay', [ThongKeController::class, 'baoDuongTheoNgay']);
+   
 
     // ===== LOẠI XE =====
     Route ::get('/trang_admin/loai_xe', [LoaiXeController::class, 'index']);
@@ -264,10 +261,13 @@ Route::get('/trang_admin/goibaoduong/them', function () {
 
     Route::get('/trang_admin/goibaoduong/xoa/{id}', [QLGoiBaoDuong_controller::class,'xoa_goi']);
    
-   // == thống kê tiêu dùng ==//
+  
 
 
-
+  // ===== KIỂM KÊ TIÊU DÙNG =====//
+    Route::get('/trang_admin/kiem_ke/khunggio-theongay', [ThongKeController::class, 'khungGioTheoNgay']);
+    Route::get('/trang_admin/kiem_ke/bao-duong-theongay', [ThongKeController::class, 'baoDuongTheoNgay']);
+    Route::get('/trang_admin/kiem_ke/{tab?}', [ThongKeController::class, 'index']);
 
 
 

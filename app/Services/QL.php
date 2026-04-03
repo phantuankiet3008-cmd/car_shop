@@ -948,7 +948,7 @@ public function Xoa_LaiThu($id)
 // THỐNG KÊ TIÊU DÙNG (LÁI THỬ / BẢO DƯỠNG)//
 public function thongKeKhungGioLaiThu($from = null, $to = null)
 {
-    $sql = "SELECT kg.id_Khung_Gio, CONCAT(kg.Gio_Bat_Dau, ' - ', kg.Gio_Ket_Thuc) as khung_gio, COUNT(*) as so_lan_dat
+    $sql = "SELECT kg.id_Khung_Gio, CONCAT(kg.Gio_Bat_Dau, ' - ', kg.Gio_Ket_Thuc) as khung_gio, COUNT(*) as so_lan_dat 
             FROM dat_lich_lai_thu dl
             JOIN khung_gio_lai_thu kg ON dl.id_Khung_Gio = kg.id_Khung_Gio
             WHERE 1=1";
@@ -1042,14 +1042,18 @@ public function thongKeChiTietNgay($ngay)
 {
     $ngay = $this->db->real_escape_string($ngay);
     $sql = "SELECT kg.id_Khung_Gio, CONCAT(kg.Gio_Bat_Dau, ' - ', kg.Gio_Ket_Thuc) as khung_gio, "
-         . "sp.Ten_Xe as ten_xe, th.Ten_Thuong_Hieu as ten_thuong_hieu, COUNT(*) as so_lan_dat\n"
+         . "lx.Ten_Loai_Xe as loai_xe, sp.Ten_Xe as ten_xe, th.Ten_Thuong_Hieu as ten_thuong_hieu, "
+         . "xm.id_Mau as id_mau, mx.Ten_Mau as ten_mau, MIN(xma.Hinh_Anh_Xe_Mau) AS hinh_anh_mau, COUNT(DISTINCT dl.id_Dat_Lich) as so_lan_dat\n"
          . "FROM dat_lich_lai_thu dl\n"
          . "JOIN khung_gio_lai_thu kg ON dl.id_Khung_Gio = kg.id_Khung_Gio\n"
          . "JOIN xe_mau xm ON dl.id_Xe_Mau = xm.id_Xe_Mau\n"
+         . "JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau\n"
          . "JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe\n"
+         . "JOIN loai_xe lx ON sp.id_Loai_Xe = lx.id_Loai_xe\n"
          . "JOIN thuong_hieu_xe th ON sp.id_Thuong_Hieu = th.id_Thuong_Hieu\n"
+         . "LEFT JOIN xe_mau_anh xma ON xm.id_Xe_Mau = xma.id_Xe_Mau\n"
          . "WHERE dl.Ngay_Lai_Thu = '$ngay'\n"
-         . "GROUP BY kg.id_Khung_Gio, kg.Gio_Bat_Dau, kg.Gio_Ket_Thuc, sp.id_Xe, sp.Ten_Xe, th.id_Thuong_Hieu, th.Ten_Thuong_Hieu\n"
+         . "GROUP BY kg.id_Khung_Gio, kg.Gio_Bat_Dau, kg.Gio_Ket_Thuc, lx.id_Loai_xe, lx.Ten_Loai_Xe, sp.id_Xe, sp.Ten_Xe, th.id_Thuong_Hieu, th.Ten_Thuong_Hieu, xm.id_Mau, mx.Ten_Mau\n"
          . "ORDER BY kg.Gio_Bat_Dau, so_lan_dat DESC";
 
     $result = $this->db->query($sql);
@@ -1065,7 +1069,7 @@ public function thongKeChiTietNgay($ngay)
 public function thongKeChiTietBaoDuongTheoNgay($ngay)
 {
     $ngay = $this->db->real_escape_string($ngay);
-    $sql = "SELECT sp.Ten_Xe as ten_xe, th.Ten_Thuong_Hieu as ten_thuong_hieu, lb.trang_thai, COUNT(*) as so_lan_dat\n"
+    $sql = "SELECT sp.Ten_Xe as ten_xe, th.Ten_Thuong_Hieu as ten_thuong_hieu, lb.trang_thai, COUNT(DISTINCT lb.id_Bao_Duong) as so_lan_dat\n"
          . "FROM lich_bao_duong lb\n"
          . "JOIN xe_mau xm ON lb.id_Xe_Mau = xm.id_Xe_Mau\n"
          . "JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe\n"
@@ -1106,7 +1110,7 @@ public function thongKeLichTheoThoiGian($from = null, $to = null, $group = 'ngay
         $sql .= " AND dl.Ngay_Lai_Thu <= '$to'";
     }
 
-    $sql .= " GROUP BY $groupField ORDER BY nhom ASC";
+    $sql .= " GROUP BY $groupField ORDER BY nhom ASC"; 
 
     $result = $this->db->query($sql);
     $data = [];
@@ -1118,7 +1122,7 @@ public function thongKeLichTheoThoiGian($from = null, $to = null, $group = 'ngay
     return $data;
 }
 
-public function thongKeLichBaoDuongTheoThoiGian($from = null, $to = null, $group = 'ngay')
+public function thongKeLichBaoDuongTheoThoiGian($from = null, $to = null, $group = 'ngay') 
 {
     $groupField = 'DATE(lb.ngay_bao_duong)';
     if ($group === 'thang') {
