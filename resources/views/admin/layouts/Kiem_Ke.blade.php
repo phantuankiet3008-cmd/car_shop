@@ -150,9 +150,9 @@
 
     const chartCanvas = document.getElementById('chartLichTheoThoiGian');
     const chiTietBox = document.getElementById('chiTietKhungGio');
-    const tieuDeChiTiet = document.getElementById('tieuDeKhungGio');
+    const tieuDeChiTiet = document.getElementById('tieuDeKhungGio'); 
     const bangChiTietBody = document.querySelector('#bangChiTietKhungGio tbody');
-    const chartGroup = @json($group ?? 'ngay');
+    const chartGroup = @json($group ?? 'ngay'); 
 
     function hienThiChiTietKhungGio(ngay, items) {
         if (!chiTietBox || !tieuDeChiTiet || !bangChiTietBody) return;
@@ -160,42 +160,30 @@
         bangChiTietBody.innerHTML = '';
 
         if (!items || items.length === 0) {
-            bangChiTietBody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Không có dữ liệu khung giờ</td></tr>';
+            bangChiTietBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Không có dữ liệu khung giờ</td></tr>';
         } else {
-            items.forEach(function(item) {
+            items.forEach(function(item) { 
                 const row = document.createElement('tr');
-                const td1 = document.createElement('td'); td1.textContent = item.khung_gio;
-                const td2 = document.createElement('td'); td2.textContent = item.loai_xe || '-';
-                const td3 = document.createElement('td'); td3.textContent = item.ten_xe || '-';
-                const td4 = document.createElement('td'); td4.textContent = item.ten_thuong_hieu || '-';
-                const td5 = document.createElement('td'); td5.textContent = item.ten_mau || '-';
-                const td6 = document.createElement('td'); td6.textContent = item.so_lan_dat;
-                row.appendChild(td1);
-                row.appendChild(td2);
-                row.appendChild(td3);
-                row.appendChild(td4);
-                row.appendChild(td5);
-                row.appendChild(td6);
+                row.innerHTML = `<td>${item.khung_gio}</td>
+                                 <td>${item.loai_xe || '-'}</td>
+                                 <td>${item.ten_xe || '-'}</td>
+                                 <td>${item.ten_thuong_hieu || '-'}</td>
+                                 <td>${item.ten_mau || '-'}</td>
+                                 <td>${item.so_lan_dat}</td>`;
                 bangChiTietBody.appendChild(row);
             });
         }
-
         chiTietBox.style.display = 'block';
     }
 
-    if (!chartCanvas) {
-        console.warn('Chart canvas not found (maybe tab khác không có canvas).');
-    } else if (!Array.isArray(chartData) || chartData.length === 0) {    
-        chartCanvas.style.display = 'none';
-        console.info('Không có dữ liệu biểu đồ để hiển thị.');
-    } else {
-        const ctx = chartCanvas.getContext('2d');
-        const chart = new Chart(ctx, {
+    if (chartCanvas && Array.isArray(chartData) && chartData.length > 0) {
+        const ctx = chartCanvas.getContext('2d'); 
+        new Chart(ctx, {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Số lần đặt lịch',
+                    label: 'Số lượt đặt lịch',
                     data: data,
                     borderColor: 'rgba(54, 162, 235, 1)',
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
@@ -209,48 +197,43 @@
                     if (activeEls.length === 0) return;
                     const index = activeEls[0].index;
                     const selectedDate = this.data.labels[index];
-
-                    // chỉ còn gọi chi tiết khi nhóm ngày (group=ngay)
                     if (chartGroup !== 'ngay') {
-                        alert('Chi tiết khung giờ chỉ khả dụng khi nhóm theo ngày. Vui lòng chọn nhóm Ngày hoặc dùng bộ lọc từ ngày đến ngày.');
+                        alert('Chi tiết khung giờ chỉ khả dụng khi nhóm theo ngày.');
                         return;
                     }
-
                     dateFilter.value = selectedDate;
                     fetchKhungGioTheoNgay(selectedDate); 
                 },
                 scales: {
+                    x: {
+                        title: { display: true, text: 'Thời gian', font: { weight: 'bold' } }
+                    },
                     y: {
                         beginAtZero: true,
                         ticks: {
                             stepSize: 1,
-                            callback: function(value) {
-                                return Number.isInteger(value) ? value : '';
-                            }
-                        }
+                            callback: value => Number.isInteger(value) ? value : ''
+                        },
+                        title: { display: true, text: 'Số lượt đặt', font: { weight: 'bold' } }
                     }
                 }
             }
         });
     }
+
     const baoDuongData = @json($bieuDoBaoDuong ?? []);
     const baoDuongLabels = Array.isArray(baoDuongData) ? baoDuongData.map(i => i.nhom) : [];
     const baoDuongValues = Array.isArray(baoDuongData) ? baoDuongData.map(i => parseInt(i.so_lan_dat)) : [];
     const baoDuongCanvas = document.getElementById('chartLichBaoDuongTheoThoiGian');
 
-    if (!baoDuongCanvas) {
-        console.warn('Chart bảo dưỡng không tìm thấy canvas.');
-    } else if (!Array.isArray(baoDuongData) || baoDuongData.length === 0) {
-        baoDuongCanvas.style.display = 'none';
-        console.info('Không có dữ liệu bảo dưỡng để hiển thị.');
-    } else {
+    if (baoDuongCanvas && Array.isArray(baoDuongData) && baoDuongData.length > 0) {
         const ctx2 = baoDuongCanvas.getContext('2d');
         new Chart(ctx2, {
             type: 'line',
             data: {
                 labels: baoDuongLabels,
                 datasets: [{
-                    label: 'Số lần đặt lịch bảo dưỡng',
+                    label: 'Số lượt đặt lịch bảo dưỡng',
                     data: baoDuongValues,
                     backgroundColor: 'rgba(34, 197, 94, 0.25)',
                     borderColor: 'rgba(34, 197, 94, 1)',
@@ -265,115 +248,61 @@
                     if (activeEls.length === 0) return;
                     const index = activeEls[0].index;
                     const selectedDate = this.data.labels[index];
-
                     if (chartGroup !== 'ngay') {
                         alert('Chi tiết bảo dưỡng theo ngày chỉ khả dụng khi nhóm theo ngày.');
                         return;
                     }
-
                     baoDuongDateFilter.value = selectedDate;
                     fetchBaoDuongTheoNgay(selectedDate);
                 },
                 scales: {
+                    x: {
+                        title: { display: true, text: 'Thời gian', font: { weight: 'bold' } }
+                    },
                     y: {
                         beginAtZero: true,
-                        ticks: {
-                            stepSize: 1
-                        }
+                        ticks: { stepSize: 1 },
+                        title: { display: true, text: 'Số lượt đặt', font: { weight: 'bold' } }
                     }
                 }
             }
         });
     }
-
-    function hienThiChiTietBaoDuong(ngay, items) {   // hiển thị chi tiết lịch bảo dưỡng của ngày được chọn
-        const chiTietBox = document.getElementById('chiTietBaoDuong');
-        const tieuDe = document.getElementById('tieuDeBaoDuong');
-        const body = document.querySelector('#bangChiTietBaoDuong tbody');
-        if (!chiTietBox || !tieuDe || !body) return; 
-
-        tieuDe.textContent = 'Chi tiết lịch bảo dưỡng ngày ' + ngay;
-        body.innerHTML = '';
-
-        if (!items || items.length === 0) {
-            body.innerHTML = '<tr><td colspan="6" style="text-align:center;">Không có dữ liệu bảo dưỡng</td></tr>';
-        } else {
-            items.forEach(function(item) {
-                const row = document.createElement('tr');
-                const c1 = document.createElement('td'); c1.textContent = item.ten_xe || '-';
-                const c2 = document.createElement('td'); c2.textContent = item.ten_mau || '-';
-                const c3 = document.createElement('td'); c3.textContent = item.ngay_bao_duong || '-';
-                const c4 = document.createElement('td'); c4.textContent = item.ngay_cap_nhat || '-';
-                const c5 = document.createElement('td'); c5.textContent = item.goi_bao_duong || '-';
-                const c6 = document.createElement('td'); c6.textContent = item.so_lan_dat;
-                row.appendChild(c1);
-                row.appendChild(c2);
-                row.appendChild(c3);
-                row.appendChild(c4);
-                row.appendChild(c5);
-                row.appendChild(c6);
-                body.appendChild(row);
-            });
-        }
-        chiTietBox.style.display = 'block';
-    }
-
-    const btnBaoDuongFetchByDate = document.getElementById('btnBaoDuongFetchByDate'); 
-    const baoDuongDateFilter = document.getElementById('baoDuongDateFilter');
-
-    btnBaoDuongFetchByDate.addEventListener('click', function () {
-        if (!baoDuongDateFilter.value) {
-            alert('Hãy chọn ngày để tra cứu lịch bảo dưỡng.');
-            return;
-        }
-        fetchBaoDuongTheoNgay(baoDuongDateFilter.value);
-    });
-
+// Hàm để gọi API lấy chi tiết bảo dưỡng theo ngày 
     function fetchBaoDuongTheoNgay(ngay) {
         fetch('/trang_admin/kiem_ke/bao-duong-theongay?ngay=' + encodeURIComponent(ngay))
             .then(r => r.json())
-            .then(json => {
-                if (json.baoDuong) {
-                    hienThiChiTietBaoDuong(ngay, json.baoDuong);
-                } else {
-                    hienThiChiTietBaoDuong(ngay, []);
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                hienThiChiTietBaoDuong(ngay, []);
-            });
+            .then(json => hienThiChiTietBaoDuong(ngay, json.baoDuong || []))
+            .catch(err => console.error(err));
     }
+
+    function fetchKhungGioTheoNgay(ngay) {
+        fetch('/trang_admin/kiem_ke/khunggio-theongay?ngay=' + encodeURIComponent(ngay))
+            .then(r => r.json())
+            .then(json => hienThiChiTietKhungGio(ngay, json.khungGio || []))
+            .catch(e => console.error(e));
+    }
+
+    function hienThiChiTietBaoDuong(ngay, items) {
+        const chiTietBoxBD = document.getElementById('chiTietBaoDuong');
+        const tieuDeBD = document.getElementById('tieuDeBaoDuong');
+        const bodyBD = document.querySelector('#bangChiTietBaoDuong tbody');
+        if (!chiTietBoxBD || !bodyBD) return;
+        tieuDeBD.textContent = 'Chi tiết lịch bảo dưỡng ngày ' + ngay; 
+        bodyBD.innerHTML = items.length === 0 ? '<tr><td colspan="6" style="text-align:center;">Không có dữ liệu</td></tr>' : '';
+        items.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${item.ten_xe || '-'}</td><td>${item.ten_mau || '-'}</td><td>${item.ngay_bao_duong}</td><td>${item.ngay_cap_nhat}</td><td>${item.goi_bao_duong}</td><td>${item.so_lan_dat}</td>`;
+            bodyBD.appendChild(row);
+        });
+        chiTietBoxBD.style.display = 'block';
+    }
+
+    const btnBaoDuongFetchByDate = document.getElementById('btnBaoDuongFetchByDate'); //  nút tra cứu 
+    const baoDuongDateFilter = document.getElementById('baoDuongDateFilter'); // input ngày bảo dưỡng
+    btnBaoDuongFetchByDate?.addEventListener('click', () => baoDuongDateFilter.value ? fetchBaoDuongTheoNgay(baoDuongDateFilter.value) : alert('Hãy chọn ngày!')); 
 
     const btnFetchByDate = document.getElementById('btnFetchByDate');
     const dateFilter = document.getElementById('dateFilter');
-
-    // Nếu đã có ngày mặc định (từ filter), hiển thị chi tiết ngay lập tức
-    if (dateFilter.value && chartGroup === 'ngay') {
-        fetchKhungGioTheoNgay(dateFilter.value);
-    }
-
-    btnFetchByDate.addEventListener('click', function () {
-        if (!dateFilter.value) {
-            alert('Hãy chọn ngày cần tra khung giờ.');
-            return;
-        }
-        fetchKhungGioTheoNgay(dateFilter.value);
-    });
-
-    function fetchKhungGioTheoNgay(ngay) {   // gọi API để lấy chi tiết khung giờ của ngày được chọn
-        fetch('/trang_admin/kiem_ke/khunggio-theongay?ngay=' + encodeURIComponent(ngay))
-            .then(r => r.json()) 
-            .then(json => { 
-                if (json.khungGio) {
-                    hienThiChiTietKhungGio(ngay, json.khungGio);
-                } else {
-                    hienThiChiTietKhungGio(ngay, []);
-                }
-            })
-            .catch(e => {
-                console.error(e);
-                hienThiChiTietKhungGio(ngay, []);
-            });
-    }
-</script>      
+    btnFetchByDate?.addEventListener('click', () => dateFilter.value ? fetchKhungGioTheoNgay(dateFilter.value) : alert('Hãy chọn ngày!'));
+</script>

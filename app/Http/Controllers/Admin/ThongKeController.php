@@ -12,8 +12,8 @@ class ThongKeController extends Controller
     {
         $service = new QL();
 
-        $from = $request->query('from');
-        $to = $request->query('to');
+        $from = $request->query('from',now()->subDays (30)->format('Y-m-d'));
+        $to = $request->query('to', now()->addMonths(1)->format('Y-m-d'));
         $group = $request->query('group', 'ngay');//
 
         $khungGio = $service->thongKeKhungGioLaiThu($from, $to);
