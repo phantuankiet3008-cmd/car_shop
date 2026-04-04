@@ -14,13 +14,14 @@ class ThongKeController extends Controller
 
         $from = $request->query('from');
         $to = $request->query('to');
-        $group = $request->query('group', 'ngay');
+        $group = $request->query('group', 'ngay');//
 
         $khungGio = $service->thongKeKhungGioLaiThu($from, $to);
         $topXe = $service->thongKeXeLaiThu(10);
         $topThuongHieu = $service->thongKeThuongHieuLaiThu(10);
         $topLoaiXeMua = $service->thongKeLoaiXeMuaNhieu(10);
         $topThuongHieuMua = $service->thongKeThuongHieuMuaNhieu(10);
+        $topMauXe = $service->thongKeMauXeYeuThich(10);
         $bieuDo = $service->thongKeLichTheoThoiGian($from, $to, $group);
         $bieuDoBaoDuong = $service->thongKeLichBaoDuongTheoThoiGian($from, $to, $group);
 
@@ -32,6 +33,7 @@ class ThongKeController extends Controller
             'topThuongHieu' => $topThuongHieu,
             'topLoaiXeMua' => $topLoaiXeMua,
             'topThuongHieuMua' => $topThuongHieuMua,
+            'topMauXe' => $topMauXe,
             'bieuDo' => $bieuDo,
             'bieuDoBaoDuong' => $bieuDoBaoDuong,
             'group' => $group,

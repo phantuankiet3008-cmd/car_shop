@@ -52,7 +52,7 @@
             <div id="chiTietBaoDuong" style="display:none; margin-top:16px;">
                 <h4 id="tieuDeBaoDuong">Chi tiết lịch bảo dưỡng ngày </h4>
                 <table id="bangChiTietBaoDuong" border="1" cellpadding="8" cellspacing="0" width="100%">
-                    <thead><tr><th>Xe</th><th>Thương hiệu</th><th>Trạng thái</th><th>Số lượt</th></tr></thead>
+                    <thead><tr><th>Xe</th><th>Màu xe</th><th>Ngày bảo dưỡng</th><th>Ngày cập nhật</th><th>Gói bảo dưỡng</th><th>Số lượt</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
@@ -108,6 +108,16 @@
                     @endforeach
                 </tbody>
             </table>
+
+            <h3>Top màu xe yêu thích</h3>
+            <table border="1" cellpadding="8" cellspacing="0" width="100%">
+                <thead><tr><th>Màu xe</th><th>Số lần đặt</th></tr></thead>
+                <tbody>
+                    @foreach($topMauXe ?? [] as $row)
+                        <tr><td>{{ $row['Ten_Mau'] }}</td><td>{{ $row['so_lan_dat'] }}</td></tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     @endif
 </div>
@@ -155,7 +165,7 @@
 
     if (!chartCanvas) {
         console.warn('Chart canvas not found (maybe tab khác không có canvas).');
-    } else if (!Array.isArray(chartData) || chartData.length === 0) {
+    } else if (!Array.isArray(chartData) || chartData.length === 0) {    
         chartCanvas.style.display = 'none';
         console.info('Không có dữ liệu biểu đồ để hiển thị.');
     } else {
@@ -187,7 +197,7 @@
                     }
 
                     dateFilter.value = selectedDate;
-                    fetchKhungGioTheoNgay(selectedDate);
+                    fetchKhungGioTheoNgay(selectedDate); 
                 },
                 scales: {
                     y: {
@@ -256,32 +266,39 @@
         });
     }
 
-    function hienThiChiTietBaoDuong(ngay, items) {
+    function hienThiChiTietBaoDuong(ngay, items) {   // hiển thị chi tiết lịch bảo dưỡng của ngày được chọn
         const chiTietBox = document.getElementById('chiTietBaoDuong');
         const tieuDe = document.getElementById('tieuDeBaoDuong');
         const body = document.querySelector('#bangChiTietBaoDuong tbody');
-        if (!chiTietBox || !tieuDe || !body) return;
+        if (!chiTietBox || !tieuDe || !body) return; 
 
         tieuDe.textContent = 'Chi tiết lịch bảo dưỡng ngày ' + ngay;
         body.innerHTML = '';
 
         if (!items || items.length === 0) {
-            body.innerHTML = '<tr><td colspan="4" style="text-align:center;">Không có dữ liệu bảo dưỡng</td></tr>';
+            body.innerHTML = '<tr><td colspan="6" style="text-align:center;">Không có dữ liệu bảo dưỡng</td></tr>';
         } else {
             items.forEach(function(item) {
                 const row = document.createElement('tr');
                 const c1 = document.createElement('td'); c1.textContent = item.ten_xe || '-';
-                const c2 = document.createElement('td'); c2.textContent = item.ten_thuong_hieu || '-';
-                const c3 = document.createElement('td'); c3.textContent = item.trang_thai || '-';
-                const c4 = document.createElement('td'); c4.textContent = item.so_lan_dat;
-                row.appendChild(c1); row.appendChild(c2); row.appendChild(c3); row.appendChild(c4);
+                const c2 = document.createElement('td'); c2.textContent = item.ten_mau || '-';
+                const c3 = document.createElement('td'); c3.textContent = item.ngay_bao_duong || '-';
+                const c4 = document.createElement('td'); c4.textContent = item.ngay_cap_nhat || '-';
+                const c5 = document.createElement('td'); c5.textContent = item.goi_bao_duong || '-';
+                const c6 = document.createElement('td'); c6.textContent = item.so_lan_dat;
+                row.appendChild(c1);
+                row.appendChild(c2);
+                row.appendChild(c3);
+                row.appendChild(c4);
+                row.appendChild(c5);
+                row.appendChild(c6);
                 body.appendChild(row);
             });
         }
         chiTietBox.style.display = 'block';
     }
 
-    const btnBaoDuongFetchByDate = document.getElementById('btnBaoDuongFetchByDate');
+    const btnBaoDuongFetchByDate = document.getElementById('btnBaoDuongFetchByDate'); 
     const baoDuongDateFilter = document.getElementById('baoDuongDateFilter');
 
     btnBaoDuongFetchByDate.addEventListener('click', function () {
@@ -326,7 +343,7 @@
 
     function fetchKhungGioTheoNgay(ngay) {   // gọi API để lấy chi tiết khung giờ của ngày được chọn
         fetch('/trang_admin/kiem_ke/khunggio-theongay?ngay=' + encodeURIComponent(ngay))
-            .then(r => r.json())
+            .then(r => r.json()) 
             .then(json => { 
                 if (json.khungGio) {
                     hienThiChiTietKhungGio(ngay, json.khungGio);
