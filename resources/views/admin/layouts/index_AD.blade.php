@@ -27,8 +27,9 @@
         <div class="body_trang">
 
             <!-- MENU TRÁI -->
-            <div class="left_menu">
+           <div class="left_menu">
                 <ul class="menu_admin">
+                    <li class="menu_item"><a href="{{ url('/trang_admin') }}">Dashboard Thống Kê</a></li> 
                     <li class="menu_item"><a href="{{ url('/trang_admin/loai_xe') }}">Loại Xe</a></li>
                     <li class="menu_item"><a href="{{ url('/trang_admin/thuong_hieu') }}">Thương Hiệu</a></li>
                     <li class="menu_item"><a href="{{ url('/trang_admin/san_pham') }}">Sản Phẩm</a></li>
@@ -46,11 +47,8 @@
 
                 @if(isset($key))
                 @switch($key)
-                @case('dashboard')
-                <div class="dashboard">
-                    <h2>Chào mừng Admin 👋</h2>
-                    <p>Chọn chức năng bên trái để quản lý hệ thống.</p>
-                </div>
+               @case('dashboard')
+                @include('admin.thongke.dashboard')
                 @break
 
                 @case('dang_xuat')

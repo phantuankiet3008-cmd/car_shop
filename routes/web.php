@@ -12,7 +12,7 @@ use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\User\BaoDuong_controller;
 use App\Http\Controllers\Admin\QLBaoDuong_controller;
 use App\Http\Controllers\Admin\QLGoiBaoDuong_controller;
-
+use App\Http\Controllers\Admin\ThongKeController;
 /*
 |--------------------------------------------------------------------------
 | ADMIN ROUTES
@@ -29,13 +29,9 @@ Route::post('/trang_admin/DangNhapADM', [AdminAuthController::class, 'login'])
 // ====== KHU VỰC ADMIN ======
 Route::middleware('admin.auth')->group(function () {
 
-    // ===== DASHBOARD =====
-    Route::get('/trang_admin', function () {
-        return view('admin.layouts.index_AD', [
-            'key' => 'dashboard'
-        ]);
-    });
-
+  // ===== DASHBOARD (Đã kết nối Controller Thống Kê) =====
+    Route::get('/trang_admin', [ThongKeController::class, 'index'])->name('admin.dashboard');
+    
     // ===== LOẠI XE =====
     Route ::get('/trang_admin/loai_xe', [LoaiXeController::class, 'index']);
     Route::get('/trang_admin/loai_xe/them', [LoaiXeController::class, 'create']);
