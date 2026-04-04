@@ -20,8 +20,10 @@ class ThongKeController extends Controller
         $topXe = $service->thongKeXeLaiThu(10);
         $topThuongHieu = $service->thongKeThuongHieuLaiThu(10);
         $topLoaiXeMua = $service->thongKeLoaiXeMuaNhieu(10);
+        $topLoaiXeUaChuong = $service->thongKeLoaiXeUaChuong(10);
         $topThuongHieuMua = $service->thongKeThuongHieuMuaNhieu(10);
-        $topMauXe = $service->thongKeMauXeYeuThich(10);
+        $topMauXeUaChuong = $service->thongKeMauXeUaChuong(10);
+        $topMauXeMua = $service->thongKeMauXeMua(10);
         $bieuDo = $service->thongKeLichTheoThoiGian($from, $to, $group);
         $bieuDoBaoDuong = $service->thongKeLichBaoDuongTheoThoiGian($from, $to, $group);
 
@@ -32,8 +34,10 @@ class ThongKeController extends Controller
             'topXe' => $topXe,
             'topThuongHieu' => $topThuongHieu,
             'topLoaiXeMua' => $topLoaiXeMua,
+            'topLoaiXeUaChuong' => $topLoaiXeUaChuong,
             'topThuongHieuMua' => $topThuongHieuMua,
-            'topMauXe' => $topMauXe,
+            'topMauXeUaChuong' => $topMauXeUaChuong,
+            'topMauXeMua' => $topMauXeMua,
             'bieuDo' => $bieuDo,
             'bieuDoBaoDuong' => $bieuDoBaoDuong,
             'group' => $group,

@@ -71,7 +71,7 @@
 
             <h3>Top xe được đặt lái thử nhiều nhất</h3>
             <table border="1" cellpadding="8" cellspacing="0" width="100%">
-                <thead><tr><th>Xe</th><th>Số lần</th></tr></thead>
+                <thead><tr><th>Xe</th><th>Số lượt đặt</th></tr></thead>
                 <tbody>
                     @foreach($topXe ?? [] as $row)
                         <tr><td>{{ $row['Ten_Xe'] }}</td><td>{{ $row['so_lan_lai_thu'] }}</td></tr>
@@ -79,9 +79,9 @@
                 </tbody>
             </table>
 
-            <h3>Top thương hiệu được quan tâm</h3>
+            <h3>Top thương hiệu được ưa thích </h3> 
             <table border="1" cellpadding="8" cellspacing="0" width="100%">
-                <thead><tr><th>Thương hiệu</th><th>Số lượt quan tâm </th></tr></thead>
+                <thead><tr><th>Thương hiệu</th><th>  lượt ưa thích  </th></tr></thead>
                 <tbody>
                     @foreach($topThuongHieu ?? [] as $row)
                         <tr><td>{{ $row['Ten_Thuong_Hieu'] }}</td><td>{{ $row['so_lan_lai_thu'] }}</td></tr>
@@ -89,9 +89,19 @@
                 </tbody>
             </table>
 
+            <h3>Top loại xe được ưa thích </h3>
+            <table border="1" cellpadding="8" cellspacing="0" width="100%">
+                <thead><tr><th>Loại xe</th><th>  lượt ưa thích  </th></tr></thead>
+                <tbody>
+                    @foreach($topLoaiXeUaChuong ?? [] as $row)
+                        <tr><td>{{ $row['Ten_Loai_Xe'] }}</td><td>{{ $row['so_lan_lai_thu'] }}</td></tr>
+                    @endforeach
+                </tbody>
+            </table>
+
             <h3>Top loại xe mua nhiều nhất</h3>
             <table border="1" cellpadding="8" cellspacing="0" width="100%">
-                <thead><tr><th>Loại xe</th><th>Số lần</th></tr></thead>
+                <thead><tr><th>Loại xe</th><th>  lượt mua </th></tr></thead>
                 <tbody>
                     @foreach($topLoaiXeMua ?? [] as $row)
                         <tr><td>{{ $row['Ten_Loai_Xe'] }}</td><td>{{ $row['so_lan_mua'] }}</td></tr>
@@ -101,7 +111,7 @@
 
             <h3>Top thương hiệu mua nhiều nhất</h3>
             <table border="1" cellpadding="8" cellspacing="0" width="100%">
-                <thead><tr><th>Thương hiệu</th><th>Số lần</th></tr></thead>
+                <thead><tr><th>Thương hiệu</th><th>  lượt mua </th></tr></thead>
                 <tbody>
                     @foreach($topThuongHieuMua ?? [] as $row)
                         <tr><td>{{ $row['Ten_Thuong_Hieu'] }}</td><td>{{ $row['so_lan_mua'] }}</td></tr>
@@ -109,12 +119,22 @@
                 </tbody>
             </table>
 
-            <h3>Top màu xe yêu thích</h3>
+            <h3>Top màu xe được ưa thích </h3>
             <table border="1" cellpadding="8" cellspacing="0" width="100%">
-                <thead><tr><th>Màu xe</th><th>Số lần đặt</th></tr></thead>
+                <thead><tr><th>Màu xe</th><th> lượt ưa thích  </th></tr></thead>
                 <tbody>
-                    @foreach($topMauXe ?? [] as $row)
+                    @foreach($topMauXeUaChuong ?? [] as $row)
                         <tr><td>{{ $row['Ten_Mau'] }}</td><td>{{ $row['so_lan_dat'] }}</td></tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+            <h3>Top màu xe được mua</h3>
+            <table border="1" cellpadding="8" cellspacing="0" width="100%">
+                <thead><tr><th>Màu xe</th><th> lượt  mua</th></tr></thead>
+                <tbody>
+                    @foreach($topMauXeMua ?? [] as $row)
+                        <tr><td>{{ $row['Ten_Mau'] }}</td><td>{{ $row['so_lan_mua'] }}</td></tr>
                     @endforeach
                 </tbody>
             </table>

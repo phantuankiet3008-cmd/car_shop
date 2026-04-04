@@ -1180,7 +1180,7 @@ public function thongKeLoaiXeMuaNhieu($limit = 10)
     return $data;
 }
 
-public function thongKeMauXeYeuThich($limit = 10)
+public function thongKeMauXeUaChuong($limit = 10)
 {
     $limit = (int)$limit;
     $sql = "SELECT mx.id_Mau, mx.Ten_Mau, COUNT(*) as so_lan_dat
@@ -1189,6 +1189,28 @@ public function thongKeMauXeYeuThich($limit = 10)
             JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau
             GROUP BY mx.id_Mau, mx.Ten_Mau
             ORDER BY so_lan_dat DESC
+            LIMIT $limit";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeMauXeMua($limit = 10)
+{
+    $limit = (int)$limit;
+    $sql = "SELECT mx.id_Mau, mx.Ten_Mau, COUNT(*) as so_lan_mua
+            FROM don_hang dh
+            JOIN xe_mau xm ON dh.id_Xe_Mau = xm.id_Xe_Mau
+            JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau
+            WHERE dh.payment_status = 'paid'
+            GROUP BY mx.id_Mau, mx.Ten_Mau
+            ORDER BY so_lan_mua DESC
             LIMIT $limit";
 
     $result = $this->db->query($sql);
@@ -1212,6 +1234,28 @@ public function thongKeThuongHieuMuaNhieu($limit = 10)
             WHERE dh.payment_status = 'paid'
             GROUP BY th.id_Thuong_Hieu, th.Ten_Thuong_Hieu
             ORDER BY so_lan_mua DESC
+            LIMIT $limit";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeLoaiXeUaChuong($limit = 10)
+{
+    $limit = (int)$limit;
+    $sql = "SELECT lx.id_Loai_xe, lx.Ten_Loai_Xe, COUNT(*) as so_lan_lai_thu
+            FROM dat_lich_lai_thu dllt
+            JOIN xe_mau xm ON dllt.id_Xe_Mau = xm.id_Xe_Mau
+            JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+            JOIN loai_xe lx ON sp.id_Loai_Xe = lx.id_Loai_xe
+            GROUP BY lx.id_Loai_xe, lx.Ten_Loai_Xe
+            ORDER BY so_lan_lai_thu DESC
             LIMIT $limit";
 
     $result = $this->db->query($sql);
