@@ -6,7 +6,8 @@
     <meta charset="UTF-8">
     <title>Trang Admin</title>
     <link rel="stylesheet" href="{{ asset('admin/css/admin.css') }}">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -20,7 +21,7 @@
             <h2 class="title_trang">TRANG QUẢN TRỊ</h2>
             Chào mừng bạn đến với trang quản trị.
             Hãy chọn một mục từ menu bên trái để bắt đầu quản lý.
-            <a href="{{ url('/admin/dang_xuat') }}" class="logout">Đăng xuất</a>
+            <a href="{{ route('admin.logout') }}" class="logout">Đăng xuất</a>
         </div>
 
         <!-- BODY -->
@@ -29,15 +30,38 @@
             <!-- MENU TRÁI -->
             <div class="left_menu">
                 <ul class="menu_admin">
-                    <li class="menu_item"><a href="{{ url('/trang_admin/loai_xe') }}">Loại Xe</a></li>
-                    <li class="menu_item"><a href="{{ url('/trang_admin/thuong_hieu') }}">Thương Hiệu</a></li>
-                    <li class="menu_item"><a href="{{ url('/trang_admin/san_pham') }}">Sản Phẩm</a></li>
-                    <li class="menu_item"><a href="{{ url('/trang_admin/khach_hang') }}">Khách Hàng</a></li>
-                    <li class="menu_item"><a href="{{ url('/trang_admin/don_hang') }}">Đơn Hàng</a></li>
-                    <li class="menu_item"><a href="{{ url('/trang_admin/uu_dai') }}">Quản Lý Ưu Đãi</a></li>
-                    <li class="menu_item"><a href="{{ url('/trang_admin/lai_thu') }}">Đặt Lịch Lái Thử</a></li>
-                    <li class="menu_item"><a href="{{ url('/trang_admin/baoduong') }}">Đặt Lịch Bảo Dưỡng</a></li>
-                    <li class="menu_item"><a href="{{ url('/trang_admin/kiem_ke') }}">Kiểm Kê</a></li>
+<<<<<<< feature-DangNhapQL
+                    <li class="menu_item"><a href="{{ url('/trang_admin/loai_xe') }}"><i
+                                class="fa-solid fa-layer-group"></i>Loại Xe</a></li>
+                    <li class="menu_item"><a href="{{ url('/trang_admin/thuong_hieu') }}"><i
+                                class="fa-solid fa-copyright"></i>Thương Hiệu</a></li>
+                    <li class="menu_item"><a href="{{ url('/trang_admin/san_pham') }}"><i
+                                class="fa-solid fa-car"></i>Sản Phẩm</a></li>
+                    <li class="menu_item"><a href="{{ url('/trang_admin/khach_hang') }}"><i
+                                class="fa-solid fa-users"></i>Khách Hàng</a></li>
+                    <li class="menu_item"><a href="{{ url('/trang_admin/don_hang') }}"><i
+                                class="fa-solid fa-cart-shopping"></i>Đơn Hàng</a></li>
+                    <li class="menu_item"><a href="{{ url('/trang_admin/uu_dai') }}"><i
+                                class="fa-solid fa-tags"></i>Quản Lý Ưu Đãi</a></li>
+                    <li class="menu_item"><a href="{{ url('/trang_admin/lai_thu') }}"><i
+                                class="fa-solid fa-calendar-check"></i>Đặt Lịch Lái Thử</a></li>
+                    <li class="menu_item"><a href="{{ url('/trang_admin/baoduong') }}"><i
+                                class="fa-solid fa-screwdriver-wrench"></i>Đặt Lịch Bảo Dưỡng</a></li>
+                    <li class="menu_item"><a href="{{ url('/trang_admin/kiem_ke') }}"><i
+                                class="fa-solid fa-clipboard-list"></i>Kiểm Kê</a></li>
+=======
+
+                    <li class="menu_item"><a href="{{ url('/trang_admin/loai_xe') }}"><i class="fa-solid fa-layer-group"></i>Loại Xe</a></li>
+                    <li class="menu_item"><a href="{{ url('/trang_admin/thuong_hieu') }}"><i class="fa-solid fa-copyright"></i>Thương Hiệu</a></li>
+                    <li class="menu_item"><a href="{{ url('/trang_admin/san_pham') }}"><i class="fa-solid fa-car"></i>Sản Phẩm</a></li>
+                    <li class="menu_item"><a href="{{ url('/trang_admin/khach_hang') }}"><i class="fa-solid fa-users"></i>Khách Hàng</a></li>
+                    <li class="menu_item"><a href="{{ url('/trang_admin/don_hang') }}"><i class="fa-solid fa-cart-shopping"></i>Đơn Hàng</a></li>
+                    <li class="menu_item"><a href="{{ url('/trang_admin/uu_dai') }}"><i class="fa-solid fa-tags"></i>Quản Lý Ưu Đãi</a></li>
+                    <li class="menu_item"><a href="{{ url('/trang_admin/lai_thu') }}"><i class="fa-solid fa-calendar-check"></i>Đặt Lịch Lái Thử</a></li>
+                    <li class="menu_item"><a href="{{ url('/trang_admin/baoduong') }}"><i class="fa-solid fa-screwdriver-wrench"></i>Đặt Lịch Bảo Dưỡng</a></li>
+                    <li class="menu_item"><a href="{{ url('/trang_admin/kiem_ke') }}"><i class="fa-solid fa-clipboard-list"></i>Kiểm Kê</a></li>
+>>>>>>> main
+                    <li class="menu_item"><a href="{{ url('/trang_admin/nhan_vien') }}">Nhân Viên</a></li>
                 </ul>
             </div>
 
@@ -52,7 +76,6 @@
                     <p>Chọn chức năng bên trái để quản lý hệ thống.</p>
                 </div>
                 @break
-
                 @case('dang_xuat')
                 @include('admin.layouts.DangXuatADM')
                 @break
@@ -140,13 +163,20 @@
                 @break
 
                 @case('don_hang')
-                @include('admin.layouts.Don_Hang')
+                @include('admin.layouts.QL_donhang.listdonhang')
+                @break
+
+                @case('them_don_hang')
+                @include('admin.layouts.QL_donhang.ADDdonhang')
+                @break
+
+                @case('Edit_Don_Hang')
+                @include('admin.layouts.QL_donhang.editdonhang')
                 @break
 
                 @case('lai_thu')
                 @include('admin.layouts.QL_laithu.LichLaiThu')
                 @break
-
                 @case('bao_duong')
                 @include('admin.layouts.QL_baoduong.QLBaoDuong')
                 @break
@@ -169,6 +199,18 @@
 
                 @case('kiem_ke')
                 @include('admin.layouts.Kiem_Ke')
+                @break
+
+                @case('nhan_vien')
+                @include('admin.layouts.QL_nhanvien.ListNhanVien')
+                @break
+
+                @case('add_nhan_vien')
+                @include('admin.layouts.QL_nhanvien.AddNhanVien')
+                @break
+
+                @case('edit_nhan_vien')
+                @include('admin.layouts.QL_nhanvien.EditNhanVien')
                 @break
 
                 @endswitch

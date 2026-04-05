@@ -5,33 +5,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sửa lịch bảo dưỡng</title>
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 </head>
 
 <body>
     <h2>Sửa lịch bảo dưỡng</h2>
 
     @if(session('error'))
-    <p style="color:red">{{ session('error') }}</p>
+    <p style="color:red; text-align:center">{{ session('error') }}</p>
     @endif
 
     <form action="/trang_admin/baoduong/update/{{ $data['baoduong']['id_lich'] }}" method="POST">
-
         @csrf
 
-        <table border="1" cellpadding="10">
+        <table>
 
             <tr>
                 <td>Khách hàng</td>
-                <td>
-                    {{ $data['baoduong']['Ho_Ten'] }}
-                </td>
+                <td>{{ $data['baoduong']['Ho_Ten'] }}</td>
             </tr>
 
             <tr>
                 <td>Số điện thoại</td>
-                <td>
-                    {{ $data['baoduong']['So_Dien_Thoai'] }}
-                </td>
+                <td>{{ $data['baoduong']['So_Dien_Thoai'] }}</td>
             </tr>
 
             <tr>
@@ -41,10 +37,18 @@
                 </td>
             </tr>
 
+            <!-- ✅ CHO PHÉP CHỌN GÓI -->
             <tr>
                 <td>Gói bảo dưỡng</td>
                 <td>
-                    {{ $data['baoduong']['ten_goi'] }}
+                    <select name="id_goi" required>
+                        @foreach($data['ds_goi'] as $goi)
+                        <option value="{{ $goi['id_goi'] }}" @if($goi['id_goi']==$data['baoduong']['id_goi']) selected
+                            @endif>
+                            {{ $goi['ten_goi'] }}
+                        </option>
+                        @endforeach
+                    </select>
                 </td>
             </tr>
 
@@ -58,7 +62,7 @@
             <tr>
                 <td>Ghi chú</td>
                 <td>
-                    <textarea name="ghi_chu" rows="4" cols="40">
+                    <textarea name="ghi_chu" rows="4">
 {{ $data['baoduong']['ghi_chu'] }}
 </textarea>
                 </td>
@@ -67,47 +71,38 @@
             <tr>
                 <td>Trạng thái</td>
                 <td>
-
                     <select name="trang_thai">
-
-                        <option value="0" @if($data['baoduong']['trang_thai']==0) selected @endif>
+                        <option value="cho_xac_nhan" @if($data['baoduong']['trang_thai']=='cho_xac_nhan' ) selected
+                            @endif>
                             Chờ xác nhận
                         </option>
 
-                        <option value="1" @if($data['baoduong']['trang_thai']==1) selected @endif>
+                        <option value="da_xac_nhan" @if($data['baoduong']['trang_thai']=='da_xac_nhan' ) selected
+                            @endif>
                             Đã xác nhận
                         </option>
 
-                        <option value="2" @if($data['baoduong']['trang_thai']==2) selected @endif>
+                        <option value="dang_bao_duong" @if($data['baoduong']['trang_thai']=='dang_bao_duong' ) selected
+                            @endif>
                             Đang bảo dưỡng
                         </option>
 
-                        <option value="3" @if($data['baoduong']['trang_thai']==3) selected @endif>
+                        <option value="hoan_thanh" @if($data['baoduong']['trang_thai']=='hoan_thanh' ) selected @endif>
                             Hoàn thành
                         </option>
-
                     </select>
-
                 </td>
             </tr>
 
             <tr>
                 <td></td>
                 <td>
-
-                    <button type="submit">
-                        Cập nhật
-                    </button>
-
-                    <a href="/trang_admin/baoduong">
-                        Quay lại
-                    </a>
-
+                    <button type="submit">Cập nhật</button>
+                    <a href="/trang_admin/baoduong">Quay lại</a>
                 </td>
             </tr>
 
         </table>
-
     </form>
 </body>
 

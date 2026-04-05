@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="{{ asset('admin/css/admin.css') }}">
 <div class="main-content">
     <div class="card">
         <h2 class="page-title">
@@ -65,7 +66,6 @@
                 <button type="submit" class="btn btn-edit">
                     CẬP NHẬT
                 </button>
-
                 <a href="{{ url('/trang_admin/thuong_hieu_xe') }}"
                    class="btn btn-delete">
                     QUAY LẠI

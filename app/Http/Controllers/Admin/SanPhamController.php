@@ -19,15 +19,25 @@ class SanPhamController extends Controller
     }
 
     // Danh sách sản phẩm xe
-    public function index()
-    {
-        return view('admin.layouts.index_AD', [
-            'key' => 'san_pham',
-            'data' => [
-                'danh_sach' => $this->ql->DanhSach_SanPham()
-            ]
-        ]);
-    }
+   public function index(Request $request)
+{
+    // Lấy dữ liệu lọc từ URL
+    $filters = [
+        'ten'         => $request->input('search_ten'),
+        'id_loai'     => $request->input('search_loai'),
+        'id_thương_hieu' => $request->input('search_thuong_hieu'),
+    ];
+
+    return view('admin.layouts.index_AD', [
+        'key' => 'san_pham',
+        'data' => [
+            // Truyền mảng filters vào Model
+            'danh_sach'      => $this->ql->DanhSach_SanPham($filters), 
+            'ds_loai'        => $this->ql->DS_Loai_Xe(),
+            'ds_thuong_hieu' => $this->ql->DS_Thuong_Hieu_Xe()
+        ]
+    ]);
+}
 
     public function create()
     {
