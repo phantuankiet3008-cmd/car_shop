@@ -6,7 +6,6 @@ use App\Http\Controllers\User\TrangChuController;
 use App\Http\Controllers\User\donhangController;
 use App\Http\Controllers\UserController;
 
-
 Route::get('/user/trangchu', [TrangChuController::class, 'index'])
     ->name('user.trangchu');
 

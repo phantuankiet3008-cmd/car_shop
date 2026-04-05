@@ -242,7 +242,47 @@ function Danh_Sach_Slider() {
     return $data;
 }
 
-// app\Services\user.php
+public function lay_anh_va_id_theo_thuong_hieu_moi_nhat($tenThuongHieu) {
+    $sql = "SELECT sp.id_Xe, sp.Anh_Dai_Dien, th.id_Thuong_Hieu
+            FROM san_pham_xe sp
+            JOIN thuong_hieu_xe th 
+                ON sp.id_Thuong_Hieu = th.id_Thuong_Hieu
+            WHERE LOWER(th.Ten_Thuong_Hieu) LIKE LOWER(?)
+            ORDER BY sp.id_Xe DESC
+            LIMIT 1";
+
+    $stmt = $this->db->prepare($sql);
+
+    $search = "%" . $tenThuongHieu . "%";
+    $stmt->bind_param("s", $search);
+
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result && $result->num_rows > 0) {
+        return $result->fetch_assoc();
+    }
+
+    return null;
+}
+
+public function lay_san_pham_khuyen_mai()
+{
+    $sql = "SELECT *
+            FROM san_pham_xe
+            WHERE Ngay_Bat_Dau <= NOW()
+              AND Ngay_Ket_Thuc >= NOW()
+            ORDER BY id_Xe DESC";
+
+    $result = $this->db->query($sql);
+
+    $data = [];
+    while ($row = $result->fetch_assoc()) {
+        $data[] = $row;
+    }
+
+    return $data;
+}
 
 public function lay_xe_khach($id_khachhang) {
     $id_khachhang = (int)$id_khachhang; // Ép kiểu để an toàn

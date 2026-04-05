@@ -24,6 +24,7 @@ body {
 .sub-menu {
   display: none;
   margin-top: 10px;
+
 }
 .title {
   color: #9ca3af;
@@ -42,7 +43,8 @@ body {
 }
 .content {
   flex: 1;
-  padding: 20px;
+  padding:0 20px;
+
 }
 .product-list {
   display: grid;
@@ -112,42 +114,38 @@ body {
     background:#2563eb;
 }
 /* ================= SLIDER ================= */
+/* Cho slider tràn full màn hình */
 .slider {
-  position: relative;
-  width: 100%;
-  max-width: 1150px;
-  height: 350px;
-  margin: 30px auto;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
   overflow: hidden;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
+/* Slides */
 .slides {
   display: flex;
   transition: transform 0.8s ease-in-out;
-  width: 100%;
 }
+
+/* Mỗi slide */
 
 .slide {
   min-width: 100%;
-  box-sizing: border-box;
+  height: 420px;
 }
 
 .slide img {
-  width: 92%;
-  height: 50%;
-  object-fit: cover;      /* HIỆN NGUYÊN XE */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;   /* 🔥 đổi cái này */
   object-position: center;
-  background: #f4f6f8;      /* nền nếu ảnh không đủ khung */
 }
-
-
 /* ================= NÚT CHUYỂN SLIDE ================= */
-.prev, .next {
+  .prev, .next {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 50%;                 /* đưa xuống giữa */
+  transform: translateY(-50%); /* cân đúng giữa */
+  
   background-color: rgba(0, 0, 0, 0.5);
   color: white;
   border: none;
@@ -155,9 +153,9 @@ body {
   padding: 10px 15px;
   cursor: pointer;
   border-radius: 50%;
-  transition: background-color 0.3s;
-  user-select: none;
-  opacity: 0;
+  
+  transition: 0.3s;
+  z-index: 10;
 }
 
 .prev:hover, .next:hover {
@@ -369,12 +367,11 @@ body { padding-top: 130px; }
 .main-nav .menu {
     background: #22323a;
     padding: 14px 22px;
-    border-radius: 6px;
+    border-radius: 1px;
     display: flex;
     gap: 28px;
     list-style: none;
-    align-items: center;
-    margin-right: 40px;
+    align-items: center
 }
 .main-nav .menu li a {
     color: #ffffff;

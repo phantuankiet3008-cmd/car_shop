@@ -3,220 +3,179 @@
 @section('content')
 
 <link rel="stylesheet" href="{{ asset('user/css/giaodien_user.css') }}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-<main>
-    @if(session('success'))
-    <div style="text-align: center; font-weight: bold; padding: 15px; background-color: #d4edda; color: #155724; margin-bottom: 20px;">
-        {{ session('success') }}
-    </div>
-@endif
-
-@if(session('error'))
-    <div style="text-align: center; font-weight: bold; padding: 15px; background-color: #f8d7da; color: #721c24; margin-bottom: 20px;">
-        {{ session('error') }}
-    </div>
-@endif
-
-
-<!-- ===== SLIDER TRÊN ===== -->
+<!-- ===== SLIDER FULL ===== -->
 <div class="slider">
-    <div class="slides"style ="margin: 0 -20px; id="slides">
-
-        <div class="slide">
-            <img src="https://thanglongford.com.vn/wp-content/uploads/2019/06/19DRangerWildtrak039VNLHD_2001-637159932732125070.jpg">
-        </div>
-
-        <div class="slide">
-            <img src="https://thuexe4cho.vn/wp-content/uploads/2022/10/xe-hoi-ford-ranger.jpeg">
-        </div>
-
-        <div class="slide">
-            <img src="https://www.studytienganh.vn/upload/2022/03/111207.jpg">
-        </div>
+    <div class="slides">
+        @foreach($data['danh_sach_slider'] as $slider)
+            <div class="slide">
+                <a href="{{ url('user/car_shop/danhsachsanpham/' . $slider['id_Loai_Xe'] . '/0') }}" target="_blank">
+                    <img src="{{ $slider['Hinh_Anh_Loai'] }}" class="slide-img">
+                </a>
+            </div>
+        @endforeach
     </div>
+
+    <!-- nút phải nằm TRONG slider -->
     <button class="prev" onclick="moveSlide(-1)">❮</button>
     <button class="next" onclick="moveSlide(1)">❯</button>
-</div>      
+</div>
+
+<!-- ===== CONTENT BÊN DƯỚI ===== -->
+<main class="main-content">
+    
+    @if(session('success'))
+        <div class="alert success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert error">
+            {{ session('error') }}
+        </div>
+    @endif
 
 
-
-
+</main>
 
 <!-- ===== TABS ===== -->
-<h2 class="tab-heading">Khám phá các dòng xe</h2>
+<h2 class="tab-heading">Khám phá các hãng xe</h2>
 
 <div class="tabs">
   <button class="tab active" onclick="showTab(event,'FORD')">FORD</button>
   <button class="tab" onclick="showTab(event,'TOYOTA')">TOYOTA</button>
-  <button class="tab" onclick="showTab(event,'KIA')">KIA</button>
-  <button class="tab" onclick="showTab(event,'MPV')">ĐA DỤNG</button>
+  <button class="tab" onclick="showTab(event,'HYUNDAI')">HYUNDAI</button>
+  <button class="tab" onclick="showTab(event,'MITSUBISHI')">MITSUBISHI</button>
   <button class="tab" onclick="showTab(event,'VINFAST')">VINFAST</button>
-  <button class="tab" onclick="showTab(event,'HONDA')">HONDA</button>
+  <button class="tab" onclick="showTab(event,'BMW')">BMW</button>
 </div>
 
-<div class="banner">
-  <div id="FORD" class="tab-content active">
+<div id="FORD" class="tab-content active">
     <div class="tab-image-container">
-        <img src="https://thanglongford.com.vn/wp-content/uploads/2019/06/19DRangerWildtrak039VNLHD_2001-637159932732125070.jpg" alt="Ford Ranger">
-        
+        <img src="{{ !empty($thuongHieuData['ford']['Anh_Dai_Dien']) ? asset($thuongHieuData['ford']['Anh_Dai_Dien']) : asset('images/no-image.jpg') }}" alt="Ford">
+
         <div class="overlay-content">
-            <h1>Dòng xe bán tải mạnh mẽ</h1>
+            <h1>Ford</h1>
+
             <div class="buttons">
-                <a href="#" class="btn-overlay">Xem chi tiết</a>
-                <a href="#" class="btn-overlay">Đặt xe ngay</a>
+                <a href="{{ url('/user/car_shop/chitietxe/' . ($thuongHieuData['ford']['id_Xe'] ?? 0)) }}" class="btn-overlay">Xem chi tiết</a>
+                <a href="{{ url('user/car_shop/danhsachsanpham/0/' . ($thuongHieuData['ford']['id_Thuong_Hieu'] ?? 0)) }}" class="btn-overlay">Đặt xe ngay</a>
             </div>
         </div>
     </div>
-  </div>
 </div>
 
-  <!-- TOYOTA Tab -->
-  <div id="TOYOTA" class="tab-content">
+  `<!-- TOYOTA Tab -->
+<div id="TOYOTA" class="tab-content">
     <div class="tab-image-container">
-        <img src="https://thanglongford.com.vn/wp-content/uploads/2019/06/toyota-prius.jpg" alt="Toyota Prius">
-        <div class="overlay-content">
-            <h1>Dòng xe tiết kiệm nhiên liệu</h1>
-            <div class="buttons">
-                <a href="#" class="btn-overlay">Xem chi tiết</a>
-                <a href="#" class="btn-overlay">Đặt xe ngay</a>
-            </div>
-        </div>
-    </div>
-  </div>
+        <img src="{{ !empty($thuongHieuData['toyota']['Anh_Dai_Dien']) ? asset($thuongHieuData['toyota']['Anh_Dai_Dien']) : asset('images/no-image.jpg') }}" alt="Toyota">
 
-  <!-- KIA Tab -->
-  <div id="KIA" class="tab-content">
-    <div class="tab-image-container">
-        <img src="https://thanglongford.com.vn/wp-content/uploads/2019/06/kia-seltos.jpg" alt="Kia Seltos">
         <div class="overlay-content">
-            <h1>Dòng xe đa dụng tiện nghi</h1>
-            <div class="buttons">
-                <a href="#" class="btn-overlay">Xem chi tiết</a>
-                <a href="#" class="btn-overlay">Đặt xe ngay</a>
-            </div>
-        </div>
-    </div>
-  </div>
+            <h1>Toyota</h1>
 
-  <!-- MPV Tab -->
-  <div id="MPV" class="tab-content">
-    <div class="tab-image-container">
-        <img src="https://thanglongford.com.vn/wp-content/uploads/2019/06/mpv-car.jpg" alt="MPV">
-        <div class="overlay-content">
-            <h1>Dòng xe đa dụng gia đình</h1>
             <div class="buttons">
-                <a href="#" class="btn-overlay">Xem chi tiết</a>
-                <a href="#" class="btn-overlay">Đặt xe ngay</a>
+                <a href="{{ url('/user/car_shop/chitietxe/' . ($thuongHieuData['toyota']['id_Xe'] ?? 0)) }}" class="btn-overlay">Xem chi tiết</a>
+                <a href="{{ url('user/car_shop/danhsachsanpham/0/' . ($thuongHieuData['toyota']['id_Thuong_Hieu'] ?? 0)) }}" class="btn-overlay">Đặt xe ngay</a>
             </div>
         </div>
     </div>
-  </div>
-
-  <!-- VINFAST Tab -->
-  <div id="VINFAST" class="tab-content">
-    <div class="tab-image-container">
-        <img src="https://thanglongford.com.vn/wp-content/uploads/2019/06/vinfast-fadil.jpg" alt="VinFast Fadil">
-        <div class="overlay-content">
-            <h1>Dòng xe Việt hiện đại</h1>
-            <div class="buttons">
-                <a href="#" class="btn-overlay">Xem chi tiết</a>
-                <a href="#" class="btn-overlay">Đặt xe ngay</a>
-            </div>
-        </div>
-    </div>
-  </div>
-
-  <!-- HONDA Tab -->
-  <div id="HONDA" class="tab-content">
-    <div class="tab-image-container">
-        <img src="https://thanglongford.com.vn/wp-content/uploads/2019/06/honda-crv.jpg" alt="Honda CR-V">
-        <div class="overlay-content">
-            <h1>Dòng xe mạnh mẽ, an toàn</h1>
-            <div class="buttons">
-                <a href="#" class="btn-overlay">Xem chi tiết</a>
-                <a href="#" class="btn-overlay">Đặt xe ngay</a>
-            </div>
-        </div>
-    </div>
-  </div>
 </div>
+
+  `<!-- Hyundai  Tab -->
+<div id="HYUNDAI" class="tab-content">
+    <div class="tab-image-container">
+        <img src="{{ asset($thuongHieuData['hyundai']['Anh_Dai_Dien']) }}" alt="Hyundai">
+        <div class="overlay-content">
+            <h1>Hyundai</h1>
+
+            <div class="buttons">
+                <a href="{{ url('/user/car_shop/chitietxe/' . ($thuongHieuData['hyundai']['id_Xe'] ?? 0)) }}" class="btn-overlay">Xem chi tiết</a>
+                <a href="{{ url('user/car_shop/danhsachsanpham/0/' . ($thuongHieuData['hyundai']['id_Thuong_Hieu'] ?? 0)) }}" class="btn-overlay">Đặt xe ngay</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Mitsubishi Tab -->
+<div id="MITSUBISHI" class="tab-content">
+    <div class="tab-image-container">
+        <img src="{{ !empty($thuongHieuData['mitsubishi']['Anh_Dai_Dien']) ? asset($thuongHieuData['mitsubishi']['Anh_Dai_Dien']) : asset('images/no-image.jpg') }}" alt="Mitsubishi">
+
+        <div class="overlay-content">
+            <h1>Mitsubishi</h1>
+
+            <div class="buttons">
+                <a href="{{ url('/user/car_shop/chitietxe/' . ($thuongHieuData['mitsubishi']['id_Xe'] ?? 0)) }}" class="btn-overlay">Xem chi tiết</a>
+                <a href="{{ url('user/car_shop/danhsachsanpham/0/' . ($thuongHieuData['mitsubishi']['id_Thuong_Hieu'] ?? 0)) }}" class="btn-overlay">Đặt xe ngay</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- VINFAST Tab -->
+<div id="VINFAST" class="tab-content">
+    <div class="tab-image-container">
+        <img src="{{ !empty($thuongHieuData['vinfast']['Anh_Dai_Dien']) ? asset($thuongHieuData['vinfast']['Anh_Dai_Dien']) : asset('images/no-image.jpg') }}" alt="VinFast">
+
+        <div class="overlay-content">
+            <h1>VinFast</h1>
+
+            <div class="buttons">
+                <a href="{{ url('/user/car_shop/chitietxe/' . ($thuongHieuData['vinfast']['id_Xe'] ?? 0)) }}" class="btn-overlay">Xem chi tiết</a>
+                <a href="{{ url('user/car_shop/danhsachsanpham/0/' . ($thuongHieuData['vinfast']['id_Thuong_Hieu'] ?? 0)) }}" class="btn-overlay">Đặt xe ngay</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- BMW Tab -->
+<div id="BMW" class="tab-content">
+    <div class="tab-image-container">
+        <img src="{{ !empty($thuongHieuData['bmw']['Anh_Dai_Dien']) ? asset($thuongHieuData['bmw']['Anh_Dai_Dien']) : asset('images/no-image.jpg') }}" alt="BMW">
+
+        <div class="overlay-content">
+            <h1>BMW</h1>
+
+            <div class="buttons">
+                <a href="{{ url('/user/car_shop/chitietxe/' . ($thuongHieuData['bmw']['id_Xe'] ?? 0)) }}" class="btn-overlay">Xem chi tiết</a>
+                <a href="{{ url('user/car_shop/danhsachsanpham/0/' . ($thuongHieuData['bmw']['id_Thuong_Hieu'] ?? 0)) }}" class="btn-overlay">Đặt xe ngay</a>
+            </div>
+        </div>
+    </div>
 </div>
 
 
 <!-- ===== SLIDER GIỮA ===== -->
-<section class="ford-section">
-    <h2 class="h2">Điều gì đang xảy ra tại Ford</h2>
-    <div class="slider-wrapper">
-    <div class="brandcard-holder" id="slider">
-        <div class="card-box">
-            <div class="brandcard">
-                    <a href="#">
-                        <img src="https://thanglongford.com.vn/wp-content/uploads/2019/06/19DRangerWildtrak039VNLHD_2001-637159932732125070.jpg">
-                    </a>
-            </div>
+ <section class="tools">
+    <h2>CÔNG CỤ MUA HÀNG</h2>
 
-            <div class="text">
-                <h3>Ford Transit</h3>
-                <p>Dòng xe thương mại</p>
-                <!-- Nút bấm -->
-                <a href="#" class="btn-link">Xem chi tiết</a>
-            </div>
+    <div class="tool-list">
 
+        <div class="tool-item" onclick="goTo('/user/car_shop/khuyenmai')">
+            <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png">
+            <p>Khuyến mãi</p>
         </div>
-        <div class="card-box">
-            <div class="brandcard">
-                <a href="#">
-                    <img src="https://thanglongford.com.vn/wp-content/uploads/2019/06/19DRangerWildtrak039VNLHD_2001-637159932732125070.jpg">
-                </a>
-            </div>
 
-            <div class="text">
-                <h3>Ford Transit</h3>
-                <p>Dòng xe thương mại</p>
-                <a href="#" class="btn-link">Xem chi tiết</a>
-            </div>
-
+        <div class="tool-item" onclick="goTo('#')">
+            <img src="https://cdn-icons-png.flaticon.com/512/743/743131.png">
+            <p>Bảo hành</p>
         </div>
-            
-        <div class="card-box">
 
-            <div class="brandcard">
-                <a href="#">
-                    <img src="https://thanglongford.com.vn/wp-content/uploads/2019/06/19DRangerWildtrak039VNLHD_2001-637159932732125070.jpg">
-                </a>
-            </div>
 
-            <div class="text">
-                <h3>Ford Transit</h3>
-                <p>Dòng xe thương mại</p>
-                <a href="#" class="btn-link">Xem chi tiết</a>
-            </div>
-
+        <div class="tool-item" onclick="goTo('#')">
+            <img src="https://cdn-icons-png.flaticon.com/512/171/171239.png">
+            <p>Đăng ký lái thử </p>
         </div>
-        <div class="card-box">
-
-            <div class="brandcard">
-                <a href="#">
-                    <img src="https://thanglongford.com.vn/wp-content/uploads/2019/06/19DRangerWildtrak039VNLHD_2001-637159932732125070.jpg">
-                </a>
-            </div>
-
-            <div class="text">
-                <h3>Ford Transit</h3>
-                <p>Dòng xe thương mại</p>
-                <a href="#" class="btn-link">Xem chi tiết</a>
-            </div>
-
+        
+        <div class="tool-item" onclick="goTo('#')">
+            <img src="https://cdn-icons-png.flaticon.com/512/684/684908.png">
+            <p>Tìm đại lý</p>
         </div>
-     </div>
-
-        <button class="brand-previous"><i class="fa-solid fa-chevron-left"></i></button>
-
-        <button class="brand-next"><i class="fa-solid fa-chevron-right"></i></button>
 
     </div>
 </section>
+
 <!-- ===== SLIDER DƯỚI ===== -->
 <section class="ford-section-2">
     <h2 class="section-title">Dịch vụ và Chăm sóc khách hàng</h2>
@@ -228,12 +187,11 @@
 
             <div class="brandcard-2">
                 <a href="#">
-                    <img src="https://thanglongford.com.vn/wp-content/uploads/2019/06/19DRangerWildtrak039VNLHD_2001-637159932732125070.jpg">
-                </a>
+                   <img src="{{ asset('upload/images/Cardealershipconsultationdeskscene.png') }}" alt="Desk scene">
             </div>
 
             <div class="text-2">
-                <h3>Ford Transit</h3>
+                <h3>Chát với chuyên viên</h3>
                 <p>Dòng xe thương mại</p>
                 <a href="#" class="btn-link-2">Xem chi tiết</a>
             </div>
@@ -305,29 +263,28 @@
         <button class="brand-next-2"><i class="fa-solid fa-chevron-right"></i></button>
     </div>
 </section>
-
-
 </main>
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+    let currentSlide = 0;
 
-    // ===== SLIDER TRÊN =====
-    let index = 0;
+    function moveSlide(direction) {
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
 
-    window.moveSlide = function(step) {
-        const slides = document.querySelectorAll(".slide");
-        index += step;
+        currentSlide += direction;
 
-        if (index < 0) index = slides.length - 1;
-        if (index >= slides.length) index = 0;
+        if (currentSlide >= totalSlides) {
+            currentSlide = 0;
+        } else if (currentSlide < 0) {
+            currentSlide = totalSlides - 1;
+        }
 
-        document.getElementById("slides").style.transform =
-            `translateX(-${index * 100}%)`;
+        const offset = -currentSlide * 100;
+        document.querySelector('.slides').style.transform = `translateX(${offset}%)`;
     }
-
-    setInterval(() => {
-        moveSlide(1);
-    }, 3000);
+    
+    // Tự động chuyển slide sau 5 giây
+    setInterval(() => moveSlide(1), 5000);
 
     // ===== TABS =====
     window.showTab = function(event, id){
@@ -344,17 +301,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ===== SLIDER GIỮA =====
-    const slider= document.getElementById("slider");
-    const nextBtn = document.querySelector(".brand-next");
-    const prevBtn = document.querySelector(".brand-previous");
-    const scrollAmount = 320;
-
-    nextBtn.onclick = () => {
-        slider.scrollBy({ left: scrollAmount, behavior: "smooth" });
-    };
-    prevBtn.onclick = () => {
-        slider.scrollBy({ left: -scrollAmount, behavior: "smooth" });
-    };
+    function goTo(link){
+    window.location.href = link;
+}
 
     // ===== SLIDER DƯỚI =====
    const slider2 = document.getElementById("slider-2");
@@ -369,63 +318,11 @@ document.addEventListener("DOMContentLoaded", () => {
         slider2.scrollBy({ left: -scrollAmount2, behavior: "smooth" });
     };
 
-});
-
-
 </script>
-
 <style>
 
 /* ===== SLIDER TRÊN ===== */
-
-.tab-heading {
-    color: #2c3e50;
-    font-size: 35px;
-    margin: 5px;
-    padding: 5px;
-    font-family: Arial, Helvetica, sans-serif;
-}
-.slider {
-    position: relative;
-    overflow: hidden;
-}
-
-.slides {
-    display: flex;
-    transition: 0.5s;
-}
-
-.slide {
-    min-width: 100%;
-    height: 350px;
-}
-
-.slide img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* nút slider trên */
-.prev, .next {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 25px;
-    background: rgba(0,0,0,0.5);
-    color: white;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-}
-
-.prev { left: 10px; }
-.next { right: 10px; }
-
 /* ===== TABS ===== */
-
-
-
 /* Xóa khoảng trắng mặc định */
 body {
     margin: 0;
@@ -435,18 +332,29 @@ body {
     width: 100%;
 }
 
+.tab-heading {
+    margin: 40px;
+    padding: 5px;
+    font-size: 40px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #2c3e50;
+}
+
 /* KHUNG ẢNH */
 .tab-image-container {
     position: relative;
-    width: 100%;
-    height: 500px; /* ❗ ĐỪNG dùng 100vh nữa */
+    width: 1200px;     /* 👈 giới hạn lại */
+    max-width: 100%;   /* responsive */
+    height: 500px;
+    margin:30px auto;    /* căn giữa */
     overflow: hidden;
+    border-radius: 10px; /* optional cho đẹp */
 }
 
 /* ẢNH */
 .tab-image-container img {
     width: 100%;
-    height: 100%;
+    height: 500px;
     object-fit: cover;       /* giữ tỉ lệ */
     object-position: center; /* lấy وسط ảnh */
     display: block;
@@ -460,6 +368,7 @@ body {
     left: 40px;
     color: white;
     z-index: 2;
+
 }
 
 /* LỚP TỐI */
@@ -533,135 +442,102 @@ body {
 .tab-content.active { display: block; }
 
 /* ===== slide dưới ===== */
-
-.h2 {
-    margin: 5px;
-    padding: 5px;
-    font-size: 40px;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-.ford-section {
-    margin:0 -20px;
-    background: #2c3e50;
-    padding: 40px;
-    color: white;
-}
-
-.slider-wrapper {
-    position: relative;
-}
-
-/* khung slider */
-.brandcard-holder {
-    display: flex;
-    gap: 20px;
-    overflow-x: auto; /* QUAN TRỌNG */
-    scroll-behavior: smooth;
-    padding: 10px 0;
-}
-
-/* ẩn thanh scroll */
-.brandcard-holder::-webkit-scrollbar {
-    display: none;
-}
-
-/* card */
-.brandcard {
-    border-radius: 12px;
-    overflow: hidden;
-    transition: 0.3s;
-    dispaly: block;
-}
-
-
-.brandcard:hover {
-    transform: scale(1.05);
-}
-
-.brandcard img  {
-    width: 100%;
-    height: 400px;
-    object-fit: cover;
-    display: block;
-    aspect-ratio: 1 / 1; /* 👈 vuông 100% */
-  
-}
-
-
-/* ===== KHUNG CHA ===== */
-.card-box {
-    flex: 0 0 calc(100% / 2.2 - 20px); 
-    /* 3 card / 1 hàng */
-}
-/* chữ */
-.text {
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    margin: 5px;
-    padding: 5px;
-    display: unset;
-}
-
-/* ===== NÚT ===== */
-.brand-previous,
-.brand-next {
-    position: absolute; /* QUAN TRỌNG */
-    top: 50%;
-    transform: translateY(-50%);
-
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    border: none;
-
-    background: rgba(0,0,0,0.6);
-    color: white;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-/* vị trí */
-.brand-previous {
-    left: -20px;
-}
-
-.brand-next {
-    right: -20px;
-}
-
-/* hover đẹp hơn */
-.brand-previous:hover,
-.brand-next:hover {
-    background: #34495e;
-    transform: translateY(-50%) scale(1.1);
-}
-
-/* icon */
-.brand-previous i,
-.brand-next i {
-    font-size: 18px;
-}
-
-.btn-link {
-    display: inline-block;
-    padding: 8px 16px;
-    margin-top: 8px;
-    background-color: #6195ca;
-    color: white;
-    text-decoration: none;
-    border-radius: 6px;
-    transition: 0.3s;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
     font-family: Arial, sans-serif;
 }
 
+body{
+    background:#fff;
+}
+
+/* TIÊU ĐỀ */
+.tools{
+    text-align:center;
+    padding:60px 20px;
+}
+
+.tools h2{
+    font-size:22px;
+    font-weight:500;
+    margin-bottom:50px;
+    letter-spacing:1px;
+}
+
+/* DANH SÁCH */
+.tool-list{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    max-width:900px;
+    margin:auto;
+    border:1px solid #637688;
+   
+}
+
+/* ITEM */
+.tool-item{
+    flex:1;
+    padding:30px 10px;
+    cursor:pointer;
+    transition:0.3s;
+    border-right:1px solid #637688;
+}
+
+.tool-item:last-child{
+    border-right:none;
+}
+
+/* ICON */
+.tool-item img{
+    width:40px;
+    margin-bottom:15px;
+    opacity:0.7;
+}
+
+/* TEXT */
+.tool-item p{
+    font-size:14px;
+    color:#333;
+}
+
+/* HOVER GIỐNG WEB XỊN */
+.tool-item:hover{
+    background:#fafafa;
+}
+
+.tool-item:hover img{
+    opacity:1;
+    transform:scale(1.1);
+}
+
+/* RESPONSIVE */
+@media (max-width:768px){
+    .tool-list{
+        flex-direction:column;
+    }
+
+    .tool-item{
+        border-right:none;
+        border-bottom:1px solid #eee;
+        width:100%;
+    }
+
+    .tool-item:last-child{
+        border-bottom:none;
+    }
+}
+
+.icon-car {
+    width: 60px;
+    transition: transform 0.3s ease;
+}
+
+.icon-car:hover {
+    transform: scale(1.3); /* phóng to nhưng không đẩy layout */
+}
 
 /* ===== SLIDER DƯỚI-2 ===== */
 .ford-section-2 {
@@ -771,5 +647,4 @@ body {
 }
 
 </style>
-
 @endsection
