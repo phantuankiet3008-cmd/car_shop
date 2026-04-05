@@ -16,9 +16,8 @@ class AdminAuthController extends Controller
     $TenDangNhap = $request->TenDangNhap;
     $MatKhau     = $request->MatKhau;
 
-    $ql = new QL(); // ✅ THÊM DÒNG NÀY
-    $login = $ql->dang_nhap_ADM($TenDangNhap, $MatKhau);
-
+    $ql = new QL();
+$login = $ql->dang_nhap_ADM($TenDangNhap, $MatKhau);
     if ($login) {
         session([
             'admin' => [

@@ -16,7 +16,7 @@ class QL {
     public $db;
 protected $cloudinary;
     public function __construct(){
-        $this->db = new \mysqli($this->hostname, $this->username, $this->password, $this->database,3308);
+$this->db = new \mysqli($this->hostname, $this->username, $this->password, $this->database, 3308);
         if($this->db->connect_error){
             die("Connection failed: " . $this->db->connect_error);
         }
