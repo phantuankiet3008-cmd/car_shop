@@ -969,7 +969,366 @@ public function Xoa_LaiThu($id)
 }
 
 
+// THỐNG KÊ TIÊU DÙNG (LÁI THỬ / BẢO DƯỠNG)//
+public function thongKeKhungGioLaiThu($from = null, $to = null)
+{
+    $sql = "SELECT kg.id_Khung_Gio, CONCAT(kg.Gio_Bat_Dau, ' - ', kg.Gio_Ket_Thuc) as khung_gio, COUNT(*) as so_lan_dat 
+            FROM dat_lich_lai_thu dl
+            JOIN khung_gio_lai_thu kg ON dl.id_Khung_Gio = kg.id_Khung_Gio
+            WHERE 1=1";
 
+    if ($from) {
+        $from = $this->db->real_escape_string($from);
+        $sql .= " AND dl.Ngay_Lai_Thu >= '$from'";
+    }
+    if ($to) {
+        $to = $this->db->real_escape_string($to);
+        $sql .= " AND dl.Ngay_Lai_Thu <= '$to'";
+    }
+
+    $sql .= " GROUP BY kg.id_Khung_Gio, kg.Gio_Bat_Dau, kg.Gio_Ket_Thuc
+              ORDER BY so_lan_dat DESC";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeXeLaiThu($limit = 10)
+{
+    $limit = (int)$limit;
+    $sql = "SELECT sp.id_Xe, sp.Ten_Xe, COUNT(*) as so_lan_lai_thu
+            FROM dat_lich_lai_thu dl
+            JOIN xe_mau xm ON dl.id_Xe_Mau = xm.id_Xe_Mau
+            JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+            GROUP BY sp.id_Xe, sp.Ten_Xe
+            ORDER BY so_lan_lai_thu DESC 
+            LIMIT $limit";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeThuongHieuLaiThu($limit = 10)
+{
+    $limit = (int)$limit;
+    $sql = "SELECT th.id_Thuong_Hieu, th.Ten_Thuong_Hieu, COUNT(*) as so_lan_lai_thu
+            FROM dat_lich_lai_thu dl
+            JOIN xe_mau xm ON dl.id_Xe_Mau = xm.id_Xe_Mau
+            JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+            JOIN thuong_hieu_xe th ON sp.id_Thuong_Hieu = th.id_Thuong_Hieu
+            GROUP BY th.id_Thuong_Hieu, th.Ten_Thuong_Hieu
+            ORDER BY so_lan_lai_thu DESC
+            LIMIT $limit";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeKhungGioLaiThuTheoNgay($ngay)
+{
+    $ngay = $this->db->real_escape_string($ngay);
+    $sql = "SELECT kg.id_Khung_Gio, CONCAT(kg.Gio_Bat_Dau, ' - ', kg.Gio_Ket_Thuc) as khung_gio, COUNT(*) as so_lan_dat\n"
+         . "FROM dat_lich_lai_thu dl\n"
+         . "JOIN khung_gio_lai_thu kg ON dl.id_Khung_Gio = kg.id_Khung_Gio\n"
+         . "WHERE dl.Ngay_Lai_Thu = '$ngay'\n"
+         . "GROUP BY kg.id_Khung_Gio, kg.Gio_Bat_Dau, kg.Gio_Ket_Thuc\n"
+         . "ORDER BY so_lan_dat DESC";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeChiTietNgay($ngay)
+{
+    $ngay = $this->db->real_escape_string($ngay);
+    $sql = "SELECT kg.id_Khung_Gio, CONCAT(kg.Gio_Bat_Dau, ' - ', kg.Gio_Ket_Thuc) as khung_gio, "
+         . "lx.Ten_Loai_Xe as loai_xe, sp.Ten_Xe as ten_xe, th.Ten_Thuong_Hieu as ten_thuong_hieu, "
+         . "xm.id_Mau as id_mau, mx.Ten_Mau as ten_mau, MIN(xma.Hinh_Anh_Xe_Mau) AS hinh_anh_mau, COUNT(DISTINCT dl.id_Dat_Lich) as so_lan_dat\n"
+         . "FROM dat_lich_lai_thu dl\n"
+         . "JOIN khung_gio_lai_thu kg ON dl.id_Khung_Gio = kg.id_Khung_Gio\n"
+         . "JOIN xe_mau xm ON dl.id_Xe_Mau = xm.id_Xe_Mau\n"
+         . "JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau\n" 
+         . "JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe\n"
+         . "JOIN loai_xe lx ON sp.id_Loai_Xe = lx.id_Loai_xe\n"
+         . "JOIN thuong_hieu_xe th ON sp.id_Thuong_Hieu = th.id_Thuong_Hieu\n"
+         . "LEFT JOIN xe_mau_anh xma ON xm.id_Xe_Mau = xma.id_Xe_Mau\n"
+         . "WHERE dl.Ngay_Lai_Thu = '$ngay'\n"
+         . "GROUP BY kg.id_Khung_Gio, kg.Gio_Bat_Dau, kg.Gio_Ket_Thuc, lx.id_Loai_xe, lx.Ten_Loai_Xe, sp.id_Xe, sp.Ten_Xe, th.id_Thuong_Hieu, th.Ten_Thuong_Hieu, xm.id_Mau, mx.Ten_Mau\n" 
+         . "ORDER BY kg.Gio_Bat_Dau, so_lan_dat DESC";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeChiTietBaoDuongTheoNgay($ngay)
+{
+    $ngay = $this->db->real_escape_string($ngay);
+    $sql = "SELECT sp.Ten_Xe as ten_xe, mx.Ten_Mau as ten_mau, lb.ngay_bao_duong as ngay_bao_duong, lb.ngay_cap_nhat as ngay_cap_nhat, lb.trang_thai, gb.ten_goi as goi_bao_duong, COUNT(DISTINCT lb.id_lich) as so_lan_dat\n"
+         . "FROM lich_bao_duong lb\n"
+         . "JOIN xe_mau xm ON lb.id_Xe_Mau = xm.id_Xe_Mau\n"
+         . "JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau\n"
+         . "JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe\n"
+         . "JOIN goi_bao_duong gb ON lb.id_goi = gb.id_goi\n"
+         . "WHERE lb.ngay_bao_duong = '$ngay'\n"
+         . "GROUP BY sp.id_Xe, mx.id_Mau, lb.ngay_bao_duong, lb.ngay_cap_nhat, lb.trang_thai, gb.id_goi, gb.ten_goi\n"
+         . "ORDER BY so_lan_dat DESC"; 
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeLichTheoThoiGian($from = null, $to = null, $group = 'ngay')
+{
+    $groupField = 'DATE(dl.Ngay_Lai_Thu)';
+    if ($group === 'thang') {
+        $groupField = "CONCAT(YEAR(dl.Ngay_Lai_Thu), '-', LPAD(MONTH(dl.Ngay_Lai_Thu), 2, '0'))";
+    } elseif ($group === 'nam') {
+        $groupField = 'YEAR(dl.Ngay_Lai_Thu)';
+    }
+
+    $sql = "SELECT $groupField as nhom, COUNT(*) as so_lan_dat
+            FROM dat_lich_lai_thu dl
+            WHERE 1=1";
+
+    if ($from) {
+        $from = $this->db->real_escape_string($from);
+        $sql .= " AND dl.Ngay_Lai_Thu >= '$from'";
+    }
+    if ($to) {
+        $to = $this->db->real_escape_string($to);
+        $sql .= " AND dl.Ngay_Lai_Thu <= '$to'";
+    }
+
+    $sql .= " GROUP BY $groupField ORDER BY nhom ASC"; 
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeLichBaoDuongTheoThoiGian($from = null, $to = null, $group = 'ngay')  //
+{
+    $groupField = 'DATE(lb.ngay_bao_duong)';
+    if ($group === 'thang') {
+        $groupField = "CONCAT(YEAR(lb.ngay_bao_duong), '-', LPAD(MONTH(lb.ngay_bao_duong), 2, '0'))";
+    } elseif ($group === 'nam') {
+        $groupField = 'YEAR(lb.ngay_bao_duong)';
+    }
+
+    $sql = "SELECT $groupField as nhom, COUNT(*) as so_lan_dat\n"
+         . "FROM lich_bao_duong lb\n"
+         . "WHERE 1=1";
+
+    if ($from) {
+        $from = $this->db->real_escape_string($from);
+        $sql .= " AND lb.ngay_bao_duong >= '$from'";
+    }
+    if ($to) {
+        $to = $this->db->real_escape_string($to);
+        $sql .= " AND lb.ngay_bao_duong <= '$to'";
+    }
+
+    $sql .= " GROUP BY $groupField ORDER BY nhom ASC";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeLoaiXeMuaNhieu($limit = 10)
+{
+    $limit = (int)$limit;
+    $sql = "SELECT lx.id_Loai_xe, lx.Ten_Loai_Xe, COUNT(*) as so_lan_mua
+            FROM don_hang dh
+            JOIN xe_mau xm ON dh.id_Xe_Mau = xm.id_Xe_Mau
+            JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+            JOIN loai_xe lx ON sp.id_Loai_Xe = lx.id_Loai_xe
+            WHERE dh.payment_status = 'paid'
+            GROUP BY lx.id_Loai_xe, lx.Ten_Loai_Xe
+            ORDER BY so_lan_mua DESC
+            LIMIT $limit";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeMauXeUaChuong($limit = 10)
+{
+    $limit = (int)$limit;
+    $sql = "SELECT mx.id_Mau, mx.Ten_Mau, COUNT(*) as so_lan_dat
+            FROM dat_lich_lai_thu dllt
+            JOIN xe_mau xm ON dllt.id_Xe_Mau = xm.id_Xe_Mau
+            JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau
+            GROUP BY mx.id_Mau, mx.Ten_Mau
+            ORDER BY so_lan_dat DESC
+            LIMIT $limit";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeMauXeMua($limit = 10)
+{
+    $limit = (int)$limit;
+    $sql = "SELECT mx.id_Mau, mx.Ten_Mau, COUNT(*) as so_lan_mua
+            FROM don_hang dh
+            JOIN xe_mau xm ON dh.id_Xe_Mau = xm.id_Xe_Mau
+            JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau
+            WHERE dh.payment_status = 'paid'
+            GROUP BY mx.id_Mau, mx.Ten_Mau
+            ORDER BY so_lan_mua DESC
+            LIMIT $limit";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeThuongHieuMuaNhieu($limit = 10)
+{
+    $limit = (int)$limit;
+    $sql = "SELECT th.id_Thuong_Hieu, th.Ten_Thuong_Hieu, COUNT(*) as so_lan_mua
+            FROM don_hang dh
+            JOIN xe_mau xm ON dh.id_Xe_Mau = xm.id_Xe_Mau
+            JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+            JOIN thuong_hieu_xe th ON sp.id_Thuong_Hieu = th.id_Thuong_Hieu
+            WHERE dh.payment_status = 'paid'
+            GROUP BY th.id_Thuong_Hieu, th.Ten_Thuong_Hieu
+            ORDER BY so_lan_mua DESC
+            LIMIT $limit";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeLoaiXeUaChuong($limit = 10)
+{
+    $limit = (int)$limit;
+    $sql = "SELECT lx.id_Loai_xe, lx.Ten_Loai_Xe, COUNT(*) as so_lan_lai_thu
+            FROM dat_lich_lai_thu dllt
+            JOIN xe_mau xm ON dllt.id_Xe_Mau = xm.id_Xe_Mau
+            JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+            JOIN loai_xe lx ON sp.id_Loai_Xe = lx.id_Loai_xe
+            GROUP BY lx.id_Loai_xe, lx.Ten_Loai_Xe
+            ORDER BY so_lan_lai_thu DESC
+            LIMIT $limit";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeLoaiXeXuHuong($limit = 10) // biểu đồ tròn  loại / dòng tổng đặt lịch và mua hàng 
+{
+    $limit = (int)$limit;
+    $sql = "SELECT 
+                lx.id_Loai_xe, 
+                lx.Ten_Loai_Xe, 
+                COALESCE(lai_thu.so_luong_lai, 0) as so_luong_lai_thu,
+                COALESCE(don_hang.so_luong_mua, 0) as so_luong_don_hang,
+                (COALESCE(lai_thu.so_luong_lai, 0) + COALESCE(don_hang.so_luong_mua, 0)) as tong_tuong_tac
+            FROM loai_xe lx
+            LEFT JOIN (
+                SELECT sp.id_Loai_Xe, COUNT(*) as so_luong_lai
+                FROM dat_lich_lai_thu dl
+                JOIN xe_mau xm ON dl.id_Xe_Mau = xm.id_Xe_Mau
+                JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+                GROUP BY sp.id_Loai_Xe
+            ) lai_thu ON lx.id_Loai_xe = lai_thu.id_Loai_Xe
+            LEFT JOIN (
+                SELECT sp.id_Loai_Xe, COUNT(*) as so_luong_mua
+                FROM don_hang dh
+                JOIN xe_mau xm ON dh.id_Xe_Mau = xm.id_Xe_Mau
+                JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+                WHERE dh.payment_status = 'paid'
+                GROUP BY sp.id_Loai_Xe
+            ) don_hang ON lx.id_Loai_xe = don_hang.id_Loai_Xe
+            WHERE (lai_thu.so_luong_lai > 0 OR don_hang.so_luong_mua > 0)
+            ORDER BY tong_tuong_tac DESC
+            LIMIT $limit";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+      return $data;
+    }
 
 
 // QL GÓI BẢO DƯỠNG
@@ -1189,7 +1548,7 @@ function DanhSach_Nhan_Vien($filters = []) {
     if (!empty($filters['ten'])) {
         $ten = addslashes($filters['ten']);
         $where .= " AND ad.Ho_Ten LIKE '%$ten%' ";
-<<<<<<< feature-DangNhapQL
+
     }
 
     if (!empty($filters['role_id'])) {
@@ -1197,7 +1556,6 @@ function DanhSach_Nhan_Vien($filters = []) {
         $where .= " AND ad.role_id = $role ";
     }
 
-=======
     }
 
     if (!empty($filters['role_id'])) {
@@ -1205,7 +1563,6 @@ function DanhSach_Nhan_Vien($filters = []) {
         $where .= " AND ad.role_id = $role ";
     }
 
->>>>>>> main
     $sql = "
         SELECT 
             ad.id_Ad,
@@ -1227,6 +1584,47 @@ function DanhSach_Nhan_Vien($filters = []) {
     $data = [];
     while ($row = $result->fetch_assoc()) {
         $data[] = $row;
+
+    }
+    return $data;
+}
+
+
+public function thongKeThuongHieuXuHuong($limit = 10) // biểu đồ tròn thương hiệu xu hướng tổng  đặt lịch và mua hàng 
+{
+    $limit = (int)$limit;
+    $sql = "SELECT 
+                th.id_Thuong_Hieu, 
+                th.Ten_Thuong_Hieu, 
+                COALESCE(lai_thu.so_luong_lai, 0) as so_luong_lai_thu,
+                COALESCE(don_hang.so_luong_mua, 0) as so_luong_don_hang,
+                (COALESCE(lai_thu.so_luong_lai, 0) + COALESCE(don_hang.so_luong_mua, 0)) as tong_tuong_tac
+            FROM thuong_hieu_xe th
+            LEFT JOIN (
+                SELECT sp.id_Thuong_Hieu, COUNT(*) as so_luong_lai
+                FROM dat_lich_lai_thu dl
+                JOIN xe_mau xm ON dl.id_Xe_Mau = xm.id_Xe_Mau
+                JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+                GROUP BY sp.id_Thuong_Hieu
+            ) lai_thu ON th.id_Thuong_Hieu = lai_thu.id_Thuong_Hieu
+            LEFT JOIN (
+                SELECT sp.id_Thuong_Hieu, COUNT(*) as so_luong_mua
+                FROM don_hang dh
+                JOIN xe_mau xm ON dh.id_Xe_Mau = xm.id_Xe_Mau
+                JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+                WHERE dh.payment_status = 'paid'
+                GROUP BY sp.id_Thuong_Hieu
+            ) don_hang ON th.id_Thuong_Hieu = don_hang.id_Thuong_Hieu
+            WHERE (lai_thu.so_luong_lai > 0 OR don_hang.so_luong_mua > 0)
+            ORDER BY tong_tuong_tac DESC
+            LIMIT $limit";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
     }
     return $data;
 }
@@ -1289,7 +1687,7 @@ function CapNhat_Nhan_Vien($request, $id) {
             WHERE id_Ad = $id
         ";
     }
-<<<<<<< feature-DangNhapQL
+
     return $this->db->query($sql);
 }
 
@@ -1298,6 +1696,7 @@ function Xoa_Nhan_Vien($id) {
     $sql = "DELETE FROM admin WHERE id_Ad = $id";
     return $this->db->query($sql);
 }
+
 
 
 
@@ -1455,7 +1854,14 @@ function Update_baoduong($id, $data)
 
     return $stmt->execute();
 }
+  function Delete_GoiBaoDuong($id)
 
+            $id = (int)$id;
+        
+            $sql = "DELETE FROM goi_bao_duong WHERE id_goi = $id";
+        
+            return $this->db->query($sql);
+        }
 
     // Xóa
     function Delete_BaoDuong($id)
@@ -1478,5 +1884,5 @@ function Xoa_Nhan_Vien($id) {
     $sql = "DELETE FROM admin WHERE id_Ad = $id";
     return $this->db->query($sql);
 }
->>>>>>> main
+
 }
