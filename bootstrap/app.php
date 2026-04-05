@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 // Import các class middleware để dùng ::class bên dưới (tùy chọn nhưng nên làm)
 use App\Http\Middleware\CheckSession;
 use App\Http\Middleware\CheckRole;
+use App\Http\Middleware\UserAuth;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -23,8 +24,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'check.session' => CheckSession::class,
             'role'          => CheckRole::class, // Đã sửa: Chỉ trỏ đến Class
+            'user.auth'     => UserAuth::class,
         ]);
     })
+   
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

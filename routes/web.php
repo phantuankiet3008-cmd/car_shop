@@ -88,6 +88,25 @@ Route::prefix('trang_admin')->group(function () {
                 Route::post('them', [UuDaiController::class, 'storeXeUuDai']);
                 Route::get('xoa/{id_xe}/{id_uudai}', [UuDaiController::class, 'destroyXeUuDai']);
             });
+            Route::prefix('don_hang')->group(function () {
+                Route::delete('/xoa/{id}', [DonHang_Controller::class, 'destroy']);
+            });
+        Route::prefix('san_pham')->group(function () {
+                Route::delete('xoa_mau/{id}', [SanPhamController::class, 'destroyMau']);
+                Route::get('xoa/{id}', [SanPhamController::class, 'destroy']);
+            });
+            Route::prefix('khach_hang')->group(function () {
+                Route::get('xoa/{id}', [KhachHangController::class, 'destroy']);
+            });
+            Route::prefix('lai_thu')->group(function () {
+                Route::get('xoa/{id}', [lichlaythuController::class, 'xoa']);
+            });
+            Route::prefix('baoduong')->group(function () {
+                Route::get('xoa/{id}', [QLBaoDuong_controller::class, 'destroy']);
+            });
+            Route::prefix('baoduong')->group(function () {
+                Route::get('xoa/{id}', [QLBaoDuong_controller::class, 'destroy']);
+            });
         });
 
 
@@ -101,8 +120,7 @@ Route::prefix('trang_admin')->group(function () {
                 Route::post('them', [SanPhamController::class, 'store']);
                 Route::get('sua/{id}', [SanPhamController::class, 'edit']);
                 Route::post('sua/{id}', [SanPhamController::class, 'update']);
-                Route::delete('xoa_mau/{id}', [SanPhamController::class, 'destroyMau']);
-                Route::get('xoa/{id}', [SanPhamController::class, 'destroy']);
+                
             });
 
             // Khách hàng
@@ -113,7 +131,7 @@ Route::prefix('trang_admin')->group(function () {
                 Route::post('them', [KhachHangController::class, 'store']);
                 Route::get('sua/{id}', [KhachHangController::class, 'edit']);
                 Route::post('sua/{id}', [KhachHangController::class, 'update']);
-                Route::get('xoa/{id}', [KhachHangController::class, 'destroy']);
+                
             });
 
             // Đơn hàng
@@ -123,9 +141,13 @@ Route::prefix('trang_admin')->group(function () {
                 Route::post('/them', [DonHang_Controller::class, 'store'])->name('admin.donhang.store');
                 Route::get('/sua/{id}', [DonHang_Controller::class, 'edit']);
                 Route::post('/cap-nhat/{id}', [DonHang_Controller::class, 'update']);
-                Route::delete('/xoa/{id}', [DonHang_Controller::class, 'destroy']);
                 Route::get('/api/get-san-pham', [DonHang_Controller::class, 'getSanPhamByFilter']);
                 Route::get('/api/get-mau-xe', [DonHang_Controller::class, 'getMauBySanPham']);
+            });
+             Route::prefix('lai_thu')->group(function () {
+                Route::get('', [lichlaythuController::class, 'index']);
+                Route::get('cap-nhat/{id}/{trangThai}', [lichlaythuController::class, 'capNhatTrangThai']);
+                Route::get('xoa/{id}', [lichlaythuController::class, 'xoa']);
             });
         });
 
@@ -134,9 +156,10 @@ Route::prefix('trang_admin')->group(function () {
         Route::middleware(['role:1,3'])->group(function () {
             Route::prefix('lai_thu')->group(function () {
                 Route::get('', [lichlaythuController::class, 'index']);
-                Route::get('cap-nhat/{id}/{trangThai}', [lichlaythuController::class, 'capNhatTrangThai']);
-                Route::get('xoa/{id}', [lichlaythuController::class, 'xoa']);
             });
+            Route::prefix('don_hang')->group(function () {
+                Route::get('/', [DonHang_Controller::class, 'index'])->name('admin.donhang.index');
+        });
         });
 
 
@@ -176,16 +199,8 @@ Route::prefix('trang_admin')->group(function () {
         });
 
     });
-<<<<<<< feature-DangNhapQL
-});
-=======
+
 });
 
-/*
-|--------------------------------------------------------------------------
-| USER & API ROUTES
-|--------------------------------------------------------------------------
-*/
 
-// Bảo dưỡng phía User
->>>>>>> main
+

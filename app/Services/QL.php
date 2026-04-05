@@ -1189,7 +1189,7 @@ function DanhSach_Nhan_Vien($filters = []) {
     if (!empty($filters['ten'])) {
         $ten = addslashes($filters['ten']);
         $where .= " AND ad.Ho_Ten LIKE '%$ten%' ";
-<<<<<<< feature-DangNhapQL
+
     }
 
     if (!empty($filters['role_id'])) {
@@ -1197,15 +1197,11 @@ function DanhSach_Nhan_Vien($filters = []) {
         $where .= " AND ad.role_id = $role ";
     }
 
-=======
-    }
 
     if (!empty($filters['role_id'])) {
         $role = (int)$filters['role_id'];
         $where .= " AND ad.role_id = $role ";
     }
-
->>>>>>> main
     $sql = "
         SELECT 
             ad.id_Ad,
@@ -1289,46 +1285,8 @@ function CapNhat_Nhan_Vien($request, $id) {
             WHERE id_Ad = $id
         ";
     }
-<<<<<<< feature-DangNhapQL
     return $this->db->query($sql);
 }
-
-function Xoa_Nhan_Vien($id) {
-    $id = (int)$id;
-    $sql = "DELETE FROM admin WHERE id_Ad = $id";
-    return $this->db->query($sql);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // BẢO DƯỠNG ADMIN
 function danh_sach_lich($request) {
@@ -1469,14 +1427,11 @@ function Update_baoduong($id, $data)
 
     return $stmt->execute();
 }
-=======
-    return $this->db->query($sql);
-}
 
 function Xoa_Nhan_Vien($id) {
     $id = (int)$id;
     $sql = "DELETE FROM admin WHERE id_Ad = $id";
     return $this->db->query($sql);
 }
->>>>>>> main
+
 }
