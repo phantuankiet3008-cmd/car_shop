@@ -8,8 +8,7 @@ use App\Services\QL;
 
 class QLBaoDuong_controller extends Controller
 {
-
-    // Danh sách lịch bảo dưỡng
+    // Danh sách
     function index(Request $request)
     {
         $service = new QL();
@@ -22,12 +21,13 @@ class QLBaoDuong_controller extends Controller
         ]);
     }
 
-    // Trang sửa bảo dưỡng
+    // Trang sửa
     function edit($id)
     {
         $ql = new QL();
 
         $baoduong = $ql->Get_ChiTietbaoduong($id);
+        $ds_goi   = $ql->Get_All_GoiBaoDuong(); 
 
         if (!$baoduong) {
             return redirect('/trang_admin/baoduong')
@@ -35,19 +35,34 @@ class QLBaoDuong_controller extends Controller
         }
 
         return view('admin.layouts.index_AD', [
-            'key' => 'Edit_Bao_Duong',
+            'key' => 'edit_bao_duong',
             'data' => [
-                'baoduong' => $baoduong
+                'baoduong' => $baoduong,
+                'ds_goi'   => $ds_goi 
             ]
         ]);
     }
 
-    // Cập nhật bảo dưỡng
+    // Cập nhật
     function update(Request $request, $id)
     {
         $ql = new QL();
 
-        $ok = $ql->Update_baoduong($id, $request->all(), $_FILES);
+        $request->validate([
+            'id_goi' => 'required|integer',
+            'ngay_bao_duong' => 'required|date',
+            'trang_thai' => 'required',
+            'ghi_chu' => 'nullable|string'
+        ]);
+
+        $data = [
+            'id_goi' => $request->id_goi,
+            'ngay_bao_duong' => $request->ngay_bao_duong,
+            'trang_thai' => $request->trang_thai,
+            'ghi_chu' => $request->ghi_chu
+        ];
+
+        $ok = $ql->Update_baoduong($id, $data);
 
         if ($ok) {
             return redirect('/trang_admin/baoduong')
@@ -57,12 +72,12 @@ class QLBaoDuong_controller extends Controller
         return back()->with('error', 'Có lỗi khi cập nhật');
     }
 
-    // Xóa lịch bảo dưỡng
+    // Xóa
     function destroy($id)
     {
         $ql = new QL();
 
-        $ok = $ql->Delete_BaoDuong($id); // sửa lại đúng hàm
+        $ok = $ql->Delete_BaoDuong($id);
 
         if ($ok) {
             return redirect('/trang_admin/baoduong')
@@ -72,6 +87,4 @@ class QLBaoDuong_controller extends Controller
         return redirect('/trang_admin/baoduong')
             ->with('error', 'Xóa lịch bảo dưỡng thất bại');
     }
-
-    
 }

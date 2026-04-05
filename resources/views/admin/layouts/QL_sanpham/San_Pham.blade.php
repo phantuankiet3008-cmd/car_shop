@@ -1,5 +1,30 @@
 <h2 class="title-page">📦 Danh sách sản phẩm xe</h2>
+<div class="filter-section" style="margin-bottom: 20px; background: #f4f4f4; padding: 15px; border-radius: 8px;">
+    <form action="{{ url('/trang_admin/san_pham') }}" method="GET" style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <input type="text" name="search_ten" placeholder="Tìm tên xe..." value="{{ request('search_ten') }}" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
 
+        <select name="search_loai" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+            <option value="">-- Tất cả loại xe --</option>
+            @foreach($data['ds_loai'] as $loai)
+                <option value="{{ $loai['id_Loai_xe'] }}" {{ request('search_loai') == $loai['id_Loai_xe'] ? 'selected' : '' }}>
+                    {{ $loai['Ten_Loai_Xe'] }}
+                </option>
+            @endforeach
+        </select>
+
+        <select name="search_thuong_hieu" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+            <option value="">-- Tất cả thương hiệu --</option>
+            @foreach($data['ds_thuong_hieu'] as $th)
+                <option value="{{ $th['id_Thuong_Hieu'] }}" {{ request('search_thuong_hieu') == $th['id_Thuong_Hieu'] ? 'selected' : '' }}>
+                    {{ $th['Ten_Thuong_Hieu'] }}
+                </option>
+            @endforeach
+        </select>
+
+        <button type="submit" class="btn-add" style="background-color: #2196F3; margin-top: 0;">🔍 Lọc</button>
+        <a href="{{ url('/trang_admin/san_pham') }}" class="btn-edit" style="text-decoration: none; line-height: 25px;">🔄 Reset</a>
+    </form>
+</div>
 <a href="{{ url('/trang_admin/san_pham/them') }}" class="btn-add">
     ➕ Thêm sản phẩm
 </a>

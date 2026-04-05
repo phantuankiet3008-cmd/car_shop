@@ -15,8 +15,7 @@
         {{ session('error') }}
     </div>
 @endif
-
-<link rel="stylesheet" href="{{ asset('user/css/chitietsp.css') }}">
+<link rel="stylesheet" href="{{ asset('user/css/laithu.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <div class="chi_tiet_san_pham">
@@ -31,6 +30,7 @@
     <div class="noi_dung_chinh">
         {{-- BÊN TRÁI: Ảnh và Thông tin --}}
         <div class="khu_trai">
+            {{-- KHU VỰC HIỂN THỊ CHÍNH: Ảnh lớn và 3D lồng nhau --}}
             <div class="main-display-wrapper">
                 {{-- Khu vực ảnh 2D --}}
                 <div id="vung_anh_xe" class="anh_sp_lon">
@@ -48,10 +48,14 @@
                     </button>
                 @endif
 
-                {{-- Khu vực 3D --}}
+                {{-- Khu vực 3D (Ẩn mặc định, sẽ phủ lên ảnh khi bật) --}}
                 <div id="mo_hinh_3D" class="viewer3d hidden">
                     <div id="threeContainer"></div>
-                    <button class="close3d"><i class="fa-solid fa-xmark"></i> Thoát 3D</button>
+                    
+                    <button class="close3d">
+                        <i class="fa-solid fa-xmark"></i> Thoát 3D
+                    </button>
+                    
                     <div class="instructions-3d">
                         <i class="fa-solid fa-hand-pointer"></i> Kéo để xoay • Cuộn để phóng to
                     </div>
@@ -67,9 +71,12 @@
                 @endforeach
             </div>
 
+            {{-- Đặc điểm nổi bật --}}
             <div class="khu_thong_tin_chi_tiet">
                 <h3><i class="fa-solid fa-circle-info"></i> Đặc điểm nổi bật</h3>
-                <p>{!! nl2br(e($chitietsp['Mo_Ta'])) !!}</p>
+                <p>
+            {!! nl2br(e($chitietsp['Mo_Ta'])) !!}
+        </p>
             </div>
         </div>
 
@@ -79,15 +86,10 @@
                 <h4>Chọn màu ngoại thất</h4>
                 <div class="ds_mau">
                     @if(!empty($mau_xe))
-                        @php $hasChecked = false; @endphp
                         @foreach($mau_xe as $index => $m)
                             <label class="item_mau">
                                 <input type="radio" name="chon_mau" 
-                                    @if($m['So_Luong'] > 0 && !$hasChecked) 
-                                        checked @php $hasChecked = true; @endphp 
-                                    @elseif($index == 0 && !$hasChecked)
-                                        checked
-                                    @endif
+                                    @checked($index==0)
                                     data-gia="{{ $m['Gia'] }}" 
                                     data-mau="{{ $m['id_Xe_Mau'] }}"
                                     data-soluong="{{ $m['So_Luong'] }}"
@@ -98,7 +100,7 @@
                                         <span class="o_mau" style="background: {{ $m['Ma_Mau'] }}"></span>
                                         <div style="display: flex; flex-direction: column;">
                                             <span class="ten_mau">{{ $m['Ten_Mau'] }}</span>
-                                            <span class="so_luong">Kho: {{$m['So_Luong'] }}</span>
+                                            <span class="so_luong">Số lượng: {{$m['So_Luong'] }}</span>
                                             @if($m['So_Luong'] <= 0)
                                                 <small style="color: #ef4444; font-weight: bold;">Hết hàng</small>
                                             @endif
@@ -113,45 +115,12 @@
                     @endif
                 </div>
             </div>
-
-            <div class="tom_tat_don">
-                <h4>Tóm tắt đơn đặt hàng</h4>
-                <div class="chi_tiet_don">
-                    <p>Xe: <strong>{{ $chitietsp['Ten_Xe'] }}</strong></p>
-                    <p>Giá niêm yết: <span id="giaTomTat"></span> đ</p>
-                    <div class="uu_dai_list">
-                        <span>Ưu đãi áp dụng:</span>
-                        <ul id="danhSachUuDai">
-                            @foreach($uu_dai as $ud)
-                                <li data-loai="{{ $ud['Loai'] }}" data-gia-tri="{{ $ud['Gia_Tri'] }}">
-                                    <i class="fa-solid fa-tag"></i> 
-                                    {{ $ud['Loai'] == 'phan_tram' ? $ud['Gia_Tri'].'%' : number_format($ud['Gia_Tri'], 0, ',', '.').' đ' }}
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-                <hr>
-                <div class="tong_ket">
-                    <p><span>Tổng sau giảm:</span> <strong id="tongSauUuDai">0</strong> đ</p>
-                    <p class="coc"><strong>Đặt cọc (1%):</strong> <strong id="tienCoc">0</strong> đ</p>
-                </div>
-
                 <div class="hanh_dong">
-                    @if(!empty($mau_xe))
-                        <form id="formDatCoc" action="{{ route('datcoc')}}" method="POST">
-                            @csrf
-                            <input type="hidden" id="input_id_xe_mau" name="id_xe_mau" value="{{ $mau_xe[0]['id_Xe_Mau'] }}">
-                            <button type="submit" class="btn-dat-hang">
-                                <i class="fa-solid fa-cart-arrow-down"></i> TIẾN HÀNH ĐẶT CỌC
-                            </button>
-                        </form>
-                        
-                        <a id="btnDatLich" href="#" class="btn-dat-lich">
-                            <i class="fa-solid fa-calendar-check"></i> ĐẶT LỊCH LÁI THỬ
-                        </a>
-                    @endif
-                </div>
+        <a id="btnDatLich" href="{{ route('datlaithu', $mau_xe[0]['id_Xe_Mau']) }}" class="btn-dat-lich">
+            <i class="fa-solid fa-calendar-check"></i> ĐẶT LỊCH LÁI THỬ
+        </a>
+    
+</div>
             </div>
         </div>
     </div>
@@ -177,13 +146,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const tongSauUuDai = document.getElementById("tongSauUuDai");
     const tienCoc = document.getElementById("tienCoc");
     const dsUuDai = document.querySelectorAll("#danhSachUuDai li");
-    
     const btnDatLich = document.getElementById("btnDatLich");
-    const btnDatHang = document.querySelector(".btn-dat-hang");
     const inputIdXeMau = document.getElementById("input_id_xe_mau");
 
-    function updateState(selectedColor, price, soluong) {
-        // 1. Cập nhật ảnh
+    // Lọc ảnh và cập nhật giá
+    function updateState(selectedColor, price) {
+        // 1. Filter Images
         let firstVisible = null;
         thumbs.forEach(img => {
             if (img.dataset.mau === selectedColor) {
@@ -199,7 +167,7 @@ document.addEventListener("DOMContentLoaded", function () {
             firstVisible.classList.add("active");
         }
 
-        // 2. Cập nhật giá
+        // 2. Update Pricing
         let formatPrice = Number(price).toLocaleString('vi-VN');
         giaChinh.innerText = formatPrice + " đ";
         giaTomTat.innerText = formatPrice;
@@ -216,34 +184,14 @@ document.addEventListener("DOMContentLoaded", function () {
         tongSauUuDai.innerText = total.toLocaleString('vi-VN');
         tienCoc.innerText = (total * 0.01).toLocaleString('vi-VN');
 
-        // 3. Xử lý Logic Số lượng (Quan trọng)
+        // 3. Update Inputs & Links
         inputIdXeMau.value = selectedColor;
-
-        if (soluong <= 0) {
-            if (btnDatLich) btnDatLich.style.display = "none";
-            if (btnDatHang) {
-                btnDatHang.disabled = true;
-                btnDatHang.style.opacity = "0.5";
-                btnDatHang.style.cursor = "not-allowed";
-                btnDatHang.innerHTML = '<i class="fa-solid fa-box-open"></i> TẠM HẾT HÀNG';
-            }
-        } else {
-            if (btnDatLich) {
-                btnDatLich.style.display = "flex";
-                btnDatLich.href = "{{ url('user/car_shop/dangkilaithu') }}/" + selectedColor;
-            }
-            if (btnDatHang) {
-                btnDatHang.disabled = false;
-                btnDatHang.style.opacity = "1";
-                btnDatHang.style.cursor = "pointer";
-                btnDatHang.innerHTML = '<i class="fa-solid fa-cart-arrow-down"></i> TIẾN HÀNH ĐẶT CỌC';
-            }
-        }
+        btnDatLich.href = "{{ url('user/car_shop/dangkilaithu') }}/" + selectedColor;
     }
 
     radios.forEach(r => {
         r.addEventListener("change", function() {
-            updateState(this.dataset.mau, parseFloat(this.dataset.gia), parseInt(this.dataset.soluong));
+            updateState(this.dataset.mau, parseFloat(this.dataset.gia));
         });
     });
 
@@ -257,9 +205,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Khởi tạo mặc định
     const checked = document.querySelector('input[name="chon_mau"]:checked');
-    if (checked) {
-        updateState(checked.dataset.mau, parseFloat(checked.dataset.gia), parseInt(checked.dataset.soluong));
-    }
+    if (checked) updateState(checked.dataset.mau, parseFloat(checked.dataset.gia));
 });
 </script>
 @endsection

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Stripe\Stripe;
 use Stripe\Checkout\Session;
 use App\Services\User;
+
 use Illuminate\Http\Request;
 
 class StripeController extends Controller

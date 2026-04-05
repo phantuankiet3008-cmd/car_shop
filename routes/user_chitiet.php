@@ -83,11 +83,14 @@ Route::middleware('user.auth')->prefix('user')->group(function () {
     Route::get('/car_shop/momo/redirect/{id}', [MoMoController::class, 'redirect'])->name('momo.redirect');
     Route::get('/car_shop/momo/return', [MoMoController::class, 'return'])->name('momo.return');
 
-    // Lái thử (Giữ nguyên name dangkilaithu và datlaithu)
+    // Lái thử 
     Route::get('/car_shop/dangkilaithu/{id}', [dangkilaithuController::class, 'index'])->name('datlaithu');
     Route::post('/car_shop/lay_gio_da_dat', [dangkilaithuController::class, 'layGioDaDat'])->name('dangkilaithu');
     Route::post('/car_shop/dat_lich_lai_thu', [dangkilaithuController::class, 'store']);
     Route::get('/car_shop/lich-lai-thu-cua-toi', [dangkilaithuController::class, 'lichCuaToi']);
+    // trang lái thử
+    Route::get('/car_shop/lai_thu/{IDloai?}/{IDTH?}', [dangkilaithuController::class,'tranglaithu'])->name('tranglaithu');
+    Route::get('/car_shop/chitietxelaithu/{id}', [dangkilaithuController::class,'chitietxelaithu'])->name('xelaithu');
 
     // BẢO DƯỠNG XE
     Route::get('/car_shop/datlichbaoduong', [BaoDuong_controller::class, 'trang_baoduong'])->name('datlichbaoduong');
