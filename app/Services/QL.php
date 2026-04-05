@@ -983,7 +983,7 @@ public function thongKeXeLaiThu($limit = 10)
             JOIN xe_mau xm ON dl.id_Xe_Mau = xm.id_Xe_Mau
             JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
             GROUP BY sp.id_Xe, sp.Ten_Xe
-            ORDER BY so_lan_lai_thu DESC
+            ORDER BY so_lan_lai_thu DESC 
             LIMIT $limit";
 
     $result = $this->db->query($sql);
@@ -1267,6 +1267,85 @@ public function thongKeLoaiXeUaChuong($limit = 10)
     }
     return $data;
 }
+
+public function thongKeLoaiXeXuHuong($limit = 10) // biểu đồ tròn  loại / dòng tổng đặt lịch và mua hàng 
+{
+    $limit = (int)$limit;
+    $sql = "SELECT 
+                lx.id_Loai_xe, 
+                lx.Ten_Loai_Xe, 
+                COALESCE(lai_thu.so_luong_lai, 0) as so_luong_lai_thu,
+                COALESCE(don_hang.so_luong_mua, 0) as so_luong_don_hang,
+                (COALESCE(lai_thu.so_luong_lai, 0) + COALESCE(don_hang.so_luong_mua, 0)) as tong_tuong_tac
+            FROM loai_xe lx
+            LEFT JOIN (
+                SELECT sp.id_Loai_Xe, COUNT(*) as so_luong_lai
+                FROM dat_lich_lai_thu dl
+                JOIN xe_mau xm ON dl.id_Xe_Mau = xm.id_Xe_Mau
+                JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+                GROUP BY sp.id_Loai_Xe
+            ) lai_thu ON lx.id_Loai_xe = lai_thu.id_Loai_Xe
+            LEFT JOIN (
+                SELECT sp.id_Loai_Xe, COUNT(*) as so_luong_mua
+                FROM don_hang dh
+                JOIN xe_mau xm ON dh.id_Xe_Mau = xm.id_Xe_Mau
+                JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+                WHERE dh.payment_status = 'paid'
+                GROUP BY sp.id_Loai_Xe
+            ) don_hang ON lx.id_Loai_xe = don_hang.id_Loai_Xe
+            WHERE (lai_thu.so_luong_lai > 0 OR don_hang.so_luong_mua > 0)
+            ORDER BY tong_tuong_tac DESC
+            LIMIT $limit";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeThuongHieuXuHuong($limit = 10) // biểu đồ tròn thương hiệu xu hướng tổng  đặt lịch và mua hàng 
+{
+    $limit = (int)$limit;
+    $sql = "SELECT 
+                th.id_Thuong_Hieu, 
+                th.Ten_Thuong_Hieu, 
+                COALESCE(lai_thu.so_luong_lai, 0) as so_luong_lai_thu,
+                COALESCE(don_hang.so_luong_mua, 0) as so_luong_don_hang,
+                (COALESCE(lai_thu.so_luong_lai, 0) + COALESCE(don_hang.so_luong_mua, 0)) as tong_tuong_tac
+            FROM thuong_hieu_xe th
+            LEFT JOIN (
+                SELECT sp.id_Thuong_Hieu, COUNT(*) as so_luong_lai
+                FROM dat_lich_lai_thu dl
+                JOIN xe_mau xm ON dl.id_Xe_Mau = xm.id_Xe_Mau
+                JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+                GROUP BY sp.id_Thuong_Hieu
+            ) lai_thu ON th.id_Thuong_Hieu = lai_thu.id_Thuong_Hieu
+            LEFT JOIN (
+                SELECT sp.id_Thuong_Hieu, COUNT(*) as so_luong_mua
+                FROM don_hang dh
+                JOIN xe_mau xm ON dh.id_Xe_Mau = xm.id_Xe_Mau
+                JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+                WHERE dh.payment_status = 'paid'
+                GROUP BY sp.id_Thuong_Hieu
+            ) don_hang ON th.id_Thuong_Hieu = don_hang.id_Thuong_Hieu
+            WHERE (lai_thu.so_luong_lai > 0 OR don_hang.so_luong_mua > 0)
+            ORDER BY tong_tuong_tac DESC
+            LIMIT $limit";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
 
 
 

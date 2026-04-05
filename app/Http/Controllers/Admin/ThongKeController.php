@@ -12,8 +12,8 @@ class ThongKeController extends Controller
     {
         $service = new QL();
 
-        $from = $request->query('from',now()->subDays (30)->format('Y-m-d'));
-        $to = $request->query('to', now()->addMonths(1)->format('Y-m-d'));
+        $from = $request->query('from',now()->subDays (30)->format('Y-m-d')); // lấy 30 ngày gần nhất ngày kết thúc là thời gian ngày hiện tại
+        $to = $request->query('to', now()->addMonths(1)->format('Y-m-d')); //   lấy thêm dữ liệu 1 tháng tới  báo lịch và  đặt xe  bảo dưỡng sắp tới
         $group = $request->query('group', 'ngay');//
 
         $khungGio = $service->thongKeKhungGioLaiThu($from, $to);
@@ -24,6 +24,8 @@ class ThongKeController extends Controller
         $topThuongHieuMua = $service->thongKeThuongHieuMuaNhieu(10);
         $topMauXeUaChuong = $service->thongKeMauXeUaChuong(10);
         $topMauXeMua = $service->thongKeMauXeMua(10);
+        $topLoaiXeXuHuong = $service->thongKeLoaiXeXuHuong(10); 
+$topThuongHieuXuHuong = $service->thongKeThuongHieuXuHuong(10);
         $bieuDo = $service->thongKeLichTheoThoiGian($from, $to, $group);
         $bieuDoBaoDuong = $service->thongKeLichBaoDuongTheoThoiGian($from, $to, $group);
 
@@ -38,6 +40,8 @@ class ThongKeController extends Controller
             'topThuongHieuMua' => $topThuongHieuMua,
             'topMauXeUaChuong' => $topMauXeUaChuong,
             'topMauXeMua' => $topMauXeMua,
+            'topLoaiXeXuHuong' => $topLoaiXeXuHuong,
+            'topThuongHieuXuHuong' => $topThuongHieuXuHuong,
             'bieuDo' => $bieuDo,
             'bieuDoBaoDuong' => $bieuDoBaoDuong,
             'group' => $group,
