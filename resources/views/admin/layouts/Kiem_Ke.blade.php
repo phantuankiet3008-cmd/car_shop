@@ -253,7 +253,7 @@ if (lineCtx && lineData.length > 0) {
         options: {
             plugins: {
                 legend: { labels: { color: textColor, font: { weight: 'bold' } } },
-                tooltip: commonTooltip
+                tooltip: commonTooltip 
             },
             scales: {
                 x: { 
@@ -304,7 +304,7 @@ if (kgCtx && kgData.length > 0) {
                 legend: { labels: { color: textColor, font: { weight: 'bold' } } },
                 tooltip: commonTooltip
             },
-            scales: {
+            scales: { //  scales tỉ lệ hình tránh  ẩn 
                 x: { 
                     ticks: { color: textColor, font: boldFont },
                     title: { // Title phải nằm TRONG x
