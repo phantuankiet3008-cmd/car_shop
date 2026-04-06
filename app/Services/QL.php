@@ -1329,6 +1329,7 @@ public function thongKeLoaiXeXuHuong($limit = 10) // biểu đồ tròn  loại 
         }
       return $data;
     }
+}
 
 
 // QL GÓI BẢO DƯỠNG
@@ -1345,6 +1346,7 @@ function danh_sach_goi(){
     }}
     return $data;
     }
+
 public function list_thuong_hieu_theo_loai($MaLoai)
 {
     $sql = "SELECT * 
@@ -1555,14 +1557,12 @@ function DanhSach_Nhan_Vien($filters = []) {
         $role = (int)$filters['role_id'];
         $where .= " AND ad.role_id = $role ";
     }
-
-    }
+    
 
     if (!empty($filters['role_id'])) {
         $role = (int)$filters['role_id'];
         $where .= " AND ad.role_id = $role ";
     }
-
     $sql = "
         SELECT 
             ad.id_Ad,
@@ -1689,13 +1689,13 @@ function CapNhat_Nhan_Vien($request, $id) {
     }
 
     return $this->db->query($sql);
-}
 
-function Xoa_Nhan_Vien($id) {
-    $id = (int)$id;
-    $sql = "DELETE FROM admin WHERE id_Ad = $id";
+
+
     return $this->db->query($sql);
 }
+
+
 
 
 
@@ -1854,7 +1854,7 @@ function Update_baoduong($id, $data)
 
     return $stmt->execute();
 }
-  function Delete_GoiBaoDuong($id)
+  function Delete_GoiBaoDuong($id){
 
             $id = (int)$id;
         
@@ -1874,9 +1874,6 @@ function Update_baoduong($id, $data)
     $stmt->bind_param("i", $id);
 
     return $stmt->execute();
-}
-=======
-    return $this->db->query($sql);
 }
 
 function Xoa_Nhan_Vien($id) {
