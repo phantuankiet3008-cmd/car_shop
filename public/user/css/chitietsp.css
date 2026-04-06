@@ -126,3 +126,70 @@ body { padding-top: 80px; background-color: #f8fafc; font-family: 'Inter', sans-
     .khu_phai { position: static; width: 100%; }
     .main-display-wrapper { height: 400px; }
 }
+.khu_thong_tin_chi_tiet {
+    margin-top: 40px;
+    padding: 40px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 25px;
+    backdrop-filter: blur(10px);
+}
+
+.khu_thong_tin_chi_tiet h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.khu_thong_tin_chi_tiet h3 i {
+    font-size: 1.2rem;
+    opacity: 0.8;
+}
+
+.khu_thong_tin_chi_tiet p {
+    color: var(--text-dim);
+    line-height: 1.8;
+    font-size: 1.1rem;
+    text-align: justify;
+    margin: 0;
+    /* Hiệu ứng đổ bóng chữ nhẹ để dễ đọc trên nền tối */
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Hiệu ứng đường kẻ trang trí phía dưới tiêu đề */
+.khu_thong_tin_chi_tiet h3::after {
+    content: '';
+    flex-grow: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--accent-gold), transparent);
+    margin-left: 20px;
+}
+
+/* Nếu bạn muốn chia nhỏ các ý bằng dấu gạch đầu dòng */
+.khu_thong_tin_chi_tiet ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Chia 2 cột cho đẹp */
+    gap: 15px;
+}
+
+.khu_thong_tin_chi_tiet li {
+    padding-left: 25px;
+    position: relative;
+    color: var(--text-main);
+}
+
+.khu_thong_tin_chi_tiet li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: var(--accent-gold);
+    font-weight: bold;
+}

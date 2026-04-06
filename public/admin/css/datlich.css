@@ -1,85 +1,144 @@
-/* ===== FORM LỌC ===== */
+/* ===== TỔNG THỂ & FONT ===== */
+
+
+/* ===== FORM LỌC (Nâng cấp thành Card) ===== */
 .filter_form {
     display: flex;
-    gap: 12px;
-    margin-bottom: 20px;
+    gap: 15px;
+    margin-bottom: 25px;
     align-items: center;
+    background: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    flex-wrap: wrap; /* Tự động xuống dòng trên mobile */
 }
 
 .filter_form input,
 .filter_form select {
-    padding: 8px 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    padding: 10px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
     font-size: 14px;
+    outline: none;
+    transition: all 0.2s ease;
+    background-color: #f8fafc;
+}
+
+.filter_form input:focus,
+.filter_form select:focus {
+    border-color: #2f5bea;
+    background-color: white;
+    box-shadow: 0 0 0 3px rgba(47, 91, 234, 0.1);
 }
 
 .filter_form button {
-    padding: 8px 16px;
-    background-color: #2f5bea;
+    padding: 10px 24px;
+    background: linear-gradient(135deg, #2f5bea 0%, #1d46c2 100%);
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
-    transition: 0.2s;
+    font-size: 14px;
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .filter_form button:hover {
-    background-color: #1d46c2;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(47, 91, 234, 0.3);
 }
 
-
-/* ===== TABLE ADMIN CHUNG ===== */
+/* ===== TABLE ADMIN (Nâng cấp giao diện phẳng) ===== */
 .admin_table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate; /* Để bo góc cho bảng */
+    border-spacing: 0;
     background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
 }
 
 .admin_table th {
-    background-color: #f2f2f2;
+    background-color: #f8fafc;
+    color: #64748b;
     text-align: left;
-    padding: 12px 10px;
-    font-weight: 700;
-    border-bottom: 2px solid #ddd;
+    padding: 16px;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid #f1f5f9;
 }
 
 .admin_table td {
-    padding: 12px 10px;
-    border-bottom: 1px solid #eee;
+    padding: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 14px;
+    color: #1e293b;
+    vertical-align: middle;
+}
+
+.admin_table tr:last-child td {
+    border-bottom: none;
 }
 
 .admin_table tr:hover {
-    background-color: #f9f9f9;
+    background-color: #f1f5f9;
+    transition: background-color 0.2s ease;
 }
 
+/* ===== TRẠNG THÁI (Biến thành Badge) ===== */
+.status_wait, .status_success, .status_cancel {
+    padding: 4px 12px;
+    border-radius: 99px; /* Dạng viên thuốc */
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-block;
+    text-align: center;
+    min-width: 85px;
+}
 
-/* ===== TRẠNG THÁI ===== */
 .status_wait {
-    color: orange;
-    font-weight: 600;
+    background-color: #fef3c7;
+    color: #92400e;
 }
 
 .status_success {
-    color: green;
-    font-weight: 600;
+    background-color: #dcfce7;
+    color: #166534;
 }
 
 .status_cancel {
-    color: red;
-    font-weight: 600;
+    background-color: #fee2e2;
+    color: #991b1b;
 }
 
-
-/* ===== HÀNH ĐỘNG ===== */
+/* ===== HÀNH ĐỘNG (Biến thành Nút bấm nhỏ) ===== */
 .action_link {
     color: #2f5bea;
     font-weight: 600;
     text-decoration: none;
-    margin-right: 8px;
+    margin-right: 12px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: all 0.2s;
+    font-size: 13px;
+    display: inline-block;
 }
 
 .action_link:hover {
-    text-decoration: underline;
+    background-color: #ebf0ff;
+    text-decoration: none;
+    color: #1d46c2;
+}
+
+/* Nút Xóa riêng biệt */
+.action_link[onclick*="confirm"] {
+    color: #ef4444;
+}
+
+.action_link[onclick*="confirm"]:hover {
+    background-color: #fef2f2;
 }
