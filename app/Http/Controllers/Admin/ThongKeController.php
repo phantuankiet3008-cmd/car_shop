@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\QL;
@@ -68,7 +67,7 @@ class ThongKeController extends Controller
     }
 
     // API phục vụ cho nút "Tra cứu ngày" bảo dưỡng bằng Fetch
-    public function baoDuongTheoNgay(Request $request)
+    public function baoDuongTheoNgay(Request $request) 
     {
         $ngay = $request->query('ngay');
         if (!$ngay) {

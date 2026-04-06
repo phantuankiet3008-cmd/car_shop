@@ -137,7 +137,7 @@
             </div>
 
             <!-- ================= LOẠI XE ================= -->
-            <div style="background:#dcfce7; padding:20px; border-radius:12px; margin-top:30px;">
+            <div style="background: Pink ; padding:20px; border-radius:12px; margin-top:30px;">
                 <h3 style="text-align:center; color:#166534;">Top loại xe xu hướng  theo hành vi khách hàng</h3>
                 <div style="display:flex; gap:20px;">
                     <div style="flex:1;">
