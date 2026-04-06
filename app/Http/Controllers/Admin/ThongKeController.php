@@ -13,9 +13,9 @@ class ThongKeController extends Controller
     {
         $service = new QL();
 
-        // Thiết lập thời gian mặc định: 30 ngày trước đến hiện tại
+        // Thiết lập thời gian mặc định: 30 ngày trước đến 1 tháng sau tính từ ngày hiện tại
         $from = $request->query('from', Carbon::now()->subDays(30)->format('Y-m-d'));
-        $to = $request->query('to', Carbon::now()->format('Y-m-d'));
+        $to = $request->query('to', Carbon::now()->addMonth(1)->format('Y-m-d'));
         $group = $request->query('group', 'ngay');
 
         // Lấy dữ liệu từ Service QL
@@ -31,7 +31,7 @@ class ThongKeController extends Controller
             'bieuDo'               => $service->thongKeLichTheoThoiGian($from, $to, $group),
 
             // Biểu đồ cột - Giờ vàng (Gán kết quả vào biến bieuDoGio để Blade nhận được)
-            'bieuDoGio'            => $service->thongKeKhungGioLaiThu($from, $to),
+           'thongKeKhungGio'      => $service->thongKeKhungGioLaiThu($from, $to),
 
             // Biểu đồ tròn & Bảng xu hướng (Dùng hàm XuHuong để có cả lượt thích và lượt mua)
             'topLoaiXeXuHuong'     => $service->thongKeLoaiXeXuHuong(10),
