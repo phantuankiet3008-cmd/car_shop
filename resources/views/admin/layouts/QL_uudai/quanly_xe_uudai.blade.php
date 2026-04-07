@@ -15,6 +15,7 @@
         .btn-delete { background-color: #dc3545; color: white; padding: 6px 12px; text-decoration: none; border-radius: 4px; font-size: 14px; display: inline-block;}
         .btn-delete:hover { background-color: #c82333; }
     </style>
+    <link rel="stylesheet" href="{{ asset('admin/css/admin.css') }}">
 </head>
 <body>
     <div style="margin-bottom: 20px;">

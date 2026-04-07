@@ -19,8 +19,8 @@ class khuyenmaiController extends Controller
     {
         $sanPham = $this->user->lay_san_pham_khuyen_mai();
 
-        return view('user.car_shop.khuyenmai', [
-            'sanPham' => $sanPham
-        ]);
+       return view('user.layouts.khuyenmai', [
+    'sanPham' => $sanPham
+]);
     }
 }

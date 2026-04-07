@@ -39,6 +39,38 @@ class QLGoiBaoDuong_controller extends Controller
         ->with('success','Thêm gói bảo dưỡng thành công');
 }
 
+
+    // Sửa gói
+    function edit($id)
+    {
+        $service = new QL();
+        $goi = $service->lay_goi_id($id);
+
+        return view('admin.layouts.index_AD', [
+            'goi' => $goi,
+            'key' => 'edit_goi_bao_duong'
+        ]);
+    }
+
+    // Cập nhật
+    function update(Request $request, $id)
+    {
+        $service = new QL();
+
+        $service->update_goi(
+            $id,
+            $request->ten_goi,
+            $request->mo_ta,
+            $request->gia
+        );
+
+        return redirect('/trang_admin/goibaoduong')
+            ->with('success','Cập nhật thành công');
+    }
+
+
+
+
     // Xóa gói
     function xoa_goi($id)
 {

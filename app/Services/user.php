@@ -1,10 +1,5 @@
 <?php
-
-
 namespace App\Services;
-use Illuminate\Support\Facades\DB;
-
-
 class User {
     private $host = "localhost";
     private $user = "root";
@@ -186,7 +181,7 @@ public function dem_don_cho_duyet($idXeMau){
     $sql = "SELECT COUNT(*) as tong
             FROM don_hang
             WHERE id_Xe_Mau = $idXeMau
-            AND Trang_Thai = 'da_coc'";
+            AND Trang_Thai = 'cho_duyet'";
 
     $result = $this->db->query($sql);
 
@@ -204,7 +199,7 @@ public function lay_khach_hang($idKhach){
 
     return ($row = $result->fetch_assoc()) ? $row : null;
 }
-function uu_dai_cua_xe($idXeMau) {
+public function uu_dai_cua_xe($idXeMau) {
 
     $idXeMau = (int)$idXeMau;
 
@@ -231,7 +226,7 @@ function uu_dai_cua_xe($idXeMau) {
 
     return $data;
 }
-function Danh_Sach_Slider() {
+ public function Danh_Sach_Slider() {
     $sql = "SELECT id_Loai_Xe, Hinh_Anh_Loai, Ten_Loai_Xe FROM loai_xe ORDER BY id_Loai_Xe DESC";
     $result = $this->db->query($sql);
 
@@ -241,6 +236,7 @@ function Danh_Sach_Slider() {
     }
     return $data;
 }
+
 
 public function lay_anh_va_id_theo_thuong_hieu_moi_nhat($tenThuongHieu) {
     $sql = "SELECT sp.id_Xe, sp.Anh_Dai_Dien, th.id_Thuong_Hieu
@@ -268,16 +264,59 @@ public function lay_anh_va_id_theo_thuong_hieu_moi_nhat($tenThuongHieu) {
 
 public function lay_san_pham_khuyen_mai()
 {
-    $sql = "SELECT *
-            FROM san_pham_xe
-            WHERE Ngay_Bat_Dau <= NOW()
-              AND Ngay_Ket_Thuc >= NOW()
-            ORDER BY id_Xe DESC";
+    $sql = "SELECT DISTINCT sp.*, 
+                   lx.Ten_Loai_Xe, 
+                   th.Ten_Thuong_Hieu, 
+                   xm.Gia AS Gia_Mau,
+                   ud.Ten_Uu_Dai, ud.Loai, ud.Gia_Tri,
+                   ud.Ngay_Bat_Dau, ud.Ngay_Ket_Thuc
+            FROM san_pham_xe sp
+            JOIN loai_xe lx ON sp.id_Loai_Xe = lx.id_Loai_xe
+            JOIN thuong_hieu_xe th ON sp.id_Thuong_Hieu = th.id_Thuong_Hieu
+            LEFT JOIN xe_mau xm 
+                ON sp.id_Xe = xm.id_Xe AND xm.is_Default = 1
+            JOIN xe_uu_dai xud 
+                ON sp.id_Xe = xud.id_Xe
+            JOIN uu_dai ud 
+                ON xud.id_Uu_Dai = ud.id_Uu_Dai
+            WHERE sp.Trang_Thai = 1
+              AND ud.Trang_Thai = 1
+              AND CURDATE() >= ud.Ngay_Bat_Dau
+              AND CURDATE() <= ud.Ngay_Ket_Thuc
+            ORDER BY sp.id_Xe DESC";
 
     $result = $this->db->query($sql);
 
     $data = [];
+
     while ($row = $result->fetch_assoc()) {
+
+        // 🔥 lấy giá mẫu (nếu null thì = 0)
+        $gia = isset($row['Gia_Mau']) ? $row['Gia_Mau'] : 0;
+
+        // 🔥 tính giá sau khuyến mãi
+        if ($row['Loai'] == 'tien_mat') {
+            $row['Gia_Sau_KM'] = $gia - $row['Gia_Tri'];
+        } 
+        else if ($row['Loai'] == 'phan_tram') {
+            $row['Gia_Sau_KM'] = $gia - ($gia * $row['Gia_Tri'] / 100);
+        } 
+        else {
+            $row['Gia_Sau_KM'] = $gia;
+        }
+
+        // 🔥 tránh giá âm
+        if ($row['Gia_Sau_KM'] < 0) {
+            $row['Gia_Sau_KM'] = 0;
+        }
+
+        // 🔥 thêm % giảm (xài cho UI đẹp)
+        if ($gia > 0) {
+            $row['Phan_Tram_Giam'] = round((($gia - $row['Gia_Sau_KM']) / $gia) * 100);
+        } else {
+            $row['Phan_Tram_Giam'] = 0;
+        }
+
         $data[] = $row;
     }
 
@@ -312,6 +351,7 @@ public function lay_xe_khach($id_khachhang) {
     }
     return $data;
 }
+
 // tạo đơn hàng 
 public function tao_don_dat_coc($id_kh, $id_xe_mau)
 {
@@ -399,60 +439,8 @@ public function thanh_toan_thanh_cong($id, $ma_gd)
 
     return $this->db->query($sql);
 }
-
-
-
-function chongoi_baoduong()
-{
-    $sql = "SELECT * FROM goi_bao_duong";
-
-    $result = $this->db->query($sql);
-
-    $data = [];
-    while ($row = $result->fetch_assoc()) {
-        $data[] = (array)$row;
-    }
-
-    return $data;
-}
-
-public function datlich_BaoDuong($id_khachhang, $id_xe_mau, $id_goi, $ngay, $ghichu) {
-    // Ép kiểu số để tránh lỗi query và bảo mật
-    $id_khachhang = (int)$id_khachhang;
-    $id_xe_mau = (int)$id_xe_mau;
-    $id_goi = (int)$id_goi;
-    
-    // Xử lý chuỗi
-    $ghichu = $this->db->real_escape_string($ghichu);
-    $ngay = $this->db->real_escape_string($ngay);
-
-    $sql = "
-        INSERT INTO lich_bao_duong 
-        (id_Khach_Hang, id_Xe_Mau, id_goi, ngay_bao_duong, ghi_chu, trang_thai)
-        VALUES 
-        ($id_khachhang, $id_xe_mau, $id_goi, '$ngay', '$ghichu', 'cho_xac_nhan')
-    ";
-
-    return $this->db->query($sql);
-}
-
-function dem_lich_trong_ngay($ngay)
-{
-    // Đảm bảo biến $ngay được xử lý để tránh lỗi bảo mật
-    $ngay_safe = $this->db->real_escape_string($ngay);
-
-    $sql = "
-        SELECT COUNT(*) as total
-        FROM lich_bao_duong
-        WHERE ngay_bao_duong = '$ngay_safe'
-    ";
-
-    $result = $this->db->query($sql);
-    
-    // Lấy giá trị số lượng cụ thể từ kết quả trả về
-    $row = $result->fetch_assoc();
-
-    return (int)$row['total'];
-}
 }
 ?>
+
+
+
