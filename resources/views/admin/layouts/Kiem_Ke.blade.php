@@ -8,13 +8,16 @@
     </div>
 
     @if(($tab ?? 'tieu-dung') === 'doanh-thu')
+
         <div class="thong-ke-doanh-thu">
             <p>Nội dung doanh thu sẽ được thêm ở đây sau.</p>
         </div>
+
+        @include('admin.layouts.ThongKe_DoanhThu')
+
     @else
         <div class="thong-ke-tieu-dung">
-
-            {{-- ===== FORM LỌC THỜI GIAN ===== --}}
+ {{-- ===== FORM LỌC THỜI GIAN ===== --}}
             <form method="get" action="{{ url('/trang_admin/kiem_ke/tieu-dung') }}">
                 <label>Ngày bắt đầu: <input type="date" name="from" value="{{ $from ?? '' }}"></label>
                 <label>Ngày kết thúc: <input type="date" name="to" value="{{ $to ?? '' }}"></label>
@@ -628,3 +631,4 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 </script>
+   

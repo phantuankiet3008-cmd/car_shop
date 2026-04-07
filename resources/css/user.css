@@ -113,14 +113,10 @@ body {
 }
 /* ================= SLIDER ================= */
 .slider {
-  position: relative;
-  width: 100%;
-  max-width: 1150px;
-  height: 350px;
-  margin: 30px auto;
-  overflow: hidden;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    width: 100%;
+    overflow: hidden;
+    max-width: unset;
+    position: relative;
 }
 
 .slides {

@@ -1,4 +1,4 @@
-{{-- index_AD.blade.php --}}
+
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -30,6 +30,8 @@
             <!-- MENU TRÁI -->
             <div class="left_menu">
                 <ul class="menu_admin">
+
+
 
                     <li class="menu_item"><a href="{{ url('/trang_admin/loai_xe') }}"><i
                                 class="fa-solid fa-layer-group"></i>Loại Xe</a></li>
@@ -208,7 +210,6 @@
 
 
         </div>
-
 
 
     </div>

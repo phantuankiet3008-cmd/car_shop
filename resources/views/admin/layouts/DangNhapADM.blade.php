@@ -57,7 +57,6 @@
 
             <div class="auth-box">
 
-            <div class="auth-box"> 
                 @if(session('error'))
                 <div class="alert alert-danger">
                     {{ session('error') }}
