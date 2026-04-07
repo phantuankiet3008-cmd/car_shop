@@ -55,7 +55,6 @@
         <div class="auth-container">
             <h2>Đăng nhập Admin</h2>
             <div class="auth-box">
-
                 @if(session('error'))
                 <div class="alert alert-danger">
                     {{ session('error') }}
