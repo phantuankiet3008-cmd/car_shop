@@ -381,91 +381,132 @@ public function Add_SanPham($ten_xe, $mo_ta, $post) {
 // Cập nhật hàm Update_SanPham trong class QL
 public function Update_SanPham($id_xe, $post) {
     $id_xe = (int)$id_xe;
+
     $ten_xe = $this->db->real_escape_string($post['ten_xe']);
     $mo_ta = $this->db->real_escape_string($post['mo_ta']);
     $id_loai = (int)$post['id_loai'];
     $id_thuong_hieu = (int)$post['id_thuong_hieu'];
 
-    // 1. Cập nhật thông tin cơ bản
-    $this->db->query("UPDATE san_pham_xe SET 
-        Ten_Xe='$ten_xe', 
-        Mo_Ta='$mo_ta', 
-        id_Loai_Xe=$id_loai, 
-        id_Thuong_Hieu=$id_thuong_hieu 
-        WHERE id_Xe=$id_xe");
+    // 🔥 TRANSACTION (QUAN TRỌNG)
+    $this->db->begin_transaction();
 
-    // 2. Cập nhật URL từ Cloudinary (nếu có thay đổi)
-    if(!empty($post['new_anh_dai_dien_url'])) {
-        $url = $this->db->real_escape_string($post['new_anh_dai_dien_url']);
-        $this->db->query("UPDATE san_pham_xe SET Anh_Dai_Dien='$url' WHERE id_Xe=$id_xe");
-    }
-    if(!empty($post['new_anh_3d_url'])) {
-        $url = $this->db->real_escape_string($post['new_anh_3d_url']);
-        $this->db->query("UPDATE san_pham_xe SET Anh_3d='$url' WHERE id_Xe=$id_xe");
-    }
+    try {
 
-    // 3. Xử lý xóa ảnh trong album cũ (Dựa trên mảng delete_anh_ids gửi từ JS)
-    if(!empty($post['delete_anh_ids'])) {
-        foreach($post['delete_anh_ids'] as $id_Xe_Mau) {
-            if(!empty($id_Xe_Mau)) {
-                // Nếu muốn kỹ hơn, bạn có thể gọi CloudinaryService để deleteImage tại đây trước khi xóa DB
-                $this->db->query("DELETE FROM xe_mau_anh WHERE id_Xe_Mau_Anh= ".(int)$id_Xe_Mau);
-            }
+        // 1. UPDATE THÔNG TIN XE
+        $this->db->query("UPDATE san_pham_xe SET 
+            Ten_Xe='$ten_xe', 
+            Mo_Ta='$mo_ta', 
+            id_Loai_Xe=$id_loai, 
+            id_Thuong_Hieu=$id_thuong_hieu 
+            WHERE id_Xe=$id_xe");
+
+        // 2. UPDATE ẢNH (nếu có)
+        if(!empty($post['new_anh_dai_dien_url'])) {
+            $url = $this->db->real_escape_string($post['new_anh_dai_dien_url']);
+            $this->db->query("UPDATE san_pham_xe SET Anh_Dai_Dien='$url' WHERE id_Xe=$id_xe");
         }
-    }
 
-    // 4. Cập nhật biến thể ĐANG CÓ & Thêm ảnh mới vào Album cũ
-    if(isset($post['gia_mau'])) {
-        foreach($post['gia_mau'] as $id_xm => $gia) {
-            $gia_clean = (int)str_replace(['.', ','], '', $gia);
-            $sl = (int)$post['so_luong'][$id_xm];
-            $this->db->query("UPDATE xe_mau SET So_Luong=$sl, Gia=$gia_clean WHERE id_Xe_Mau=$id_xm");
+        if(!empty($post['new_anh_3d_url'])) {
+            $url = $this->db->real_escape_string($post['new_anh_3d_url']);
+            $this->db->query("UPDATE san_pham_xe SET Anh_3d='$url' WHERE id_Xe=$id_xe");
+        }
 
-            // Thêm ảnh mới vào album của màu đã tồn tại
-            if(isset($post['more_anh_mau_urls'][$id_xm])) {
-                foreach($post['more_anh_mau_urls'][$id_xm] as $u) {
-                    $u_e = $this->db->real_escape_string($u);
-                    $this->db->query("INSERT INTO xe_mau_anh (id_Xe_Mau, Hinh_Anh_Xe_Mau) VALUES ($id_xm, '$u_e')");
+        // 3. 🔥 XÓA MÀU (ĐÚNG VỊ TRÍ)
+        $deletedColorIds = [];
+        if (!empty($post['delete_color_ids'])) {
+            $deletedColorIds = array_map('intval', explode(',', $post['delete_color_ids']));
+
+            foreach ($deletedColorIds as $id_xm) {
+                if ($id_xm > 0) {
+                    // Xóa ảnh trước
+                    $this->db->query("DELETE FROM xe_mau_anh WHERE id_Xe_Mau = $id_xm");
+
+                    // Xóa màu
+                    $this->db->query("DELETE FROM xe_mau WHERE id_Xe_Mau = $id_xm");
                 }
             }
         }
-    }
 
-    // 5. Thêm biến thể MỚI (Màu mới hoàn toàn cho xe này)
-    if(isset($post['new_ten_mau'])) {
-        foreach($post['new_ten_mau'] as $idx => $val_mau) {
-            $id_m = 0;
-            // Xử lý tạo nhanh màu mới (NEW|Tên|Mã)
-            if (strpos($val_mau, 'NEW|') === 0) {
-                $parts = explode('|', $val_mau);
-                $ten_m = $this->db->real_escape_string($parts[1]);
-                $ma_m = $this->db->real_escape_string($parts[2]);
-                $this->db->query("INSERT INTO mau_xe (Ten_Mau, Ma_Mau) VALUES ('$ten_m', '$ma_m')");
-                $id_m = $this->db->insert_id;
-            } else {
-                $id_m = (int)$val_mau;
+        // 4. XÓA ẢNH RIÊNG LẺ
+        if(!empty($post['delete_anh_ids'])) {
+            foreach($post['delete_anh_ids'] as $id_anh) {
+                if(!empty($id_anh)) {
+                    $this->db->query("DELETE FROM xe_mau_anh WHERE id_Xe_Mau_Anh=".(int)$id_anh);
+                }
             }
+        }
 
-            if($id_m > 0) {
-                $gia_n = (int)str_replace(['.', ','], '', $post['new_gia_mau'][$idx]);
-                $sl_n = (int)$post['new_so_luong'][$idx];
-                
-                $this->db->query("INSERT INTO xe_mau (id_Xe, id_Mau, Gia, So_Luong, is_Default) 
-                                 VALUES ($id_xe, $id_m, $gia_n, $sl_n, 0)");
-                $new_id_xm = $this->db->insert_id;
+        // 5. UPDATE MÀU CŨ + THÊM ẢNH
+        if(isset($post['gia_mau'])) {
+            foreach($post['gia_mau'] as $id_xm => $gia) {
 
-                // Thêm album ảnh cho màu mới này
-                if(isset($post['new_anh_mau_urls'][$idx])) {
-                    foreach($post['new_anh_mau_urls'][$idx] as $u) {
+                $id_xm = (int)$id_xm;
+
+                // ❌ BỎ QUA nếu đã bị xóa
+                if (in_array($id_xm, $deletedColorIds)) continue;
+
+                $gia_clean = (int)str_replace(['.', ','], '', $gia);
+                $sl = (int)$post['so_luong'][$id_xm];
+
+                $this->db->query("UPDATE xe_mau SET So_Luong=$sl, Gia=$gia_clean WHERE id_Xe_Mau=$id_xm");
+
+                // thêm ảnh mới vào màu cũ
+                if(isset($post['more_anh_mau_urls'][$id_xm])) {
+                    foreach($post['more_anh_mau_urls'][$id_xm] as $u) {
                         $u_e = $this->db->real_escape_string($u);
-                        $this->db->query("INSERT INTO xe_mau_anh (id_Xe_Mau, Hinh_Anh_Xe_Mau) VALUES ($new_id_xm, '$u_e')");
+                        $this->db->query("INSERT INTO xe_mau_anh (id_Xe_Mau, Hinh_Anh_Xe_Mau) VALUES ($id_xm, '$u_e')");
                     }
-                
                 }
             }
         }
+
+        // 6. THÊM MÀU MỚI
+        if(isset($post['new_ten_mau'])) {
+            foreach($post['new_ten_mau'] as $idx => $val_mau) {
+
+                $id_m = 0;
+
+                // tạo màu mới nhanh
+                if (strpos($val_mau, 'NEW|') === 0) {
+                    $parts = explode('|', $val_mau);
+                    $ten_m = $this->db->real_escape_string($parts[1]);
+                    $ma_m = $this->db->real_escape_string($parts[2]);
+
+                    $this->db->query("INSERT INTO mau_xe (Ten_Mau, Ma_Mau) VALUES ('$ten_m', '$ma_m')");
+                    $id_m = $this->db->insert_id;
+                } else {
+                    $id_m = (int)$val_mau;
+                }
+
+                if($id_m > 0) {
+                    $gia_n = (int)str_replace(['.', ','], '', $post['new_gia_mau'][$idx]);
+                    $sl_n = (int)$post['new_so_luong'][$idx];
+
+                    $this->db->query("INSERT INTO xe_mau (id_Xe, id_Mau, Gia, So_Luong, is_Default) 
+                                     VALUES ($id_xe, $id_m, $gia_n, $sl_n, 0)");
+
+                    $new_id_xm = $this->db->insert_id;
+
+                    // thêm album ảnh
+                    if(isset($post['new_anh_mau_urls'][$idx])) {
+                        foreach($post['new_anh_mau_urls'][$idx] as $u) {
+                            $u_e = $this->db->real_escape_string($u);
+                            $this->db->query("INSERT INTO xe_mau_anh (id_Xe_Mau, Hinh_Anh_Xe_Mau) VALUES ($new_id_xm, '$u_e')");
+                        }
+                    }
+                }
+            }
+        }
+
+        // ✅ COMMIT
+        $this->db->commit();
+        return true;
+
+    } catch (\Exception $e) {
+        // ❌ ROLLBACK nếu lỗi
+        $this->db->rollback();
+        return false;
     }
-    return true;
 }
 public function Delete_MauXe($id_Xe_Mau)
 {

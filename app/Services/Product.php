@@ -285,6 +285,58 @@ function list_anh_xe_mau($id) {
         return $data;
     }
 
+    // Hàm lấy sản phẩm khuyến mãi (có ưu đãi đang hoạt động)
+    public function locSanPhamKhuyenMai($search = '', $MaLoai = 0, $MaThuongHieu = 0)
+    {
+        // 1. Prevent SQL Injection
+        $search = $this->db->real_escape_string($search);
+        $MaLoai = (int)$MaLoai;
+        $MaThuongHieu = (int)$MaThuongHieu;
+
+        // 2. Base SQL Query - Lấy sản phẩm có ưu đãi đang hoạt động
+        $sql = "SELECT DISTINCT sp.*, 
+                       lx.Ten_Loai_Xe, 
+                       th.Ten_Thuong_Hieu, 
+                       xm.Gia AS Gia_Mau
+                FROM san_pham_xe sp
+                JOIN loai_xe lx ON sp.id_Loai_Xe = lx.id_Loai_xe
+                JOIN thuong_hieu_xe th ON sp.id_Thuong_Hieu = th.id_Thuong_Hieu
+                LEFT JOIN xe_mau xm ON sp.id_Xe = xm.id_Xe AND xm.is_Default = 1
+                JOIN xe_uu_dai xud ON sp.id_Xe = xud.id_Xe
+                JOIN uu_dai ud ON xud.id_Uu_Dai = ud.id_Uu_Dai
+                WHERE sp.Trang_Thai = 1
+                AND ud.Trang_Thai = 1
+                AND CURDATE() >= ud.Ngay_Bat_Dau
+                AND CURDATE() <= ud.Ngay_Ket_Thuc";
+
+        // 3. Append filter conditions
+        if ($search !== '') {
+            $sql .= " AND sp.Ten_Xe LIKE '%$search%'";
+        }
+        if ($MaLoai > 0) {
+            $sql .= " AND sp.id_Loai_Xe = $MaLoai";
+        }
+        if ($MaThuongHieu > 0) {
+            $sql .= " AND sp.id_Thuong_Hieu = $MaThuongHieu";
+        }
+
+        // 4. Sort 
+        $sql .= " ORDER BY sp.id_Xe DESC";
+
+        // 5. Execute and gather results
+        $result = $this->db->query($sql);
+        $data = [];
+
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                // Ensure data is treated as an object for Blade compatibility
+                $data[] = (object) $row; 
+            }
+        }
+
+        return $data;
+    }
+
     // 3. Hàm lấy ưu đãi - Đã sửa lỗi thiếu Return
      function uu_dai_cua_xe($id) {
 
