@@ -1,15 +1,14 @@
 <div class="admin-kiem-ke">
     <h2>Kiểm Kê</h2>
-<link rel="stylesheet" href="{{ asset('admin/css/admin_kiem_ke.css') }}">
+    <link rel="stylesheet" href="{{ asset('admin/css/admin_kiem_ke.css') }}">
+    
     <div class="kiem_ke-sidebar">
         <a href="{{ url('/trang_admin/kiem_ke/doanh-thu') }}" class="{{ ($tab ?? 'tieu-dung') === 'doanh-thu' ? 'active' : '' }}">Doanh Thu</a>
         <a href="{{ url('/trang_admin/kiem_ke/tieu-dung') }}" class="{{ ($tab ?? 'tieu-dung') === 'tieu-dung' ? 'active' : '' }}">Tiêu Dùng</a>
     </div>
 
     @if(($tab ?? 'tieu-dung') === 'doanh-thu')
-        <div class="thong-ke-doanh-thu">
-            <p> thêm nội dung doanh thu ở đây sau.</p>
-        </div>
+        @include('admin.layouts.ThongKe_DoanhThu')
     @else
         <div class="thong-ke-tieu-dung">
             <form method="get" action="{{ url('/trang_admin/kiem_ke/tieu-dung') }}" class="mb-20">
@@ -56,21 +55,22 @@
                     <tbody></tbody>
                 </table>
             </div>
+            
             <div class="row-charts" style="display: flex; gap: 20px; margin: 30px 0; flex-wrap: wrap;">
-     <div style="flex: 1; min-width: 320px; background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); text-align: center;">
-        <h4 style="margin-bottom: 15px; color: #1e293b; font-weight: 600;"> Xu hướng theo Dòng xe </h4>
-        <div style="max-width: 260px; margin: auto;">
-            <canvas id="chartLoaiXeXuHuong"></canvas>
-        </div>
-    </div>
+                <div style="flex: 1; min-width: 320px; background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); text-align: center;">
+                    <h4 style="margin-bottom: 15px; color: #1e293b; font-weight: 600;"> Xu hướng theo Dòng xe </h4>
+                    <div style="max-width: 260px; margin: auto;">
+                        <canvas id="chartLoaiXeXuHuong"></canvas>
+                    </div>
+                </div>
 
-    <div style="flex: 1; min-width: 320px; background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); text-align: center;">
-        <h4 style="margin-bottom: 15px; color: #1e293b; font-weight: 600;"> Xu hướng theo Thương Hiệu</h4>
-        <div style="max-width: 260px; margin: auto;">
-            <canvas id="chartThuongHieuXuHuong"></canvas>
-        </div>
-    </div>
-</div>
+                <div style="flex: 1; min-width: 320px; background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); text-align: center;">
+                    <h4 style="margin-bottom: 15px; color: #1e293b; font-weight: 600;"> Xu hướng theo Thương Hiệu</h4>
+                    <div style="max-width: 260px; margin: auto;">
+                        <canvas id="chartThuongHieuXuHuong"></canvas>
+                    </div>
+                </div>
+            </div>
 
             <h3>Thống kê lịch bảo dưỡng</h3>
             <table border="1" cellpadding="8" cellspacing="0" width="100%">
@@ -83,8 +83,7 @@
                     @endforeach
                 </tbody>
             </table>
-           
-
+        
             <h3>Top xe được đặt lái thử nhiều nhất</h3>
             <table border="1" cellpadding="8" cellspacing="0" width="100%">
                 <thead><tr><th>Xe</th><th>Số lượt đặt</th></tr></thead>
@@ -158,6 +157,7 @@
     @endif
 </div>
 
+@if(($tab ?? 'tieu-dung') === 'tieu-dung')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     const chartData = @json($bieuDo ?? []);
@@ -181,11 +181,11 @@
             items.forEach(function(item) { 
                 const row = document.createElement('tr');
                 row.innerHTML = `<td>${item.khung_gio}</td>
-                                 <td>${item.loai_xe || '-'}</td>
-                                 <td>${item.ten_xe || '-'}</td>
-                                 <td>${item.ten_thuong_hieu || '-'}</td>
-                                 <td>${item.ten_mau || '-'}</td>
-                                 <td>${item.so_lan_dat}</td>`;
+                                <td>${item.loai_xe || '-'}</td>
+                                <td>${item.ten_xe || '-'}</td>
+                                <td>${item.ten_thuong_hieu || '-'}</td>
+                                <td>${item.ten_mau || '-'}</td>
+                                <td>${item.so_lan_dat}</td>`;
                 bangChiTietBody.appendChild(row);
             });
         }
@@ -284,7 +284,7 @@
             }
         });
     }
-// Hàm để gọi API lấy chi tiết bảo dưỡng theo ngày 
+
     function fetchBaoDuongTheoNgay(ngay) {
         fetch('/trang_admin/kiem_ke/bao-duong-theongay?ngay=' + encodeURIComponent(ngay))
             .then(r => r.json())
@@ -314,85 +314,86 @@
         chiTietBoxBD.style.display = 'block';
     }
 
-    const btnBaoDuongFetchByDate = document.getElementById('btnBaoDuongFetchByDate'); //  nút tra cứu 
-    const baoDuongDateFilter = document.getElementById('baoDuongDateFilter'); // input ngày bảo dưỡng
+    const btnBaoDuongFetchByDate = document.getElementById('btnBaoDuongFetchByDate'); 
+    const baoDuongDateFilter = document.getElementById('baoDuongDateFilter'); 
     btnBaoDuongFetchByDate?.addEventListener('click', () => baoDuongDateFilter.value ? fetchBaoDuongTheoNgay(baoDuongDateFilter.value) : alert('Hãy chọn ngày!')); 
 
     const btnFetchByDate = document.getElementById('btnFetchByDate');
     const dateFilter = document.getElementById('dateFilter');
     btnFetchByDate?.addEventListener('click', () => dateFilter.value ? fetchKhungGioTheoNgay(dateFilter.value) : alert('Hãy chọn ngày!'));
     
-   // biểu đồ tròn //
-const dataLoaiXe = @json($topLoaiXeXuHuong ?? []); // Đảm bảo biến này khớp với tên bạn truyền từ Controller
-const palette = ['#2f80ed', '#16a34a', '#f2994a', '#eb5757', '#9b51e0', '#2196f3', '#56ccf2', '#f2c94c'];
-const ctxLoaiXe = document.getElementById('chartLoaiXeXuHuong')?.getContext('2d');
-if (ctxLoaiXe && dataLoaiXe.length > 0) {
-    new Chart(ctxLoaiXe, {
-        type: 'pie',
-        data: {
-            labels: dataLoaiXe.map(i => i.Ten_Loai_Xe),
-            datasets: [{
-                data: dataLoaiXe.map(i => i.tong_tuong_tac),
-                backgroundColor: palette,
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'bottom' },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const index = context.dataIndex;
-                            const item = dataLoaiXe[index];
-                            return [
-                                ` ${item.Ten_Loai_Xe}: ${item.tong_tuong_tac} lượt`,
-                                `   • Đặt lịch lái thử: ${item.so_luong_lai_thu}`,
-                                `   • Số lượng mua: ${item.so_luong_don_hang}`
-                            ];
+    // Biểu đồ tròn
+    const dataLoaiXe = @json($topLoaiXeXuHuong ?? []);
+    const palette = ['#2f80ed', '#16a34a', '#f2994a', '#eb5757', '#9b51e0', '#2196f3', '#56ccf2', '#f2c94c'];
+    const ctxLoaiXe = document.getElementById('chartLoaiXeXuHuong')?.getContext('2d');
+    if (ctxLoaiXe && dataLoaiXe.length > 0) {
+        new Chart(ctxLoaiXe, {
+            type: 'pie',
+            data: {
+                labels: dataLoaiXe.map(i => i.Ten_Loai_Xe),
+                datasets: [{
+                    data: dataLoaiXe.map(i => i.tong_tuong_tac),
+                    backgroundColor: palette,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const index = context.dataIndex;
+                                const item = dataLoaiXe[index];
+                                return [
+                                    ` ${item.Ten_Loai_Xe}: ${item.tong_tuong_tac} lượt`,
+                                    `   • Đặt lịch lái thử: ${item.so_luong_lai_thu}`,
+                                    `   • Số lượng mua: ${item.so_luong_don_hang}`
+                                ];
+                            }
                         }
                     }
                 }
             }
-        }
-    });
-}
+        });
+    }
 
-//  Biểu đồ  tròn Xu hướng theo Thương Hiệu
-const dataThuongHieu = @json($topThuongHieuXuHuong ?? []); // Đảm bảo biến này khớp với Controller
+    // Biểu đồ tròn Xu hướng theo Thương Hiệu
+    const dataThuongHieu = @json($topThuongHieuXuHuong ?? []);
 
-const ctxThuongHieu = document.getElementById('chartThuongHieuXuHuong')?.getContext('2d');
-if (ctxThuongHieu && dataThuongHieu.length > 0) {
-    new Chart(ctxThuongHieu, {
-        type: 'pie',
-        data: {
-            labels: dataThuongHieu.map(i => i.Ten_Thuong_Hieu),
-            datasets: [{
-                data: dataThuongHieu.map(i => i.tong_tuong_tac),
-                backgroundColor: palette,
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'bottom' },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const index = context.dataIndex;
-                            const item = dataThuongHieu[index];
-                            return [
-                                ` ${item.Ten_Thuong_Hieu}: ${item.tong_tuong_tac} lượt`,
-                                `   • Đặt lịch lái thử: ${item.so_luong_lai_thu}`,
-                                `   • Số lượng mua: ${item.so_luong_don_hang}`
-                            ];
+    const ctxThuongHieu = document.getElementById('chartThuongHieuXuHuong')?.getContext('2d');
+    if (ctxThuongHieu && dataThuongHieu.length > 0) {
+        new Chart(ctxThuongHieu, {
+            type: 'pie',
+            data: {
+                labels: dataThuongHieu.map(i => i.Ten_Thuong_Hieu),
+                datasets: [{
+                    data: dataThuongHieu.map(i => i.tong_tuong_tac),
+                    backgroundColor: palette,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const index = context.dataIndex;
+                                const item = dataThuongHieu[index];
+                                return [
+                                    ` ${item.Ten_Thuong_Hieu}: ${item.tong_tuong_tac} lượt`,
+                                    `   • Đặt lịch lái thử: ${item.so_luong_lai_thu}`,
+                                    `   • Số lượng mua: ${item.so_luong_don_hang}`
+                                ];
+                            }
                         }
                     }
                 }
             }
-        }
-    });
-}
+        });
+    }
 </script>
+@endif
