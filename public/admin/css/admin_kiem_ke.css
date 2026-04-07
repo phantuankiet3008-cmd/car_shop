@@ -1,149 +1,667 @@
-:root {
-    --bg: #f5f7fb;
-    --card: #ffffff;
-    --text: #1f2a44;
-    --muted: #6e7d90;
-    --border: #e1e8f2;
-    --accent: #2f80ed;
-    --accent-soft: rgba(47, 128, 237, 0.12);
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+
+/* ===== RESET ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
+/* ===== BODY ===== */
+body {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    background: #f8fafc;
+    /* Solid, clean background like the sample */
+    color: #0f172a;
+}
+
+/* ===== CONTAINER ===== */
 .admin-kiem-ke {
-    background: var(--bg);
-    color: var(--text);
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(19, 33, 66, 0.08);
-    max-width: 1200px;
-    margin: 20px auto;
-    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    padding: 28px 38px;
 }
 
-.admin-kiem-ke h2 {
-    margin-bottom: 14px;
-    color: #253858;
-    font-size: 1.8rem;
-    font-weight: 700;
+/* ===== TITLE ===== */
+.admin-kiem-ke>h2 {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+    color: #1e293b;
+    /* Solid color, not gradient */
 }
 
+/* ===== SIDEBAR NAV ===== */
 .kiem_ke-sidebar {
-    display: inline-flex;
+    display: flex;
     gap: 12px;
-    margin-bottom: 20px;
+    margin-bottom: 28px;
 }
 
 .kiem_ke-sidebar a {
-    padding: 10px 16px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    padding: 11px 24px;
+    border-radius: 12px;
+    background: #e2e8f0;
+    color: #1e293b;
+    font-weight: 700;
     text-decoration: none;
-    color: var(--text);
-    font-weight: 600;
-    background: var(--card);
+    transition: all 0.25s ease;
+}
+
+.kiem_ke-sidebar a:hover {
+    background: #c7d2fe;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(99, 102, 241, 0.2);
 }
 
 .kiem_ke-sidebar a.active {
-    background: var(--accent);
+    background: linear-gradient(135deg, #2f80ed, #2563eb);
     color: #fff;
-    border-color: var(--accent);
-    box-shadow: 0 4px 12px rgba(47, 128, 237, 0.25);
+    box-shadow: 0 8px 18px rgba(47, 128, 237, 0.35);
 }
 
-.thong-ke-tieu-dung {
-    background: var(--card);
-    border: 1px solid var(--border);
+/* ===== MAIN CARD ===== */
+.thong-ke-tieu-dung,
+.thong-ke-doanh-thu {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.07);
+}
+
+/* ===== FORM ===== */
+form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 28px;
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    padding: 18px 22px;
+    border-radius: 14px;
+    border: 1px solid #bae6fd;
+}
+
+form label {
+    font-weight: 700;
+    color: #0369a1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+form input,
+form select {
+    padding: 8px 13px;
+    border-radius: 8px;
+    border: 1.5px solid #7dd3fc;
+    font-weight: 600;
+    outline: none;
+    background: #fff;
+    transition: all 0.2s;
+}
+
+form input:focus,
+form select:focus {
+    border-color: #2f80ed;
+    box-shadow: 0 0 0 3px rgba(47, 128, 237, 0.15);
+}
+
+/* ===== BUTTON ===== */
+button[type="submit"],
+form button {
+    padding: 9px 22px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 800;
+    cursor: pointer;
+    background: linear-gradient(135deg, #2f80ed, #2563eb);
+    color: white;
+    letter-spacing: 0.4px;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(47, 128, 237, 0.3);
+}
+
+button[type="submit"]:hover,
+form button:hover {
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 10px 22px rgba(47, 128, 237, 0.4);
+}
+
+/* ===== CHART CANVAS ===== */
+canvas {
+    margin-top: 6px;
+    border-radius: 14px;
+}
+
+/* Wrapper biểu đồ – mỗi cái một khác nhau */
+.chart-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.chart-wrapper canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Wrapper biểu đồ: Tăng chiều cao lên 350px để nhìn rõ ràng, ko bị bẹt */
+.chart-wrapper.h-main,
+.chart-wrapper.h-bar,
+.chart-wrapper.h-small {
+    height: 350px;
+}
+
+/* ===== CHART SECTION – CLEAN & MODERN ===== */
+.chart-section {
+    background: #ffffff;
     border-radius: 12px;
-    padding: 16px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid #edf2f7;
+    transition: all 0.3s ease;
 }
 
-.thong-ke-tieu-dung form {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 10px;
-    align-items: end;
-    margin-bottom: 22px;
+.chart-section:hover {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
-.thong-ke-tieu-dung label {
+.chart-section .chart-header {
     display: flex;
     flex-direction: column;
-    font-size: 0.92rem;
-    color: var(--muted);
+    /* Stacked to center title properly */
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
 }
 
-.thong-ke-tieu-dung input,
-.thong-ke-tieu-dung select,
-.thong-ke-tieu-dung button {
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 8px 10px;
-    font-size: 0.95rem;
+.chart-section .title-indicator {
+    width: 40px;
+    /* Wider indicator for center style */
+    height: 4px;
+    border-radius: 2px;
+    background: #3b82f6;
 }
 
-.thong-ke-tieu-dung button {
-    background: var(--accent);
-    color: #fff;
-    font-weight: 700;
-    cursor: pointer;
-    border-color: var(--accent);
+.chart-section h3 {
+    color: #0f172a;
+    font-size: 20px;
+    font-weight: 800;
+    /* Super bold for clarity */
+    margin: 0;
+    text-align: center;
+    letter-spacing: -0.02em;
 }
 
-.thong-ke-tieu-dung button:hover {
-    opacity: 0.95;
+/* Các màu chỉ định cho từng section */
+.chart-section.chart-pink .title-indicator {
+    background: #f43f5e;
 }
 
-.thong-ke-tieu-dung h3 {
-    margin-top: 26px;
-    margin-bottom: 10px;
-    color: #2c3e50;
-    font-size: 1.1rem;
-    letter-spacing: 0.2px;
+.chart-section.chart-green .title-indicator {
+    background: #10b981;
 }
 
+/* ===== PIE CHART CARDS ===== */
+.pie-chart-grid {
+    display: flex;
+    gap: 24px;
+    margin: 28px 0;
+    flex-wrap: wrap;
+}
+
+.pie-chart-card {
+    flex: 1;
+    min-width: 320px;
+    border-radius: 20px;
+    padding: 28px 24px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.pie-chart-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Pie card 1 – Dòng xe – xanh tím */
+.pie-card-loai {
+    background: linear-gradient(145deg, #f5f3ff, #ede9fe);
+    border: 1px solid #c4b5fd;
+    box-shadow: 0 10px 30px rgba(124, 58, 237, 0.15);
+}
+
+.pie-card-loai .pie-title {
+    color: #5b21b6;
+    font-size: 17px;
+    font-weight: 900;
+    margin-bottom: 16px;
+    letter-spacing: 0.3px;
+}
+
+.pie-card-loai::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: rgba(124, 58, 237, 0.08);
+}
+
+/* Pie card 2 – Thương hiệu – cam vàng */
+.pie-card-thuonghieu {
+    background: linear-gradient(145deg, #fff7ed, #ffedd5);
+    border: 1px solid #fed7aa;
+    box-shadow: 0 10px 30px rgba(251, 146, 60, 0.2);
+}
+
+.pie-card-thuonghieu .pie-title {
+    color: #c2410c;
+    font-size: 17px;
+    font-weight: 900;
+    margin-bottom: 16px;
+    letter-spacing: 0.3px;
+}
+
+.pie-card-thuonghieu::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: rgba(251, 146, 60, 0.08);
+}
+
+/* Wrapper biểu đồ tròn: giới hạn kích thước vừa vặn */
+.pie-chart-card .donut-wrap {
+    width: 100%;
+    max-width: 250px;
+    /* Giảm chút để không quá bự */
+    margin: 0 auto;
+}
+
+.pie-chart-card .donut-wrap canvas {
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.1));
+}
+
+/* ===== TABLE SHARED BASE ===== */
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-bottom: 20px;
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 10px;
+    margin-top: 10px;
+    border-radius: 12px;
     overflow: hidden;
-}
-
-table th,
-table td {
-    border: 1px solid var(--border);
-    padding: 10px 12px;
-    text-align: left;
-    font-size: 0.92rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
 }
 
 table th {
-    background: var(--accent-soft);
-    color: var(--text);
+    font-weight: 800;
+    font-size: 18px;
+    /* Phóng cỡ 18 */
+    padding: 14px 16px;
+    letter-spacing: 0.2px;
+    color: #ffffff;
+    text-align: center;
+    /* Căn giữa tiêu đề bảng */
+}
+
+table td {
+    padding: 12px 16px;
     font-weight: 700;
+    /* Bolder content to avoid blurriness */
+    color: #1e293b;
 }
 
-table tr:nth-child(even) {
-    background: #f7f9fc;
+table tbody tr {
+    transition: all 0.2s ease;
 }
 
-#chartLichTheoThoiGian {
-    max-width: 100%;
-    height: auto;
+table tbody tr:nth-child(even) {
+    background: #f8fafc;
+}
+
+table tbody tr:hover {
+    transform: scale(1.008);
+}
+
+/* ===== SECTION BLOCKS ===== */
+.section-block {
+    border-radius: 20px;
+    padding: 24px;
+    margin-top: 28px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.section-header {
+    text-align: center;
+    font-size: 20px;
+    /* Đúng cỡ 20 theo ý bạn */
+    font-weight: 900;
+    /* Siêu đậm */
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+    color: inherit;
+}
+
+/* ─── TOP XE LÁI THỬ ─── xanh dương */
+.section-top-xe {
+    background: linear-gradient(145deg, #eff6ff, #dbeafe);
+    border-left: 6px solid #2563eb;
+}
+
+.section-top-xe .section-header {
+    color: #1d4ed8;
+    border-bottom-color: #bfdbfe;
+}
+
+.section-top-xe table thead {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #fff;
+}
+
+.section-top-xe table tbody tr:nth-child(even) {
+    background: #dbeafe;
+}
+
+.section-top-xe table tbody tr:hover {
+    background: #bfdbfe;
+}
+
+/* ─── THƯƠNG HIỆU ─── xanh biển đậm */
+.section-thuonghieu {
+    background: linear-gradient(145deg, #f0f9ff, #e0f2fe);
+    border-left: 6px solid #0284c7;
+}
+
+.section-thuonghieu .section-header {
+    color: #0369a1;
+    border-bottom-color: #bae6fd;
+}
+
+.section-thuonghieu table thead {
+    background: linear-gradient(135deg, #0284c7, #0369a1);
+    color: #fff;
+}
+
+.section-thuonghieu table tbody tr:nth-child(even) {
+    background: #e0f2fe;
+}
+
+.section-thuonghieu table tbody tr:hover {
+    background: #bae6fd;
+}
+
+/* ─── LOẠI XE ─── xanh lá */
+.section-loaixe {
+    background: linear-gradient(145deg, #f0fdf4, #dcfce7);
+    border-left: 6px solid #16a34a;
+}
+
+.section-loaixe .section-header {
+    color: #166534;
+    border-bottom-color: #bbf7d0;
+}
+
+.section-loaixe table thead {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    color: #fff;
+}
+
+.section-loaixe table tbody tr:nth-child(even) {
+    background: #dcfce7;
+}
+
+.section-loaixe table tbody tr:hover {
+    background: #bbf7d0;
+}
+
+/* ─── MÀU XE ─── cam */
+.section-mauxe {
+    background: linear-gradient(145deg, #fff7ed, #ffedd5);
+    border-left: 6px solid #ea580c;
+}
+
+.section-mauxe .section-header {
+    color: #c2410c;
+    border-bottom-color: #fed7aa;
+}
+
+.section-mauxe table thead {
+    background: linear-gradient(135deg, #ea580c, #c2410c);
+    color: #fff;
+}
+
+.section-mauxe table tbody tr:nth-child(even) {
+    background: #ffedd5;
+}
+
+.section-mauxe table tbody tr:hover {
+    background: #fed7aa;
+}
+
+/* ─── BẢO DƯỠNG TABLE ─── tím */
+.section-baoduong-table {
+    background: linear-gradient(145deg, #faf5ff, #f3e8ff);
+    border-left: 6px solid #7c3aed;
+}
+
+.section-baoduong-table .section-header {
+    color: #5b21b6;
+    border-bottom-color: #ddd6fe;
+}
+
+.section-baoduong-table table thead {
+    background: linear-gradient(135deg, #7c3aed, #5b21b6);
+    color: #fff;
+}
+
+.section-baoduong-table table tbody tr:nth-child(even) {
+    background: #f3e8ff;
+}
+
+.section-baoduong-table table tbody tr:hover {
+    background: #ddd6fe;
+}
+
+/* ===== TABLE 2 CỘT SIDE BY SIDE ===== */
+.table-duo {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.table-duo>div {
+    flex: 1;
+    min-width: 260px;
+}
+
+.table-duo h4 {
+    font-weight: 800;
+    font-size: 18px;
+    /* Phóng cỡ 18 */
+    margin-bottom: 12px;
+    text-align: center;
+    /* Căn giữa */
+    color: #1e293b;
+}
+
+/* ===== DETAIL BOX – KHUNG GIỜ ===== */
+#chiTietKhungGio {
+    background: linear-gradient(135deg, #eff6ff, #ffffff);
+    border-left: 6px solid #2f80ed;
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid #bfdbfe;
+    box-shadow: 0 10px 25px rgba(47, 128, 237, 0.1);
+    animation: fadeSlide 0.4s ease;
+    margin-top: 16px;
+}
+
+#tieuDeKhungGio {
+    color: #1d4ed8;
+    font-weight: 900;
+    font-size: 18px;
+    margin-bottom: 12px;
+}
+
+#bangChiTietKhungGio thead {
+    background: linear-gradient(135deg, #2f80ed, #2563eb);
+    color: white;
+}
+
+#bangChiTietKhungGio tbody tr:hover {
+    background: #dbeafe;
+}
+
+/* ===== DETAIL BOX – BẢO DƯỠNG ===== */
+#chiTietBaoDuong {
+    background: linear-gradient(135deg, #f0fdf4, #ffffff);
+    border-left: 6px solid #16a34a;
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid #bbf7d0;
+    box-shadow: 0 10px 25px rgba(22, 163, 74, 0.1);
+    animation: fadeSlide 0.4s ease;
+    margin-top: 16px;
+}
+
+#tieuDeBaoDuong {
+    color: #166534;
+    font-weight: 900;
+    font-size: 18px;
+    margin-bottom: 12px;
+}
+
+#bangChiTietBaoDuong thead {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    color: white;
+}
+
+#bangChiTietBaoDuong tbody tr:hover {
+    background: #dcfce7;
+}
+
+/* ===== SHARED DETAIL TABLE ===== */
+#bangChiTietKhungGio,
+#bangChiTietBaoDuong {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+#bangChiTietKhungGio th,
+#bangChiTietBaoDuong th {
+    padding: 12px 14px;
+    font-weight: 800;
+}
+
+#bangChiTietKhungGio td,
+#bangChiTietBaoDuong td {
+    padding: 10px 14px;
+    font-weight: 600;
+}
+
+/* ===== DATE PICKER ROW ===== */
+.date-filter-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Căn giữa */
+    gap: 15px;
+    margin: 30px 0;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+    border: 1px dashed #cbd5e1;
+    flex-wrap: wrap;
+}
+
+.date-filter-row label {
+    font-weight: 800;
+    color: #1e293b;
+    font-size: 15px;
+}
+
+.date-filter-row input[type="date"] {
+    padding: 10px 16px;
+    border: 2px solid #e2e8f0;
     border-radius: 10px;
-    background: #fff;
-    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.08);
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    color: #0f172a;
+    outline: none;
+    transition: all 0.3s ease;
+    background: #ffffff;
+    cursor: pointer;
 }
 
-@media (max-width: 960px) {
+.date-filter-row input[type="date"]:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+
+.date-filter-row button {
+    padding: 10px 24px;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.date-filter-row button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+    filter: brightness(1.1);
+}
+
+.date-filter-row button:active {
+    transform: translateY(0);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 860px) {
+    .kiem_ke-sidebar {
+        flex-direction: column;
+    }
+
+    form {
+        flex-direction: column;
+    }
+
+    .pie-chart-grid {
+        flex-direction: column;
+    }
+
+    .table-duo {
+        flex-direction: column;
+    }
+
     .admin-kiem-ke {
-        padding: 14px;
-    }
-    .thong-ke-tieu-dung form {
-        grid-template-columns: 1fr;
-    }
-    .thong-ke-tieu-dung table {
-        font-size: 0.84rem;
+        padding: 16px 18px;
     }
 }
