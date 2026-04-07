@@ -282,7 +282,7 @@ if (lineCtx && lineData.length > 0) {
     });
 }
     // 2. Biểu đồ cột Khung giờ
-   // 2. Biểu đồ cột Khung giờ
+
 const kgData = @json($thongKeKhungGio ?? []);
 const kgCtx = document.getElementById('chartKhungGioCot')?.getContext('2d');
 if (kgCtx && kgData.length > 0) {
