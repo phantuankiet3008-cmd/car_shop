@@ -320,10 +320,22 @@ document.addEventListener("DOMContentLoaded", function() {
                 },
                 scales: {
                     x: {
+                        title: {
+                            display: true,
+                            text: 'Thời gian',
+                            color: '#0f172a',
+                            font: { family: 'Inter', size: 13, weight: '800' }
+                        },
                         ticks: { color: '#0f172a', font: { family: 'Inter', size: 12, weight: '700' } },
                         grid: { display: false }
                     },
                     y: {
+                        title: {
+                            display: true,
+                            text: 'Số lượt',
+                            color: '#0f172a',
+                            font: { family: 'Inter', size: 13, weight: '800' }
+                        },
                         beginAtZero: true,
                         ticks: { color: '#0f172a', font: { family: 'Inter', size: 12, weight: '700' }, stepSize: 1 },
                         grid: { color: '#f1f5f9', borderDash: [4, 4], drawBorder: false }
@@ -336,8 +348,8 @@ document.addEventListener("DOMContentLoaded", function() {
     // ── 2. BIỂU ĐỒ CỘT – KHUNG GIỜ ──────────────────────────────
     const kgData = @json($thongKeKhungGio ?? []);
     const kgCtx  = document.getElementById('chartKhungGioCot')?.getContext('2d');
-    if (kgCtx && kgData.length > 0) {
-        new Chart(kgCtx, {
+    if (kgCtx && kgData.length > 0) { // Chỉ vẽ biểu đồ nếu có dữ liệu
+        new Chart(kgCtx, { 
             type: 'bar',
             data: {
                 labels: kgData.map(i => i.khung_gio),
@@ -372,10 +384,22 @@ document.addEventListener("DOMContentLoaded", function() {
                 },
                 scales: {
                     x: {
+                        title: {
+                            display: true,
+                            text: 'Khung giờ',
+                            color: '#1e293b',
+                            font: { family: 'Inter', size: 13, weight: '800' }
+                        },
                         ticks: { color: '#1e293b', font: { family: 'Inter', size: 12, weight: '700' } },
                         grid: { display: false }
                     },
                     y: {
+                        title: {
+                            display: true,
+                            text: 'Số lượt',
+                            color: '#1e293b',
+                            font: { family: 'Inter', size: 13, weight: '800' }
+                        },
                         beginAtZero: true,
                         ticks: { color: '#1e293b', font: { family: 'Inter', size: 12, weight: '700' }, stepSize: 1 },
                         grid: { color: '#f1f5f9', borderDash: [4, 4], drawBorder: false }
@@ -439,10 +463,22 @@ document.addEventListener("DOMContentLoaded", function() {
                 },
                 scales: {
                     x: {
+                        title: {
+                            display: true,
+                            text: 'Thời gian',
+                            color: '#1e293b',
+                            font: { family: 'Inter', size: 13, weight: '800' }
+                        },
                         ticks: { color: '#1e293b', font: { family: 'Inter', size: 12, weight: '700' } },
                         grid: { display: false }
                     },
                     y: {
+                        title: {
+                            display: true,
+                            text: 'Số lượt',
+                            color: '#1e293b',
+                            font: { family: 'Inter', size: 13, weight: '800' }
+                        },
                         beginAtZero: true,
                         ticks: { color: '#1e293b', font: { family: 'Inter', size: 12, weight: '700' }, stepSize: 1 },
                         grid: { color: '#f1f5f9', borderDash: [4, 4], drawBorder: false }
