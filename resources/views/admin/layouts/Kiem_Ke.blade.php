@@ -32,7 +32,7 @@
             <div class="chart-section">
                 <div class="chart-header">
                     <div class="title-indicator"></div>
-                    <h3>Số lượt đặt lịch lái thử</h3>
+                    <h3> Đặt lịch lái thử theo thời gian </h3>
                 </div>
                 <div class="chart-wrapper h-main">
                     <canvas id="chartLichTheoThoiGian"></canvas>
@@ -70,7 +70,7 @@
             <div class="chart-section chart-green" style="margin-top: 30px;">
                 <div class="chart-header">
                     <div class="title-indicator"></div>
-                    <h3>Đặt lịch bảo dưỡng theo thời gian</h3>
+                    <h3>Đặt lịch bảo dưỡng theo thời gian  </h3>
                 </div>
                 <div class="chart-wrapper h-small">
                     <canvas id="chartLichBaoDuongTheoThoiGian"></canvas>
@@ -511,8 +511,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 layout: { padding: { bottom: 10 } },
                 plugins: {
                     legend: {
-                        position: 'bottom',
-                        labels: {
+                        position: 'bottom', 
+                        labels: { 
                             color: '#1e293b',
                             font: { weight: '700', size: 11 },
                             padding: 10,
@@ -556,7 +556,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 }]
             },
             options: {
-                responsive: true,
+                responsive: true, 
                 maintainAspectRatio: true,
                 cutout: '58%',
                 layout: { padding: { bottom: 10 } },
@@ -573,7 +573,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         }
                     },
                     tooltip: {
-                        ...commonTooltip,
+                        ...commonTooltip, 
                         callbacks: {
                             label: function(ctx) {
                                 const item = thData[ctx.dataIndex];
@@ -588,7 +588,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             }
         });
-    }
+    }   
 
     // ── FETCH CHI TIẾT THEO NGÀY ──────────────────────────────────
     window.fetchKhungGioTheoNgay = function(ngay) {
