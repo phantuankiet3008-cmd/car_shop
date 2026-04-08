@@ -46,28 +46,30 @@
             <div class="ic-icon ic-rev"><i class="fa-solid fa-wallet"></i></div>
             <span class="ic-title">Tổng Doanh Thu</span>
             <h4 class="ic-value">{{ number_format($tongDoanhThu ?? 0, 0, ',', '.') }} đ</h4>
-            <span class="ic-trend t-up"><i class="fa-solid fa-arrow-trend-up"></i> +14.2%</span>
+            <span class="ic-trend t-up"><i class="fa-solid fa-bolt"></i> Cập nhật tự động</span>
+        </div>
+
+        <div class="insight-card" onclick="openModalXeBan()" style="cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+            <div class="ic-icon ic-con"><i class="fa-solid fa-car"></i></div> 
+            <span class="ic-title">Số Lượng Xe Bán Ra</span>
+            <h4 class="ic-value">{{ $soLuongXeBanRa ?? 0 }}</h4>
+            <span class="ic-trend t-up"><i class="fa-solid fa-hand-pointer"></i> Nhấn để xem chi tiết</span>
         </div>
 
         <div class="insight-card">
             <div class="ic-icon ic-usr"><i class="fa-solid fa-user-plus"></i></div>
-            <span class="ic-title">Khách Hàng Mới</span>
+            <span class="ic-title">Tổng Khách Hàng</span>
             <h4 class="ic-value">{{ number_format($khachHangMoi ?? 0, 0, ',', '.') }}</h4>
-            <span class="ic-trend t-up"><i class="fa-solid fa-arrow-trend-up"></i> +5.1%</span>
+            <span class="ic-trend t-up"><i class="fa-solid fa-bolt"></i> Cập nhật tự động</span>
         </div>
 
         <div class="insight-card">
-            <div class="ic-icon ic-ret"><i class="fa-solid fa-chart-line"></i></div>
-            <span class="ic-title">Tỷ Lệ Giữ Chân</span>
-            <h4 class="ic-value">68.4%</h4>
-            <span class="ic-trend t-down"><i class="fa-solid fa-arrow-trend-down"></i> -2.4%</span>
-        </div>
-
-        <div class="insight-card">
-            <div class="ic-icon ic-con"><i class="fa-solid fa-arrow-right-arrow-left"></i></div>
-            <span class="ic-title">Tỷ Lệ Chuyển Đổi</span>
-            <h4 class="ic-value">4.21%</h4>
-            <span class="ic-trend t-up"><i class="fa-solid fa-arrow-trend-up"></i> +0.8%</span>
+            <div class="ic-icon ic-ret"><i class="fa-solid fa-rotate-left"></i></div>
+            <span class="ic-title">Tỷ Lệ Khách Mua Lại</span>
+            <h4 class="ic-value">{{ $tyLeQuayLai ?? 0 }}%</h4>
+            <span class="ic-trend {{ ($tyLeQuayLai ?? 0) > 0 ? 't-up' : 't-down' }}">
+                <i class="fa-solid fa-chart-pie"></i> Dữ liệu thực tế
+            </span>
         </div>
     </div>
 
@@ -90,8 +92,47 @@
     </div>
 </div>
 
+<div id="modalXeBan" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
+    <div style="background-color: #fff; padding: 25px; border-radius: 16px; width: 80%; max-width: 800px; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="margin: 0; color: #0f172a;">Chi Tiết Xe Đã Bán Năm {{ $namHienTai ?? date('Y') }}</h3>
+            <span onclick="closeModalXeBan()" style="font-size: 24px; font-weight: bold; color: #64748b; cursor: pointer;">&times;</span>
+        </div>
+        
+        <table border="1" cellpadding="10" cellspacing="0" width="100%" style="border-collapse: collapse; text-align: left; border-color: #e2e8f0;">
+            <thead style="background-color: #f8fafc;">
+                <tr>
+                    <th>STT</th>
+                    <th>Tên Xe</th>
+                    <th>Màu Xe</th>
+                    <th>Giá Bán (VNĐ)</th>
+                    <th>Ngày Bán</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if(isset($chiTietXeBanRa) && count($chiTietXeBanRa) > 0)
+                    @foreach($chiTietXeBanRa as $index => $xe)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td style="font-weight: 600; color: #3b82f6;">{{ $xe['Ten_Xe'] }}</td>
+                            <td>{{ $xe['Ten_Mau'] }}</td>
+                            <td style="font-weight: bold; color: #10b981;">{{ number_format($xe['Tong_Tien'], 0, ',', '.') }} đ</td>
+                            <td>{{ date('d/m/Y', strtotime($xe['Ngay_Tao'])) }}</td>
+                        </tr>
+                    @endforeach
+                @else
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 20px;">Chưa có dữ liệu xe bán ra.</td>
+                    </tr>
+                @endif
+            </tbody>
+        </table>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+// Khởi tạo biểu đồ
 document.addEventListener("DOMContentLoaded", function() {
     const ctx = document.getElementById('insightRevenueChart').getContext('2d');
     
@@ -100,7 +141,7 @@ document.addEventListener("DOMContentLoaded", function() {
     gradient.addColorStop(0, 'rgba(59, 130, 246, 0.4)'); 
     gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
 
-const dataDoanhThu = {!! json_encode($bieuDoDoanhThu ?? [0,0,0,0,0,0,0,0,0,0,0,0]) !!};
+    const dataDoanhThu = {!! json_encode($bieuDoDoanhThu ?? [0,0,0,0,0,0,0,0,0,0,0,0]) !!};
 
     new Chart(ctx, {
         type: 'line',
@@ -115,10 +156,10 @@ const dataDoanhThu = {!! json_encode($bieuDoDoanhThu ?? [0,0,0,0,0,0,0,0,0,0,0,0
                 pointBackgroundColor: '#fff',
                 pointBorderColor: '#3b82f6',
                 pointBorderWidth: 3,
-                pointRadius: 0, // Ẩn điểm mặc định, chỉ hiện khi hover giống hình mẫu
+                pointRadius: 0,
                 pointHoverRadius: 6,
                 fill: true,
-                tension: 0.4 // Tạo đường lượn sóng mượt
+                tension: 0.4
             }]
         },
         options: {
@@ -133,9 +174,9 @@ const dataDoanhThu = {!! json_encode($bieuDoDoanhThu ?? [0,0,0,0,0,0,0,0,0,0,0,0
                 }
             },
             scales: {
-                y: { display: false, beginAtZero: true }, // Ẩn cột Y giống mẫu
+                y: { display: false, beginAtZero: true },
                 x: {
-                    grid: { display: false, drawBorder: false }, // Ẩn lưới nền
+                    grid: { display: false, drawBorder: false },
                     ticks: { color: '#94a3b8', font: { size: 12, weight: '600' } }
                 }
             },
@@ -143,4 +184,21 @@ const dataDoanhThu = {!! json_encode($bieuDoDoanhThu ?? [0,0,0,0,0,0,0,0,0,0,0,0
         }
     });
 });
+
+// Hàm xử lý Mở/Đóng Modal Chi tiết Xe
+function openModalXeBan() {
+    document.getElementById('modalXeBan').style.display = 'flex';
+}
+
+function closeModalXeBan() {
+    document.getElementById('modalXeBan').style.display = 'none';
+}
+
+// Bấm ra ngoài vùng xám đen để đóng Modal
+window.onclick = function(event) {
+    let modal = document.getElementById('modalXeBan');
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
 </script>

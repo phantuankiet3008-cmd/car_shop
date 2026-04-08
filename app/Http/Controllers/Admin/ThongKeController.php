@@ -12,40 +12,30 @@ class ThongKeController extends Controller
     public function index(Request $request, $tab = 'tieu-dung')
     {
         $service = new QL();
-
-        // ===============================================
+// ===============================================
         // 1. NẾU BẤM VÀO TAB "DOANH THU"
         // ===============================================
         if ($tab == 'doanh-thu') {
             $namHienTai = date('Y');
             
-            // Tính tổng tiền các đơn hàng đã thanh toán (paid)
-            $tongDoanhThu = DB::table('don_hang')->where('payment_status', 'paid')->sum('Tong_Tien');
+            $tongDoanhThu = $service->ThongKe_TongDoanhThu($namHienTai);
+            $soLuongXeBanRa = $service->ThongKe_SoLuongXeBanRa($namHienTai);
+            $khachHangMoi = $service->ThongKe_KhachHangMoi($namHienTai);
+            $tyLeQuayLai  = $service->ThongKe_TyLeQuayLai();
+            $bieuDoDoanhThu = $service->ThongKe_BieuDoDoanhThu($namHienTai);
             
-            // Đếm tổng số khách hàng mới
-            $khachHangMoi = DB::table('khach_hang')->count();
-            
-            // Gom nhóm doanh thu theo từng tháng để vẽ biểu đồ lượn sóng
-            $doanhThuDB = DB::table('don_hang')
-                ->select(DB::raw('MONTH(Ngay_Tao) as thang'), DB::raw('SUM(Tong_Tien) as doanh_thu'))
-                ->where('payment_status', 'paid')
-                ->whereYear('Ngay_Tao', $namHienTai)
-                ->groupBy(DB::raw('MONTH(Ngay_Tao)'))
-                ->pluck('doanh_thu', 'thang')
-                ->toArray();
-
-            // Nhồi dữ liệu cho đủ 12 tháng (tháng nào không có doanh thu thì = 0)
-            $bieuDoDoanhThu = [];
-            for ($i = 1; $i <= 12; $i++) {
-                $bieuDoDoanhThu[] = isset($doanhThuDB[$i]) ? (float) $doanhThuDB[$i] : 0;
-            }
+            // DÒNG MỚI THÊM: Lấy chi tiết xe bán ra
+            $chiTietXeBanRa = $service->ThongKe_ChiTietXeBanRa($namHienTai);
 
             return view('admin.layouts.index_AD', [
                 'key' => 'kiem_ke',
                 'tab' => $tab,
                 'tongDoanhThu' => $tongDoanhThu,
+                'soLuongXeBanRa' => $soLuongXeBanRa,
                 'khachHangMoi' => $khachHangMoi,
+                'tyLeQuayLai'  => $tyLeQuayLai,
                 'bieuDoDoanhThu' => $bieuDoDoanhThu,
+                'chiTietXeBanRa' => $chiTietXeBanRa, // DÒNG MỚI THÊM
                 'namHienTai' => $namHienTai
             ]);
         }

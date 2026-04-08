@@ -1881,5 +1881,93 @@ function Xoa_Nhan_Vien($id) {
     $sql = "DELETE FROM admin WHERE id_Ad = $id";
     return $this->db->query($sql);
 }
+   // ==========================================
+    // CÁC HÀM THỐNG KÊ DOANH THU 
+    // ==========================================
 
+    // 1. Tổng doanh thu trong năm
+    public function ThongKe_TongDoanhThu($nam) {
+        $nam = (int)$nam;
+        $sql = "SELECT SUM(Tong_Tien) as total FROM don_hang WHERE payment_status = 'paid' AND YEAR(Ngay_Tao) = $nam";
+        $result = $this->db->query($sql);
+        $row = $result->fetch_assoc();
+        return $row['total'] ? (float)$row['total'] : 0;
+    }
+
+    // 2. Khách hàng mới trong năm
+    public function ThongKe_KhachHangMoi($nam) {
+        $nam = (int)$nam;
+        $sql = "SELECT COUNT(*) as total FROM khach_hang WHERE YEAR(Ngay_Tao) = $nam";
+        $result = $this->db->query($sql);
+        $row = $result->fetch_assoc();
+        return (int)$row['total'];
+    }
+
+    // 3. Tỷ lệ khách mua lại (Giữ chân)
+    public function ThongKe_TyLeQuayLai() {
+        $sqlTotal = "SELECT COUNT(*) as total FROM khach_hang";
+        $resTotal = $this->db->query($sqlTotal);
+        $totalKhach = (int)$resTotal->fetch_assoc()['total'];
+
+        if ($totalKhach === 0) return 0;
+
+        $sqlReturn = "SELECT COUNT(*) as total_return FROM (
+                        SELECT id_Khach_Hang 
+                        FROM don_hang 
+                        WHERE payment_status = 'paid' 
+                        GROUP BY id_Khach_Hang 
+                        HAVING COUNT(id_Don_Hang) > 1
+                      ) as returning_customers";
+        $resReturn = $this->db->query($sqlReturn);
+        $totalReturn = (int)$resReturn->fetch_assoc()['total_return'];
+
+        return round(($totalReturn / $totalKhach) * 100, 2);
+    }
+
+    // 4. Lấy dữ liệu 12 tháng cho biểu đồ
+    public function ThongKe_BieuDoDoanhThu($nam) {
+        $nam = (int)$nam;
+        $sql = "SELECT MONTH(Ngay_Tao) as thang, SUM(Tong_Tien) as doanh_thu 
+                FROM don_hang 
+                WHERE payment_status = 'paid' AND YEAR(Ngay_Tao) = $nam 
+                GROUP BY MONTH(Ngay_Tao)";
+        $result = $this->db->query($sql);
+        
+        $data = array_fill(1, 12, 0); 
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $data[(int)$row['thang']] = (float)$row['doanh_thu'];
+            }
+        }
+        return array_values($data); 
+    }
+
+    // 5. Đếm số lượng xe bán ra
+    public function ThongKe_SoLuongXeBanRa($nam) {
+        $nam = (int)$nam;
+        $sql = "SELECT COUNT(*) as total FROM don_hang WHERE payment_status = 'paid' AND YEAR(Ngay_Tao) = $nam";
+        $result = $this->db->query($sql);
+        $row = $result->fetch_assoc();
+        return (int)$row['total'];
+    }
+
+    // 6. Lấy chi tiết xe bán ra cho Modal
+    public function ThongKe_ChiTietXeBanRa($nam) {
+        $nam = (int)$nam;
+        $sql = "SELECT sp.Ten_Xe, mx.Ten_Mau, dh.Tong_Tien, dh.Ngay_Tao 
+                FROM don_hang dh
+                JOIN xe_mau xm ON dh.id_Xe_Mau = xm.id_Xe_Mau
+                JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+                JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau
+                WHERE dh.payment_status = 'paid' AND YEAR(dh.Ngay_Tao) = $nam
+                ORDER BY dh.Ngay_Tao DESC";
+        $result = $this->db->query($sql);
+        $data = [];
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $data[] = $row;
+            }
+        }
+        return $data;
+    }
 }
