@@ -1,18 +1,24 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\QL;
-use Illuminate\Support\Facades\DB; // Thêm thư viện DB
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+
 
 class ThongKeController extends Controller
 {
     public function index(Request $request, $tab = 'tieu-dung')
     {
         $service = new QL();
-// ===============================================
+
+        // Thiết lập thời gian mặc định: 30 ngày trước đến 1 tháng sau tính từ ngày hiện tại
+        $from = $request->query('from', Carbon::now()->subDays(30)->format('Y-m-d'));
+        $to = $request->query('to', Carbon::now()->addMonth(1)->format('Y-m-d'));
+        $group = $request->query('group', 'ngay');
+
         // 1. NẾU BẤM VÀO TAB "DOANH THU"
         // ===============================================
         if ($tab == 'doanh-thu') {
@@ -41,46 +47,32 @@ class ThongKeController extends Controller
         }
 
         // ===============================================
-        // 2. NẾU BẤM VÀO TAB "TIÊU DÙNG"
+        // 2. NẾU BẤM VÀO TAB "TIÊU DÙNG" (Mặc định)
         // ===============================================
-        $from = $request->query('from', now()->subDays(30)->format('Y-m-d')); 
-        $to = $request->query('to', now()->addMonths(1)->format('Y-m-d')); 
-        $group = $request->query('group', 'ngay');
+        $data = [
+            'key'                  => 'kiem_ke',
+            'tab'                  => $tab,
+            'from'                 => $from,
+            'to'                   => $to,
+            'group'                => $group,
+            'bieuDo'               => $service->thongKeLichTheoThoiGian($from, $to, $group),
+            'thongKeKhungGio'      => $service->thongKeKhungGioLaiThu($from, $to),
+            'topLoaiXeXuHuong'     => $service->thongKeLoaiXeXuHuong(10),
+            'topThuongHieuXuHuong' => $service->thongKeThuongHieuXuHuong(10),
+            'bieuDoBaoDuong'       => $service->thongKeLichBaoDuongTheoThoiGian($from, $to, $group),
+            'topXe'                => $service->thongKeXeLaiThu(10),
+            'topThuongHieu'        => $service->thongKeThuongHieuLaiThu(10),
+            'topLoaiXeUaChuong'    => $service->thongKeLoaiXeUaChuong(10),
+            'topLoaiXeMua'         => $service->thongKeLoaiXeMuaNhieu(10),
+            'topThuongHieuMua'     => $service->thongKeThuongHieuMuaNhieu(10),
+            'topMauXeUaChuong'     => $service->thongKeMauXeUaChuong(10),
+            'topMauXeMua'          => $service->thongKeMauXeMua(10),
+        ];
 
-        $khungGio = $service->thongKeKhungGioLaiThu($from, $to);
-        $topXe = $service->thongKeXeLaiThu(10);
-        $topThuongHieu = $service->thongKeThuongHieuLaiThu(10);
-        $topLoaiXeMua = $service->thongKeLoaiXeMuaNhieu(10);
-        $topLoaiXeUaChuong = $service->thongKeLoaiXeUaChuong(10);
-        $topThuongHieuMua = $service->thongKeThuongHieuMuaNhieu(10);
-        $topMauXeUaChuong = $service->thongKeMauXeUaChuong(10);
-        $topMauXeMua = $service->thongKeMauXeMua(10);
-        $topLoaiXeXuHuong = $service->thongKeLoaiXeXuHuong(10); 
-        $topThuongHieuXuHuong = $service->thongKeThuongHieuXuHuong(10);
-        $bieuDo = $service->thongKeLichTheoThoiGian($from, $to, $group);
-        $bieuDoBaoDuong = $service->thongKeLichBaoDuongTheoThoiGian($from, $to, $group);
-
-        return view('admin.layouts.index_AD', [
-            'key' => 'kiem_ke',
-            'tab' => $tab,
-            'khungGio' => $khungGio,
-            'topXe' => $topXe,
-            'topThuongHieu' => $topThuongHieu,
-            'topLoaiXeMua' => $topLoaiXeMua,
-            'topLoaiXeUaChuong' => $topLoaiXeUaChuong,
-            'topThuongHieuMua' => $topThuongHieuMua,
-            'topMauXeUaChuong' => $topMauXeUaChuong,
-            'topMauXeMua' => $topMauXeMua,
-            'topLoaiXeXuHuong' => $topLoaiXeXuHuong,
-            'topThuongHieuXuHuong' => $topThuongHieuXuHuong,
-            'bieuDo' => $bieuDo,
-            'bieuDoBaoDuong' => $bieuDoBaoDuong,
-            'group' => $group,
-            'from' => $from,
-            'to' => $to,  
-        ]);
+        return view('admin.layouts.index_AD', $data);
     }
 
+    // API phục vụ cho nút "Xem chi tiết khung giờ" bằng Fetch
     public function khungGioTheoNgay(Request $request)
     {
         $ngay = $request->query('ngay');
@@ -89,7 +81,8 @@ class ThongKeController extends Controller
         return response()->json(['date' => $ngay, 'khungGio' => $service->thongKeChiTietNgay($ngay)]);
     }
 
-    public function baoDuongTheoNgay(Request $request)
+    // API phục vụ cho nút "Tra cứu ngày" bảo dưỡng bằng Fetch
+    public function baoDuongTheoNgay(Request $request) 
     {
         $ngay = $request->query('ngay');
         if (!$ngay) return response()->json(['error' => 'Chưa truyền ngày'], 400);

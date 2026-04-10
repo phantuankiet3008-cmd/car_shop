@@ -66,7 +66,7 @@
                 <button type="submit" class="btn btn-edit">
                     CẬP NHẬT
                 </button>
-                <a href="{{ url('/trang_admin/thuong_hieu_xe') }}"
+                <a href="{{ url('/trang_admin/thuong_hieu') }}"
                    class="btn btn-delete">
                     QUAY LẠI
                 </a>

@@ -107,7 +107,7 @@
     <div class="admin-form-container">
     <h2>Sửa Loại Xe</h2>
 
-    <form method="POST" action="..." enctype="multipart/form-data">
+    <form method="POST" action="{{ url('/trang_admin/loai_xe/sua/' . $data['loai_xe']['id_Loai_xe']) }}" enctype="multipart/form-data">
         @csrf
 
         <div class="input-group">

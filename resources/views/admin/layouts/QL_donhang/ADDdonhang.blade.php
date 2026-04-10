@@ -175,7 +175,7 @@ $(document).ready(function() {
         $('#gia_goc').val('');
 
         $.ajax({
-            url: '/api/get-san-pham',
+            url: '/trang_admin/api/get-san-pham',
             type: 'GET',
             data: { id_loai: loai, id_thuong_hieu: th },
             success: function(res) {
@@ -192,7 +192,7 @@ $(document).ready(function() {
         $('#id_xe_mau').html('<option value="">Đang tải...</option>');
 
         $.ajax({
-            url: '/api/get-mau-xe',
+            url: '/trang_admin/api/get-mau-xe',
             type: 'GET',
             data: { id_xe: id_xe },
             success: function(res) {

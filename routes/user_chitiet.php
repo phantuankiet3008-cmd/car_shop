@@ -6,6 +6,7 @@ use App\Http\Controllers\User\{
     TrangChuController,
     chitietxeController,
     danhsachsanphamController,
+    khuyenmaiController,
     DangNhap_controller,
     DangKy_controller,
     QuenMK_controller,
@@ -29,6 +30,14 @@ Route::prefix('user')->group(function () {
     Route::get('/car_shop/trangchu', [TrangChuController::class, 'trangchu'])->name('trangchu');
     Route::get('/car_shop/chitietxe/{id}', [chitietxeController::class, 'index']);
     Route::get('/car_shop/danhsachsanpham/{IDloai?}/{IDTH?}', [danhsachsanphamController::class, 'index'])->name('danhsach');
+    Route::get('/car_shop/khuyenmai', [khuyenmaiController::class, 'khuyenmai'])->name('khuyenmai');
+    Route::get('/car_shop/baohanh', function () {return view('user.layouts.baohanh');})->name('baohanh');
+    Route::get('/car_shop/tuvan', function () {return view('user.layouts.tuvan');})->name('tuvan');
+    Route::get('/car_shop/giaoxe', function () {return view('user.layouts.giaoxe');})->name('giaoxe');
+    Route::get('/car_shop/tructuyen', function () {return view('user.layouts.tructuyen');})->name('tructuyen');
+    Route::get('/car_shop/suachua', function () {return view('user.layouts.suachua');})->name('suachua');
+    Route::get('/car_shop/lai_thu/{IDloai?}/{IDTH?}', [dangkilaithuController::class,'tranglaithu'])->name('tranglaithu');
+
 
     // Auth (Giữ nguyên name cũ)
     Route::get('/car_shop/dangnhap', function () { return view('user.layouts.DangNhap'); })->name('dangnhap');
@@ -95,5 +104,10 @@ Route::middleware('user.auth')->prefix('user')->group(function () {
     // BẢO DƯỠNG XE
     Route::get('/car_shop/datlichbaoduong', [BaoDuong_controller::class, 'trang_baoduong'])->name('datlichbaoduong');
     Route::post('/car_shop/dat_bao_duong', [BaoDuong_controller::class, 'datlich_BaoDuong']);
+
+
+
+
+
 
 });
