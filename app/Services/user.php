@@ -439,6 +439,88 @@ public function thanh_toan_thanh_cong($id, $ma_gd)
 
     return $this->db->query($sql);
 }
+function chongoi_baoduong()
+{
+    $sql = "SELECT * FROM goi_bao_duong";
+
+    $result = $this->db->query($sql);
+
+    $data = [];
+    while ($row = $result->fetch_assoc()) {
+        $data[] = (array)$row;
+    }
+
+    return $data;
+}
+
+public function datlich_BaoDuong($id_khachhang, $id_xe_mau, $id_goi, $ngay, $ghichu) {
+    // Ép kiểu số để tránh lỗi query và bảo mật
+    $id_khachhang = (int)$id_khachhang;
+    $id_xe_mau = (int)$id_xe_mau;
+    $id_goi = (int)$id_goi;
+    
+    // Xử lý chuỗi
+    $ghichu = $this->db->real_escape_string($ghichu);
+    $ngay = $this->db->real_escape_string($ngay);
+
+    $sql = "
+        INSERT INTO lich_bao_duong 
+        (id_Khach_Hang, id_Xe_Mau, id_goi, ngay_bao_duong, ghi_chu, trang_thai)
+        VALUES 
+        ($id_khachhang, $id_xe_mau, $id_goi, '$ngay', '$ghichu', 'cho_xac_nhan')
+    ";
+
+    return $this->db->query($sql);
+}
+
+function dem_lich_trong_ngay($ngay)
+{
+    // Đảm bảo biến $ngay được xử lý để tránh lỗi bảo mật
+    $ngay_safe = $this->db->real_escape_string($ngay);
+
+    $sql = "
+        SELECT COUNT(*) as total
+        FROM lich_bao_duong
+        WHERE ngay_bao_duong = '$ngay_safe'
+    ";
+
+    $result = $this->db->query($sql);
+    
+    // Lấy giá trị số lượng cụ thể từ kết quả trả về
+    $row = $result->fetch_assoc();
+
+    return (int)$row['total'];
+}
+
+
+function lay_lich_bao_duong($id_khach){
+    $id_khach = (int)$id_khach;
+
+    $sql = "SELECT l.id_lich, sp.Ten_Xe, m.Ten_Mau, g.ten_goi, g.gia, 
+                   l.ngay_bao_duong, l.trang_thai
+            FROM lich_bao_duong l
+            JOIN xe_mau xm ON l.id_Xe_Mau = xm.id_Xe_Mau
+            JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+            JOIN mau_xe m ON xm.id_Mau = m.id_Mau
+            JOIN goi_bao_duong g ON l.id_goi = g.id_goi
+            WHERE l.id_Khach_Hang = $id_khach
+            ORDER BY l.id_lich DESC";
+
+    return $this->db->query($sql);
+}
+
+function huy_lich_bao_duong($id_lich, $user_id)
+{
+    $sql = "UPDATE lich_bao_duong 
+            SET trang_thai = 'da_huy' 
+            WHERE id_lich = ? AND id_khach_hang = ? 
+            AND trang_thai = 'cho_xac_nhan'";
+
+    $stmt = $this->db->prepare($sql);
+    $stmt->bind_param("ii", $id_lich, $user_id);
+
+    return $stmt->execute();
+}
 }
 ?>
 

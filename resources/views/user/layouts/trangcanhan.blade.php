@@ -94,7 +94,7 @@ Thông báo
 
 <div class="tab-pane fade" id="baoduong">
     <div class="p-3">
-        Nội dung bảo dưỡng
+        <iframe src="{{ url('user/car_shop/lich_bao_duong_cua_toi') }}" width="100%" height="600" style="border:none;"></iframe>
     </div>
 </div>
 
