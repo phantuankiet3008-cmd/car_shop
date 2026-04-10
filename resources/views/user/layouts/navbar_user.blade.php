@@ -36,9 +36,7 @@
 
         
 
-        <li>
-            <a href="#">🙋‍♂️ / 🙋‍♀️HỖ TRỢ VÀ DỊCH VỤ</a>
-        </li>
+        
 
     </ul>
 </nav>

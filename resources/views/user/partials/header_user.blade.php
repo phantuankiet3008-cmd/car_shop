@@ -41,11 +41,12 @@
     </div>
 
     <!-- CART -->
-    <a href="{{ url('user/car_shop/giohang') }}">
+      @if(session('user_id'))
+    <a href="{{ url('/user/car_shop/don_cua_toi') }}">
         <i class="fas fa-shopping-cart"></i>
         <span>Đơn Hàng</span>
     </a>
-
+    @endif
     <!-- LOGOUT -->
     @if(session('user_id'))
         <a href="{{ url('user/car_shop/dangxuat') }}">

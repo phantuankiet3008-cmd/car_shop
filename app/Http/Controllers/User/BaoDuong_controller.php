@@ -23,7 +23,7 @@ class BaoDuong_controller extends Controller
         ]);
     }
 
-// app\Http\Controllers\User\BaoDuong_controller.php
+
 
 function datlich_BaoDuong(Request $request)
 {

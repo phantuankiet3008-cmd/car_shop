@@ -163,7 +163,7 @@
     </label>
 @empty
     <p style="text-align: center; color: #7f8c8d; grid-column: 1 / -1;">
-        Bạn chưa có xe nào trong hệ thống. Vui lòng mua xe trước khi đặt lịch bảo dưỡng.
+        Bạn chưa có xe nào trong hệ thống.
     </p>
 @endforelse
             </div>

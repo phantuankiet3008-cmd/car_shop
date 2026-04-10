@@ -1,0 +1,98 @@
+/* Card tổng */
+.order-card {
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    padding: 20px;
+    background: #fff;
+}
+
+/* Tiêu đề */
+.order-title {
+    font-weight: 600;
+    font-size: 22px;
+}
+
+/* Table */
+.table thead {
+    background: #0d6efd;
+    color: white;
+}
+
+.table tbody tr {
+    transition: 0.2s;
+}
+
+.table tbody tr:hover {
+    background: #f5f7fa;
+}
+
+/* Badge */
+.badge-status {
+    padding: 6px 10px;
+    border-radius: 10px;
+    font-size: 13px;
+}
+
+/* Trạng thái */
+.status-new { background: #6c757d; color: #fff; }
+.status-coc { background: #0d6efd; color: #fff; }
+.status-ky { background: #ffc107; color: #000; }
+.status-giao { background: #198754; color: #fff; }
+
+/* Payment */
+.pay-paid { color: #198754; font-weight: 500; }
+.pay-pending { color: #dc3545; font-weight: 500; }
+
+/* Price */
+.price {
+    font-weight: 600;
+    color: #dc3545;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+th, td {
+    padding: 12px 16px; /* làm bảng to ra */
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #2f6fed;
+    color: white;
+    font-weight: bold;
+}
+
+tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* làm cột xe rộng hơn */
+td:nth-child(2) {
+    text-align: left;
+    min-width: 250px;
+}
+
+/* cột màu */
+td:nth-child(3) {
+    min-width: 200px;
+}
+
+/* tiền nổi bật */
+td:nth-child(4) {
+    color: red;
+    font-weight: bold;
+}
+
+/* trạng thái */
+.status {
+    background: orange;
+    padding: 6px 12px;
+    border-radius: 20px;
+    color: white;
+    font-size: 14px;
+}

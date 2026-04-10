@@ -32,7 +32,8 @@
                 <ul class="menu_admin">
 
 
-
+                    <li class="menu_item"><a href="{{ url('/trang_admin/kiem_ke') }}"><i
+                                class="fa-solid fa-clipboard-list"></i>Thống Kê</a></li>
                     <li class="menu_item"><a href="{{ url('/trang_admin/loai_xe') }}"><i
                                 class="fa-solid fa-layer-group"></i>Loại Xe</a></li>
                     <li class="menu_item"><a href="{{ url('/trang_admin/thuong_hieu') }}"><i
@@ -49,9 +50,7 @@
                                 class="fa-solid fa-calendar-check"></i>Đặt Lịch Lái Thử</a></li>
                     <li class="menu_item"><a href="{{ url('/trang_admin/baoduong') }}"><i
                                 class="fa-solid fa-screwdriver-wrench"></i>Đặt Lịch Bảo Dưỡng</a></li>
-                    <li class="menu_item"><a href="{{ url('/trang_admin/kiem_ke') }}"><i
-                                class="fa-solid fa-clipboard-list"></i>Kiểm Kê</a></li>
-                    <li class="menu_item"><a href="{{ url('/trang_admin/nhan_vien') }}">Nhân Viên</a></li>
+                    <li class="menu_item"><a href="{{ url('/trang_admin/nhan_vien') }}"><i class="fa-solid fa-user-tie"></i>Nhân Viên</a></li>
                 </ul>
             </div>
 

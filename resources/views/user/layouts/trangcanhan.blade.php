@@ -27,9 +27,6 @@
 Thông tin khách hàng
 </button>
 
-<button class="nav-link" data-bs-toggle="pill" data-bs-target="#donhang">
-Đơn hàng của bạn
-</button>
 
 <button class="nav-link" data-bs-toggle="pill" data-bs-target="#baoduong">
 Đặt lịch bảo dưỡng
@@ -39,9 +36,7 @@ Thông tin khách hàng
 lịch lái thử của bạn
 </button>
 
-<button class="nav-link" data-bs-toggle="pill" data-bs-target="#thongbao">
-Thông báo
-</button>
+
 
 </div>
 
@@ -86,11 +81,7 @@ Thông báo
     <iframe src="{{ url('user/car_shop/profile') }}" width="100%" height="600" style="border:none;"></iframe>
 </div>
 
-<div class="tab-pane fade" id="donhang">
-    <div class="p-3">
-        Nội dung đơn hàng
-    </div>
-</div>
+
 
 <div class="tab-pane fade" id="baoduong">
     <div class="p-3">
@@ -104,11 +95,7 @@ Thông báo
     </div>
 </div>
 
-<div class="tab-pane fade" id="thongbao">
-    <div class="p-3">
-        Nội dung thông báo
-    </div>
-</div>
+
 </div>
 
 </div>

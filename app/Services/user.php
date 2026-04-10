@@ -339,7 +339,7 @@ public function lay_xe_khach($id_khachhang) {
         JOIN thuong_hieu_xe th ON spx.id_Thuong_Hieu = th.id_Thuong_Hieu
         JOIN loai_xe lx ON spx.id_Loai_Xe = lx.id_Loai_xe
         WHERE dh.id_Khach_Hang = $id_khachhang
-        AND dh.Trang_Thai IN ('da_coc', 'da_ky', 'da_giao')
+        AND dh.Trang_Thai IN ('da_giao')
     ";
 
     $result = $this->db->query($sql);
@@ -520,6 +520,30 @@ function huy_lich_bao_duong($id_lich, $user_id)
     $stmt->bind_param("ii", $id_lich, $user_id);
 
     return $stmt->execute();
+}
+public function don_hang_cua_toi($id_khach)
+{
+    $id_khach = (int)$id_khach;
+
+    $sql = "
+        SELECT 
+            dh.id_Don_Hang,
+            sp.Ten_Xe,
+            mx.Ten_Mau,
+            dh.Tong_Tien,
+            dh.Tien_Coc,
+            dh.payment_status,
+            dh.Trang_Thai,
+            dh.Ngay_Tao
+        FROM don_hang dh
+        JOIN xe_mau xm ON dh.id_Xe_Mau = xm.id_Xe_Mau
+        JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+        JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau
+        WHERE dh.id_Khach_Hang = $id_khach
+        ORDER BY dh.id_Don_Hang DESC
+    ";
+
+    return $this->db->query($sql);
 }
 }
 ?>
