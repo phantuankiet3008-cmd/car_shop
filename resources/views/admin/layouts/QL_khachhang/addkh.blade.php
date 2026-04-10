@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
 
     <title>Thêm khách hàng</title>
- <style> body{ font-family: Arial; padding: 20px; } input, textarea { width: 100%; margin-bottom: 10px; padding: 8px; } </style>
+ <style>input, textarea { width: 100%; margin-bottom: 10px; padding: 8px; } </style>
 </head>
 <body>
 <div class="admin-form-container">

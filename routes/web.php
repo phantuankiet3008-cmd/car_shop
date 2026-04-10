@@ -51,6 +51,13 @@ Route::prefix('trang_admin')->group(function () {
             // Quản lý Nhân viên
             Route::resource('nhan_vien', NhanVien_controller::class)->except(['show']);
             Route::get('nhan_vien/tim', [NhanVien_controller::class, 'index']);
+            Route::get('/nhan_vien/them',[NhanVien_controller::class, 'create']);
+            Route::post('/nhan_vien/them',[NhanVien_controller::class, 'store']);
+            Route::get('/nhan_vien/sua/{id}',[NhanVien_controller::class, 'edit']);
+            Route::post('/nhan_vien/sua',[NhanVien_controller::class, 'update']);
+            Route::get('/nhan_vien/xoa/{id}',[NhanVien_controller::class, 'destroy']);
+
+
 
 
             // Các route xóa (Destroy) đặc quyền của Admin

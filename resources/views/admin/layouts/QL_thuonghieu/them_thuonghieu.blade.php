@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <style> body{ font-family: Arial; padding: 20px; } input, textarea { width: 100%; margin-bottom: 10px; padding: 8px; } </style>
+    <style>  input, textarea { width: 100%; margin-bottom: 10px; padding: 8px; } </style>
 </html>
 </head>
 <body>

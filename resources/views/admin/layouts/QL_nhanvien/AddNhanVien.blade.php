@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>Thêm nhân viên</title>
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+     <style>  input, textarea { width: 100%; margin-bottom: 10px; padding: 8px; } </style>
 </head>
 
 <body>
