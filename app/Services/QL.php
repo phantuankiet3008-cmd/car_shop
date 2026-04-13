@@ -1942,6 +1942,45 @@ function Xoa_Nhan_Vien($id) {
         return array_values($data); 
     }
 
+    // 4.1 Lấy dữ liệu 7 ngày gần nhất (Tuần)
+    public function ThongKe_BieuDoDoanhThu_Tuan() {
+        // Lấy 7 ngày có doanh thu gần nhất để biểu đồ luôn đẹp khi demo
+        $sql = "SELECT DATE(Ngay_Tao) as ngay, SUM(Tong_Tien) as doanh_thu 
+                FROM don_hang 
+                WHERE payment_status = 'paid' 
+                GROUP BY DATE(Ngay_Tao) 
+                ORDER BY DATE(Ngay_Tao) DESC LIMIT 7";
+        $result = $this->db->query($sql);
+        $labels = [];
+        $data = [];
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                array_unshift($labels, date('d/m', strtotime($row['ngay'])));
+                array_unshift($data, (float)$row['doanh_thu']);
+            }
+        }
+        // Điền thêm ngày trống nếu DB chưa đủ 7 ngày
+        while(count($labels) < 7) {
+            array_unshift($labels, '--/--');
+            array_unshift($data, 0);
+        }
+        return ['labels' => $labels, 'data' => $data];
+    }
+
+    // 4.2 Lấy dữ liệu 5 năm gần nhất (Năm)
+    public function ThongKe_BieuDoDoanhThu_Nam($namHienTai) {
+        $data = [];
+        $labels = [];
+        for ($i = 4; $i >= 0; $i--) { // Lùi về 5 năm
+            $nam = $namHienTai - $i;
+            $labels[] = (string)$nam;
+            $sql = "SELECT SUM(Tong_Tien) as total FROM don_hang WHERE payment_status = 'paid' AND YEAR(Ngay_Tao) = $nam";
+            $res = $this->db->query($sql);
+            $row = $res->fetch_assoc();
+            $data[] = $row['total'] ? (float)$row['total'] : 0;
+        }
+        return ['labels' => $labels, 'data' => $data];
+    }
     // 5. Đếm số lượng xe bán ra
     public function ThongKe_SoLuongXeBanRa($nam) {
         $nam = (int)$nam;
