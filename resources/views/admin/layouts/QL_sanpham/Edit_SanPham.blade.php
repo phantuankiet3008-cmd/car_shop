@@ -22,7 +22,7 @@
 <form action="{{ url('/trang_admin/san_pham/sua/' . $data['xe']['id_Xe']) }}" method="POST">
     @csrf
     <h2 style="text-align:center; color:#0f172a; margin: 30px 0;">CHỈNH SỬA SẢN PHẨM</h2>
-
+<input type="hidden" name="delete_color_ids" id="delete_color_ids">
     <div class="vfast-edit-main">
         {{-- CỘT 1: ẢNH ĐẠI DIỆN & 3D --}}
         <div class="vfast-col-left">
@@ -55,7 +55,7 @@
                     <div class="color-group">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
                             <strong style="font-size:13px">{{ $m['Ten_Mau'] }}</strong>
-                            <button type="button" onclick="deleteColor({{ $m['id_Xe_Mau'] }})" style="color:red; border:none; background:none; cursor:pointer;">✕ Xóa</button>
+                           <button type="button" onclick="deleteColor({{ $m['id_Xe_Mau'] }})">✕ Xóa</button>
                         </div>
                         
                         <div style="display:flex; gap:5px; margin-top:5px;">
@@ -126,6 +126,7 @@
 const cloudName = 'dht18l0rh'; 
 const uploadPreset = 'ml_default';
 let newIdx = 0;
+let deletedColors = [];
 
 // 1. Upload Avatar
 function uploadAvatar() {
@@ -249,4 +250,20 @@ function initPriceFormat() {
 }
 function openZoom(src) { document.getElementById('zoomModal').style.display='flex'; document.getElementById('zoomImg').src=src; }
 initPriceFormat();
+
+function deleteColor(id) {
+    if(confirm("Xóa màu này?")) {
+        // lưu id
+        deletedColors.push(id);
+
+        // gán vào input hidden
+        document.getElementById('delete_color_ids').value = deletedColors.join(',');
+
+        // ẩn UI
+        const box = event.target.closest('.color-group');
+        box.style.opacity = "0.3";
+        box.style.pointerEvents = "none";
+    }
+
+}
 </script>

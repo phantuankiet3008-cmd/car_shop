@@ -116,9 +116,9 @@
                 </div>
             </div>
                 <div class="hanh_dong">
-        <a id="btnDatLich" href="{{ route('datlaithu', $mau_xe[0]['id_Xe_Mau']) }}" class="btn-dat-lich">
-            <i class="fa-solid fa-calendar-check"></i> ĐẶT LỊCH LÁI THỬ
-        </a>
+        <a id="btnDatLich" href="#" class="btn-dat-lich">
+                            <i class="fa-solid fa-calendar-check"></i> ĐẶT LỊCH LÁI THỬ
+                        </a>
     
 </div>
             </div>
@@ -146,12 +146,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const tongSauUuDai = document.getElementById("tongSauUuDai");
     const tienCoc = document.getElementById("tienCoc");
     const dsUuDai = document.querySelectorAll("#danhSachUuDai li");
+    
     const btnDatLich = document.getElementById("btnDatLich");
+    const btnDatHang = document.querySelector(".btn-dat-hang");
     const inputIdXeMau = document.getElementById("input_id_xe_mau");
 
-    // Lọc ảnh và cập nhật giá
-    function updateState(selectedColor, price) {
-        // 1. Filter Images
+    function updateState(selectedColor, price, soluong) {
+        // 1. Cập nhật ảnh
         let firstVisible = null;
         thumbs.forEach(img => {
             if (img.dataset.mau === selectedColor) {
@@ -167,7 +168,7 @@ document.addEventListener("DOMContentLoaded", function () {
             firstVisible.classList.add("active");
         }
 
-        // 2. Update Pricing
+        // 2. Cập nhật giá
         let formatPrice = Number(price).toLocaleString('vi-VN');
         giaChinh.innerText = formatPrice + " đ";
         giaTomTat.innerText = formatPrice;
@@ -184,14 +185,34 @@ document.addEventListener("DOMContentLoaded", function () {
         tongSauUuDai.innerText = total.toLocaleString('vi-VN');
         tienCoc.innerText = (total * 0.01).toLocaleString('vi-VN');
 
-        // 3. Update Inputs & Links
+        // 3. Xử lý Logic Số lượng (Quan trọng)
         inputIdXeMau.value = selectedColor;
-        btnDatLich.href = "{{ url('user/car_shop/dangkilaithu') }}/" + selectedColor;
+
+        if (soluong <= 0) {
+            if (btnDatLich) btnDatLich.style.display = "none";
+            if (btnDatHang) {
+                btnDatHang.disabled = true;
+                btnDatHang.style.opacity = "0.5";
+                btnDatHang.style.cursor = "not-allowed";
+                btnDatHang.innerHTML = '<i class="fa-solid fa-box-open"></i> TẠM HẾT HÀNG';
+            }
+        } else {
+            if (btnDatLich) {
+                btnDatLich.style.display = "flex";
+                btnDatLich.href = "{{ url('user/car_shop/dangkilaithu') }}/" + selectedColor;
+            }
+            if (btnDatHang) {
+                btnDatHang.disabled = false;
+                btnDatHang.style.opacity = "1";
+                btnDatHang.style.cursor = "pointer";
+                btnDatHang.innerHTML = '<i class="fa-solid fa-cart-arrow-down"></i> TIẾN HÀNH ĐẶT CỌC';
+            }
+        }
     }
 
     radios.forEach(r => {
         r.addEventListener("change", function() {
-            updateState(this.dataset.mau, parseFloat(this.dataset.gia));
+            updateState(this.dataset.mau, parseFloat(this.dataset.gia), parseInt(this.dataset.soluong));
         });
     });
 
@@ -205,7 +226,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Khởi tạo mặc định
     const checked = document.querySelector('input[name="chon_mau"]:checked');
-    if (checked) updateState(checked.dataset.mau, parseFloat(checked.dataset.gia));
+    if (checked) {
+        updateState(checked.dataset.mau, parseFloat(checked.dataset.gia), parseInt(checked.dataset.soluong));
+    }
 });
 </script>
 @endsection

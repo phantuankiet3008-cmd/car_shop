@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7fc8cc1ab1a7219880fdd2cc463db5c2",
+    "content-hash": "7ea7d6870884a99084cbbfdb7b00733e",
     "packages": [
         {
             "name": "brick/math",
@@ -207,16 +207,16 @@
         },
         {
             "name": "cloudinary/cloudinary_php",
-            "version": "3.1.2",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cloudinary/cloudinary_php.git",
-                "reference": "c373c01db4ecfe9637b1cb384ab1587c4af86793"
+                "reference": "05f2248f4bd809d1eac249b9fa59c605e83fd086"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cloudinary/cloudinary_php/zipball/c373c01db4ecfe9637b1cb384ab1587c4af86793",
-                "reference": "c373c01db4ecfe9637b1cb384ab1587c4af86793",
+                "url": "https://api.github.com/repos/cloudinary/cloudinary_php/zipball/05f2248f4bd809d1eac249b9fa59c605e83fd086",
+                "reference": "05f2248f4bd809d1eac249b9fa59c605e83fd086",
                 "shasum": ""
             },
             "require": {
@@ -266,9 +266,9 @@
             "support": {
                 "email": "info@cloudinary.com",
                 "issues": "https://github.com/cloudinary/cloudinary_php/issues",
-                "source": "https://github.com/cloudinary/cloudinary_php/tree/3.1.2"
+                "source": "https://github.com/cloudinary/cloudinary_php/tree/3.0.0"
             },
-            "time": "2025-09-21T10:52:52+00:00"
+            "time": "2025-01-06T23:23:36+00:00"
         },
         {
             "name": "cloudinary/transformation-builder-sdk",

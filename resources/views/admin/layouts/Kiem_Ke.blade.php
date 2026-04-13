@@ -8,348 +8,531 @@
     </div>
 
     @if(($tab ?? 'tieu-dung') === 'doanh-thu')
+
+        <div class="thong-ke-doanh-thu">
+            <p>Nội dung doanh thu sẽ được thêm ở đây sau.</p>
+        </div>
+
         @include('admin.layouts.ThongKe_DoanhThu')
+
     @else
         <div class="thong-ke-tieu-dung">
-            <form method="get" action="{{ url('/trang_admin/kiem_ke/tieu-dung') }}" class="mb-20">
+ {{-- ===== FORM LỌC THỜI GIAN ===== --}}
+            <form method="get" action="{{ url('/trang_admin/kiem_ke/tieu-dung') }}">
                 <label>Ngày bắt đầu: <input type="date" name="from" value="{{ $from ?? '' }}"></label>
                 <label>Ngày kết thúc: <input type="date" name="to" value="{{ $to ?? '' }}"></label>
                 <label>Nhóm theo:
                     <select name="group">
-                        <option value="ngay" {{ ($group ?? 'ngay') == 'ngay' ? 'selected' : '' }}>Ngày</option>
+                        <option value="ngay"  {{ ($group ?? 'ngay') == 'ngay'  ? 'selected' : '' }}>Ngày</option>
                         <option value="thang" {{ ($group ?? '') == 'thang' ? 'selected' : '' }}>Tháng</option>
-                        <option value="nam" {{ ($group ?? '') == 'nam' ? 'selected' : '' }}>Năm</option>
+                        <option value="nam"   {{ ($group ?? '') == 'nam'   ? 'selected' : '' }}>Năm</option>
                     </select>
                 </label>
                 <button type="submit">Cập nhật</button>
             </form>
 
-            <h3>Số lượt đặt lịch lái thử </h3>
-            <div class="row" style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
-                <label style="margin-bottom:0;">Chọn ngày để xem khung giờ:</label>
-                <input type="date" id="dateFilter" value="{{ $from ?? '' }}" style="padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px;" />
-                <button id="btnFetchByDate" type="button" style="padding:7px 14px; background:#2f80ed; color:#fff; border:none; border-radius:6px;">Xem theo ngày</button>
+            {{-- ===== BIỂU ĐỒ ĐƯỜNG – LÁI THỬ ===== --}}
+            <div class="chart-section">
+                <div class="chart-header">
+                    <div class="title-indicator"></div>
+                    <h3> Đặt lịch lái thử theo thời gian </h3>
+                </div>
+                <div class="chart-wrapper h-main">
+                    <canvas id="chartLichTheoThoiGian"></canvas>
+                </div>
             </div>
-            <canvas id="chartLichTheoThoiGian" width="800" height="300"></canvas>
 
-            <div id="chiTietKhungGio" style="display:none; margin-top:16px;">
-                <h4 id="tieuDeKhungGio">Chi tiết khung giờ của ngày </h4>
-                <table id="bangChiTietKhungGio" border="1" cellpadding="8" cellspacing="0" width="100%">
+            {{-- ===== BIỂU ĐỒ CỘT – KHUNG GIỜ ===== --}}
+            <div class="chart-section chart-pink">
+                <div class="chart-header">
+                    <div class="title-indicator"></div>
+                    <h3>Thống kê mật độ đặt lịch theo Khung giờ</h3>
+                </div>
+                <div class="chart-wrapper h-bar">
+                    <canvas id="chartKhungGioCot"></canvas>
+                </div>
+            </div>
+
+            {{-- ===== XEM CHI TIẾT KHUNG GIỜ ===== --}}
+            <div class="date-filter-row">
+                <label>📅 Chọn ngày xem chi tiết:</label>
+                <input type="date" id="dateFilter" value="{{ $from ?? '' }}" />
+                <button id="btnFetchByDate" type="button">
+                    <span>🔍</span> Xem theo ngày
+                </button>
+            </div>
+            <div id="chiTietKhungGio" style="display:none;">
+                <h4 id="tieuDeKhungGio">Chi tiết khung giờ</h4>
+                <table id="bangChiTietKhungGio">
                     <thead><tr><th>Khung giờ</th><th>Loại xe</th><th>Tên xe</th><th>Thương hiệu</th><th>Màu xe</th><th>Số lần đặt</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
 
-            <h3> Đặt Lịch Bảo Dưỡng </h3>
-            <div class="row" style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
-                <label style="margin-bottom:0;">Chọn ngày bảo dưỡng:</label>
-                <input type="date" id="baoDuongDateFilter" value="{{ $from ?? '' }}" style="padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px;" />
-                <button id="btnBaoDuongFetchByDate" type="button" style="padding:7px 14px; background:#16a34a; color:#fff; border:none; border-radius:6px;">Tra cứu ngày</button>
+            {{-- ===== BIỂU ĐỒ ĐƯỜNG – BẢO DƯỠNG ===== --}}
+            <div class="chart-section chart-green" style="margin-top: 30px;">
+                <div class="chart-header">
+                    <div class="title-indicator"></div>
+                    <h3>Đặt lịch bảo dưỡng theo thời gian  </h3>
+                </div>
+                <div class="chart-wrapper h-small">
+                    <canvas id="chartLichBaoDuongTheoThoiGian"></canvas>
+                </div>
             </div>
-            <canvas id="chartLichBaoDuongTheoThoiGian" width="800" height="300"></canvas>
 
-            <div id="chiTietBaoDuong" style="display:none; margin-top:16px;">
-                <h4 id="tieuDeBaoDuong">Chi tiết lịch bảo dưỡng ngày </h4>
-                <table id="bangChiTietBaoDuong" border="1" cellpadding="8" cellspacing="0" width="100%">
+            {{-- ===== XEM CHI TIẾT BẢO DƯỠNG ===== --}}
+            <div class="date-filter-row">
+                <label>🛠️ Tra cứu lịch bảo dưỡng:</label>
+                <input type="date" id="baoDuongDateFilter" value="{{ $from ?? '' }}" />
+                <button id="btnBaoDuongFetchByDate" type="button" class="btn-green-gradient">
+                    <span>⚡</span> Tra cứu ngày
+                </button>
+            </div>
+            <div id="chiTietBaoDuong" style="display:none;">
+                <h4 id="tieuDeBaoDuong">Chi tiết lịch bảo dưỡng</h4>
+                <table id="bangChiTietBaoDuong">
                     <thead><tr><th>Xe</th><th>Màu xe</th><th>Ngày bảo dưỡng</th><th>Ngày cập nhật</th><th>Gói bảo dưỡng</th><th>Số lượt</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
-            
-            <div class="row-charts" style="display: flex; gap: 20px; margin: 30px 0; flex-wrap: wrap;">
-                <div style="flex: 1; min-width: 320px; background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); text-align: center;">
-                    <h4 style="margin-bottom: 15px; color: #1e293b; font-weight: 600;"> Xu hướng theo Dòng xe </h4>
-                    <div style="max-width: 260px; margin: auto;">
+
+            {{-- ===== BIỂU ĐỒ TRÒN – XU HƯỚNG ===== --}}
+            <div class="pie-chart-grid">
+                <div class="pie-chart-card pie-card-loai">
+                    <div class="pie-title">🚗 Xu hướng theo Dòng xe</div>
+                    <div class="donut-wrap">
                         <canvas id="chartLoaiXeXuHuong"></canvas>
                     </div>
                 </div>
-
-                <div style="flex: 1; min-width: 320px; background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); text-align: center;">
-                    <h4 style="margin-bottom: 15px; color: #1e293b; font-weight: 600;"> Xu hướng theo Thương Hiệu</h4>
-                    <div style="max-width: 260px; margin: auto;">
+                <div class="pie-chart-card pie-card-thuonghieu">
+                    <div class="pie-title">🏷️ Xu hướng theo Thương Hiệu</div>
+                    <div class="donut-wrap">
                         <canvas id="chartThuongHieuXuHuong"></canvas>
                     </div>
                 </div>
             </div>
 
-            <h3>Thống kê lịch bảo dưỡng</h3>
-            <table border="1" cellpadding="8" cellspacing="0" width="100%">
-                <thead>
-                    <tr><th>Khoảng</th><th>Số lần đặt</th></tr>
-                </thead>
-                <tbody>
-                    @foreach($bieuDoBaoDuong ?? [] as $row)
-                        <tr><td>{{ $row['nhom'] }}</td><td>{{ $row['so_lan_dat'] }}</td></tr>
-                    @endforeach
-                </tbody>
-            </table>
-        
-            <h3>Top xe được đặt lái thử nhiều nhất</h3>
-            <table border="1" cellpadding="8" cellspacing="0" width="100%">
-                <thead><tr><th>Xe</th><th>Số lượt đặt</th></tr></thead>
-                <tbody>
-                    @foreach($topXe ?? [] as $row)
-                        <tr><td>{{ $row['Ten_Xe'] }}</td><td>{{ $row['so_lan_lai_thu'] }}</td></tr>
-                    @endforeach
-                </tbody>
-            </table>
+            {{-- ===== BẢNG THỐNG KÊ BẢO DƯỠNG ===== --}}
+            <div class="section-block section-baoduong-table">
+                <div class="section-header">🔩 Thống kê lịch bảo dưỡng</div>
+                <table>
+                    <thead><tr><th>Khoảng</th><th>Số lần đặt</th></tr></thead>
+                    <tbody>
+                        @foreach($bieuDoBaoDuong ?? [] as $row)
+                            <tr><td>{{ $row['nhom'] }}</td><td>{{ $row['so_lan_dat'] }}</td></tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
 
-            <h3>Top thương hiệu được ưa thích </h3> 
-            <table border="1" cellpadding="8" cellspacing="0" width="100%">
-                <thead><tr><th>Thương hiệu</th><th>  lượt ưa thích  </th></tr></thead>
-                <tbody>
-                    @foreach($topThuongHieu ?? [] as $row)
-                        <tr><td>{{ $row['Ten_Thuong_Hieu'] }}</td><td>{{ $row['so_lan_lai_thu'] }}</td></tr>
-                    @endforeach
-                </tbody>
-            </table>
+            {{-- ===== TOP XE ===== --}}
+            <div class="section-block section-top-xe">
+                <div class="section-header">🏆 Top xe được đặt lái thử nhiều nhất</div>
+                <table>
+                    <thead><tr><th>Xe</th><th>Số lượt đặt</th></tr></thead>
+                    <tbody>
+                        @foreach($topXe ?? [] as $row)
+                            <tr><td>{{ $row['Ten_Xe'] }}</td><td>{{ $row['so_lan_lai_thu'] }}</td></tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
 
-            <h3>Top loại xe được ưa thích </h3>
-            <table border="1" cellpadding="8" cellspacing="0" width="100%">
-                <thead><tr><th>Loại xe</th><th>  lượt ưa thích  </th></tr></thead>
-                <tbody>
-                    @foreach($topLoaiXeUaChuong ?? [] as $row)
-                        <tr><td>{{ $row['Ten_Loai_Xe'] }}</td><td>{{ $row['so_lan_lai_thu'] }}</td></tr>
-                    @endforeach
-                </tbody>
-            </table>
+            {{-- ===== THƯƠNG HIỆU ===== --}}
+            <div class="section-block section-thuonghieu">
+                <div class="section-header">🏷️ Top thương hiệu xu hướng hành vi khách hàng</div>
+                <div class="table-duo">
+                    <div>
+                        <h4>Thương hiệu ưa thích</h4>
+                        <table>
+                            <thead><tr><th>Thương hiệu</th><th>Lượt</th></tr></thead>
+                            <tbody>
+                                @foreach($topThuongHieu ?? [] as $row)
+                                    <tr>
+                                        <td>{{ $row['Ten_Thuong_Hieu'] }}</td>
+                                        <td>{{ $row['so_lan_lai_thu'] }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h4>Thương hiệu được mua</h4>
+                        <table>
+                            <thead><tr><th>Thương hiệu</th><th>Lượt</th></tr></thead>
+                            <tbody>
+                                @foreach($topThuongHieuMua ?? [] as $row)
+                                    <tr>
+                                        <td>{{ $row['Ten_Thuong_Hieu'] }}</td>
+                                        <td>{{ $row['so_lan_mua'] }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-            <h3>Top loại xe mua nhiều nhất</h3>
-            <table border="1" cellpadding="8" cellspacing="0" width="100%">
-                <thead><tr><th>Loại xe</th><th>  lượt mua </th></tr></thead>
-                <tbody>
-                    @foreach($topLoaiXeMua ?? [] as $row)
-                        <tr><td>{{ $row['Ten_Loai_Xe'] }}</td><td>{{ $row['so_lan_mua'] }}</td></tr>
-                    @endforeach
-                </tbody>
-            </table>
+            {{-- ===== LOẠI XE ===== --}}
+            <div class="section-block section-loaixe">
+                <div class="section-header">🚙 Top loại xe xu hướng theo hành vi khách hàng</div>
+                <div class="table-duo">
+                    <div>
+                        <h4>Loại xe ưa thích</h4>
+                        <table>
+                            <thead><tr><th>Loại xe</th><th>Lượt</th></tr></thead>
+                            <tbody>
+                                @foreach($topLoaiXeUaChuong ?? [] as $row)
+                                    <tr>
+                                        <td>{{ $row['Ten_Loai_Xe'] }}</td>
+                                        <td>{{ $row['so_lan_lai_thu'] }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h4>Loại xe được mua</h4>
+                        <table>
+                            <thead><tr><th>Loại xe</th><th>Lượt</th></tr></thead>
+                            <tbody>
+                                @foreach($topLoaiXeMua ?? [] as $row)
+                                    <tr>
+                                        <td>{{ $row['Ten_Loai_Xe'] }}</td>
+                                        <td>{{ $row['so_lan_mua'] }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-            <h3>Top thương hiệu mua nhiều nhất</h3>
-            <table border="1" cellpadding="8" cellspacing="0" width="100%">
-                <thead><tr><th>Thương hiệu</th><th>  lượt mua </th></tr></thead>
-                <tbody>
-                    @foreach($topThuongHieuMua ?? [] as $row)
-                        <tr><td>{{ $row['Ten_Thuong_Hieu'] }}</td><td>{{ $row['so_lan_mua'] }}</td></tr>
-                    @endforeach
-                </tbody>
-            </table>
+            {{-- ===== MÀU XE ===== --}}
+            <div class="section-block section-mauxe">
+                <div class="section-header">🎨 Top màu xe theo hành vi khách hàng</div>
+                <div class="table-duo">
+                    <div>
+                        <h4>Màu xe ưa thích</h4>
+                        <table>
+                            <thead><tr><th>Màu xe</th><th>Lượt</th></tr></thead>
+                            <tbody>
+                                @foreach($topMauXeUaChuong ?? [] as $row)
+                                    <tr>
+                                        <td>{{ $row['Ten_Mau'] }}</td>
+                                        <td>{{ $row['so_lan_dat'] }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h4>Màu xe được mua</h4>
+                        <table>
+                            <thead><tr><th>Màu xe</th><th>Lượt</th></tr></thead>
+                            <tbody>
+                                @foreach($topMauXeMua ?? [] as $row)
+                                    <tr>
+                                        <td>{{ $row['Ten_Mau'] }}</td>
+                                        <td>{{ $row['so_lan_mua'] }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-            <h3>Top màu xe được ưa thích </h3>
-            <table border="1" cellpadding="8" cellspacing="0" width="100%">
-                <thead><tr><th>Màu xe</th><th> lượt ưa thích  </th></tr></thead>
-                <tbody>
-                    @foreach($topMauXeUaChuong ?? [] as $row)
-                        <tr><td>{{ $row['Ten_Mau'] }}</td><td>{{ $row['so_lan_dat'] }}</td></tr>
-                    @endforeach
-                </tbody>
-            </table>
-
-            <h3>Top màu xe được mua</h3>
-            <table border="1" cellpadding="8" cellspacing="0" width="100%">
-                <thead><tr><th>Màu xe</th><th> lượt  mua</th></tr></thead>
-                <tbody>
-                    @foreach($topMauXeMua ?? [] as $row)
-                        <tr><td>{{ $row['Ten_Mau'] }}</td><td>{{ $row['so_lan_mua'] }}</td></tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+        </div>{{-- end thong-ke-tieu-dung --}}
     @endif
 </div>
 
-@if(($tab ?? 'tieu-dung') === 'tieu-dung')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const chartData = @json($bieuDo ?? []);
-    const labels = Array.isArray(chartData) ? chartData.map(i => i.nhom) : [];
-    const data = Array.isArray(chartData) ? chartData.map(i => parseInt(i.so_lan_dat)) : [];
+document.addEventListener("DOMContentLoaded", function() {
+    const textColor = '#1e293b';
+    const boldFont  = { weight: '700', size: 12 };
 
-    const chartCanvas = document.getElementById('chartLichTheoThoiGian');
-    const chiTietBox = document.getElementById('chiTietKhungGio');
-    const tieuDeChiTiet = document.getElementById('tieuDeKhungGio'); 
-    const bangChiTietBody = document.querySelector('#bangChiTietKhungGio tbody');
-    const chartGroup = @json($group ?? 'ngay'); 
+    // Bảng màu rực rỡ cho biểu đồ tròn
+    const palette = [
+        '#6366f1','#f59e0b','#10b981','#f43f5e','#3b82f6',
+        '#a855f7','#14b8a6','#ef4444','#84cc16','#0ea5e9'
+    ];
 
-    function hienThiChiTietKhungGio(ngay, items) {
-        if (!chiTietBox || !tieuDeChiTiet || !bangChiTietBody) return;
-        tieuDeChiTiet.textContent = 'Chi tiết khung giờ của ngày ' + ngay;
-        bangChiTietBody.innerHTML = '';
+    const commonTooltip = {
+        enabled: true,
+        backgroundColor: 'rgba(15,23,42,0.88)',
+        titleFont: { weight: 'bold', size: 14 },
+        bodyFont:  { weight: '600',  size: 13 },
+        padding: 12,
+        cornerRadius: 10,
+        displayColors: true
+    };
 
-        if (!items || items.length === 0) {
-            bangChiTietBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Không có dữ liệu khung giờ</td></tr>';
-        } else {
-            items.forEach(function(item) { 
-                const row = document.createElement('tr');
-                row.innerHTML = `<td>${item.khung_gio}</td>
-                                <td>${item.loai_xe || '-'}</td>
-                                <td>${item.ten_xe || '-'}</td>
-                                <td>${item.ten_thuong_hieu || '-'}</td>
-                                <td>${item.ten_mau || '-'}</td>
-                                <td>${item.so_lan_dat}</td>`;
-                bangChiTietBody.appendChild(row);
-            });
-        }
-        chiTietBox.style.display = 'block';
-    }
-
-    if (chartCanvas && Array.isArray(chartData) && chartData.length > 0) {
-        const ctx = chartCanvas.getContext('2d'); 
-        new Chart(ctx, {
+    // ── 1. BIỂU ĐỒ ĐƯỜNG – LÁI THỬ ──────────────────────────────
+    const lineData = @json($bieuDo ?? []);
+    const lineCtx  = document.getElementById('chartLichTheoThoiGian')?.getContext('2d');
+    if (lineCtx && lineData.length > 0) {
+        new Chart(lineCtx, {
             type: 'line',
             data: {
-                labels: labels,
+                labels: lineData.map(i => i.nhom),
                 datasets: [{
                     label: 'Số lượt đặt lịch',
-                    data: data,
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    data: lineData.map(i => parseInt(i.so_lan_dat)),
+                    borderColor: '#3b82f6',
+                    backgroundColor: function(context) {
+                        const chart = context.chart;
+                        const {ctx, chartArea} = chart;
+                        if (!chartArea) return null;
+                        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                        gradient.addColorStop(0, 'rgba(59, 130, 246, 0)');
+                        gradient.addColorStop(1, 'rgba(59, 130, 246, 0.15)');
+                        return gradient;
+                    },
                     fill: true,
-                    tension: 0.2,
+                    tension: 0.45,
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#3b82f6',
+                    pointBorderWidth: 2,
+                    pointHoverRadius: 6,
+                    pointHoverBackgroundColor: '#3b82f6',
+                    pointHoverBorderColor: '#ffffff',
+                    pointHoverBorderWidth: 2
                 }]
             },
             options: {
                 responsive: true,
-                onClick: function(evt, activeEls) {
-                    if (activeEls.length === 0) return;
-                    const index = activeEls[0].index;
-                    const selectedDate = this.data.labels[index];
-                    if (chartGroup !== 'ngay') {
-                        alert('Chi tiết khung giờ chỉ khả dụng khi nhóm theo ngày.');
-                        return;
-                    }
-                    dateFilter.value = selectedDate;
-                    fetchKhungGioTheoNgay(selectedDate); 
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { 
+                        position: 'top',
+                        align: 'center', /* Căn giữa tiêu đề biểu đồ */
+                        labels: { 
+                            color: '#0f172a', /* Màu tối đậm cho nét chữ sắc sảo */
+                            font: { family: 'Inter', size: 13, weight: '800' },
+                            boxWidth: 12,
+                            boxHeight: 12,
+                            usePointStyle: true,
+                            padding: 20
+                        } 
+                    },
+                    tooltip: commonTooltip
                 },
                 scales: {
                     x: {
-                        title: { display: true, text: 'Thời gian', font: { weight: 'bold' } }
+                        title: {
+                            display: true,
+                            text: 'Thời gian',
+                            color: '#0f172a',
+                            font: { family: 'Inter', size: 13, weight: '800' }
+                        },
+                        ticks: { color: '#0f172a', font: { family: 'Inter', size: 12, weight: '700' } },
+                        grid: { display: false }
                     },
                     y: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1,
-                            callback: value => Number.isInteger(value) ? value : ''
+                        title: {
+                            display: true,
+                            text: 'Số lượt',
+                            color: '#0f172a',
+                            font: { family: 'Inter', size: 13, weight: '800' }
                         },
-                        title: { display: true, text: 'Số lượt đặt', font: { weight: 'bold' } }
+                        beginAtZero: true,
+                        ticks: { color: '#0f172a', font: { family: 'Inter', size: 12, weight: '700' }, stepSize: 1 },
+                        grid: { color: '#f1f5f9', borderDash: [4, 4], drawBorder: false }
                     }
                 }
             }
         });
     }
 
-    const baoDuongData = @json($bieuDoBaoDuong ?? []);
-    const baoDuongLabels = Array.isArray(baoDuongData) ? baoDuongData.map(i => i.nhom) : [];
-    const baoDuongValues = Array.isArray(baoDuongData) ? baoDuongData.map(i => parseInt(i.so_lan_dat)) : [];
-    const baoDuongCanvas = document.getElementById('chartLichBaoDuongTheoThoiGian');
+    // ── 2. BIỂU ĐỒ CỘT – KHUNG GIỜ ──────────────────────────────
+    const kgData = @json($thongKeKhungGio ?? []);
+    const kgCtx  = document.getElementById('chartKhungGioCot')?.getContext('2d');
+    if (kgCtx && kgData.length > 0) { // Chỉ vẽ biểu đồ nếu có dữ liệu
+        new Chart(kgCtx, { 
+            type: 'bar',
+            data: {
+                labels: kgData.map(i => i.khung_gio),
+                datasets: [{
+                    label: 'Số lượt đặt',
+                    data: kgData.map(i => i.so_lan_dat),
+                    backgroundColor: kgData.map((_, idx) => palette[idx % palette.length] + 'cc'),
+                    hoverBackgroundColor: kgData.map((_, idx) => palette[idx % palette.length]),
+                    borderColor: '#ffffff',
+                    borderWidth: 2,
+                    borderRadius: 10,
+                    borderSkipped: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { 
+                        position: 'top',
+                        align: 'center', /* Căn giữa */
+                        labels: { 
+                            color: '#0f172a', 
+                            font: { family: 'Inter', size: 13, weight: '800' },
+                            boxWidth: 12,
+                            boxHeight: 12,
+                            usePointStyle: true,
+                            padding: 20
+                        } 
+                    },
+                    tooltip: commonTooltip
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Khung giờ',
+                            color: '#1e293b',
+                            font: { family: 'Inter', size: 13, weight: '800' }
+                        },
+                        ticks: { color: '#1e293b', font: { family: 'Inter', size: 12, weight: '700' } },
+                        grid: { display: false }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Số lượt',
+                            color: '#1e293b',
+                            font: { family: 'Inter', size: 13, weight: '800' }
+                        },
+                        beginAtZero: true,
+                        ticks: { color: '#1e293b', font: { family: 'Inter', size: 12, weight: '700' }, stepSize: 1 },
+                        grid: { color: '#f1f5f9', borderDash: [4, 4], drawBorder: false }
+                    }
+                }
+            }
+        });
+    }
 
-    if (baoDuongCanvas && Array.isArray(baoDuongData) && baoDuongData.length > 0) {
-        const ctx2 = baoDuongCanvas.getContext('2d');
-        new Chart(ctx2, {
+    // ── 3. BIỂU ĐỒ ĐƯỜNG – BẢO DƯỠNG ────────────────────────────
+    const bdData = @json($bieuDoBaoDuong ?? []);
+    const bdCtx  = document.getElementById('chartLichBaoDuongTheoThoiGian')?.getContext('2d');
+    if (bdCtx && bdData.length > 0) {
+        new Chart(bdCtx, {
             type: 'line',
             data: {
-                labels: baoDuongLabels,
+                labels: bdData.map(i => i.nhom),
                 datasets: [{
-                    label: 'Số lượt đặt lịch bảo dưỡng',
-                    data: baoDuongValues,
-                    backgroundColor: 'rgba(34, 197, 94, 0.25)',
-                    borderColor: 'rgba(34, 197, 94, 1)',
-                    borderWidth: 2,
+                    label: 'Số lượt bảo dưỡng',
+                    data: bdData.map(i => parseInt(i.so_lan_dat)),
+                    borderColor: '#10b981',
+                    backgroundColor: function(context) {
+                        const chart = context.chart;
+                        const {ctx, chartArea} = chart;
+                        if (!chartArea) return null;
+                        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                        gradient.addColorStop(0, 'rgba(16, 185, 129, 0)');
+                        gradient.addColorStop(1, 'rgba(16, 185, 129, 0.15)');
+                        return gradient;
+                    },
                     fill: true,
-                    tension: 0.3
+                    tension: 0.45,
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#10b981',
+                    pointBorderWidth: 2,
+                    pointHoverRadius: 6,
+                    pointHoverBackgroundColor: '#10b981',
+                    pointHoverBorderColor: '#ffffff',
+                    pointHoverBorderWidth: 2
                 }]
             },
             options: {
                 responsive: true,
-                onClick: function(evt, activeEls) {
-                    if (activeEls.length === 0) return;
-                    const index = activeEls[0].index;
-                    const selectedDate = this.data.labels[index];
-                    if (chartGroup !== 'ngay') {
-                        alert('Chi tiết bảo dưỡng theo ngày chỉ khả dụng khi nhóm theo ngày.');
-                        return;
-                    }
-                    baoDuongDateFilter.value = selectedDate;
-                    fetchBaoDuongTheoNgay(selectedDate);
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { 
+                        position: 'top',
+                        align: 'center', /* Căn giữa */
+                        labels: { 
+                            color: '#0f172a', 
+                            font: { family: 'Inter', size: 13, weight: '800' },
+                            boxWidth: 12,
+                            boxHeight: 12,
+                            usePointStyle: true,
+                            padding: 20
+                        } 
+                    },
+                    tooltip: commonTooltip
                 },
                 scales: {
                     x: {
-                        title: { display: true, text: 'Thời gian', font: { weight: 'bold' } }
+                        title: {
+                            display: true,
+                            text: 'Thời gian',
+                            color: '#1e293b',
+                            font: { family: 'Inter', size: 13, weight: '800' }
+                        },
+                        ticks: { color: '#1e293b', font: { family: 'Inter', size: 12, weight: '700' } },
+                        grid: { display: false }
                     },
                     y: {
+                        title: {
+                            display: true,
+                            text: 'Số lượt',
+                            color: '#1e293b',
+                            font: { family: 'Inter', size: 13, weight: '800' }
+                        },
                         beginAtZero: true,
-                        ticks: { stepSize: 1 },
-                        title: { display: true, text: 'Số lượt đặt', font: { weight: 'bold' } }
+                        ticks: { color: '#1e293b', font: { family: 'Inter', size: 12, weight: '700' }, stepSize: 1 },
+                        grid: { color: '#f1f5f9', borderDash: [4, 4], drawBorder: false }
                     }
                 }
             }
         });
     }
 
-    function fetchBaoDuongTheoNgay(ngay) {
-        fetch('/trang_admin/kiem_ke/bao-duong-theongay?ngay=' + encodeURIComponent(ngay))
-            .then(r => r.json())
-            .then(json => hienThiChiTietBaoDuong(ngay, json.baoDuong || []))
-            .catch(err => console.error(err));
-    }
-
-    function fetchKhungGioTheoNgay(ngay) {
-        fetch('/trang_admin/kiem_ke/khunggio-theongay?ngay=' + encodeURIComponent(ngay))
-            .then(r => r.json())
-            .then(json => hienThiChiTietKhungGio(ngay, json.khungGio || []))
-            .catch(e => console.error(e));
-    }
-
-    function hienThiChiTietBaoDuong(ngay, items) {
-        const chiTietBoxBD = document.getElementById('chiTietBaoDuong');
-        const tieuDeBD = document.getElementById('tieuDeBaoDuong');
-        const bodyBD = document.querySelector('#bangChiTietBaoDuong tbody');
-        if (!chiTietBoxBD || !bodyBD) return;
-        tieuDeBD.textContent = 'Chi tiết lịch bảo dưỡng ngày ' + ngay; 
-        bodyBD.innerHTML = items.length === 0 ? '<tr><td colspan="6" style="text-align:center;">Không có dữ liệu</td></tr>' : '';
-        items.forEach(item => {
-            const row = document.createElement('tr');
-            row.innerHTML = `<td>${item.ten_xe || '-'}</td><td>${item.ten_mau || '-'}</td><td>${item.ngay_bao_duong}</td><td>${item.ngay_cap_nhat}</td><td>${item.goi_bao_duong}</td><td>${item.so_lan_dat}</td>`;
-            bodyBD.appendChild(row);
-        });
-        chiTietBoxBD.style.display = 'block';
-    }
-
-    const btnBaoDuongFetchByDate = document.getElementById('btnBaoDuongFetchByDate'); 
-    const baoDuongDateFilter = document.getElementById('baoDuongDateFilter'); 
-    btnBaoDuongFetchByDate?.addEventListener('click', () => baoDuongDateFilter.value ? fetchBaoDuongTheoNgay(baoDuongDateFilter.value) : alert('Hãy chọn ngày!')); 
-
-    const btnFetchByDate = document.getElementById('btnFetchByDate');
-    const dateFilter = document.getElementById('dateFilter');
-    btnFetchByDate?.addEventListener('click', () => dateFilter.value ? fetchKhungGioTheoNgay(dateFilter.value) : alert('Hãy chọn ngày!'));
-    
-    // Biểu đồ tròn
-    const dataLoaiXe = @json($topLoaiXeXuHuong ?? []);
-    const palette = ['#2f80ed', '#16a34a', '#f2994a', '#eb5757', '#9b51e0', '#2196f3', '#56ccf2', '#f2c94c'];
-    const ctxLoaiXe = document.getElementById('chartLoaiXeXuHuong')?.getContext('2d');
-    if (ctxLoaiXe && dataLoaiXe.length > 0) {
-        new Chart(ctxLoaiXe, {
-            type: 'pie',
+    // ── 4. BIỂU ĐỒ TRÒN – LOẠI XE ───────────────────────────────
+    const lxData = @json($topLoaiXeXuHuong ?? []);
+    const lxCtx  = document.getElementById('chartLoaiXeXuHuong')?.getContext('2d');
+    if (lxCtx && lxData.length > 0) {
+        new Chart(lxCtx, {
+            type: 'doughnut',
             data: {
-                labels: dataLoaiXe.map(i => i.Ten_Loai_Xe),
+                labels: lxData.map(i => i.Ten_Loai_Xe),
                 datasets: [{
-                    data: dataLoaiXe.map(i => i.tong_tuong_tac),
+                    data: lxData.map(i => i.tong_tuong_tac),
                     backgroundColor: palette,
-                    borderWidth: 1
+                    borderColor: '#fff',
+                    borderWidth: 3,
+                    hoverOffset: 16
                 }]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: true,
+                cutout: '58%',
+                layout: { padding: { bottom: 10 } },
                 plugins: {
-                    legend: { position: 'bottom' },
+                    legend: {
+                        position: 'bottom', 
+                        labels: { 
+                            color: '#1e293b',
+                            font: { weight: '700', size: 11 },
+                            padding: 10,
+                            boxWidth: 12,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
                     tooltip: {
+                        ...commonTooltip,
                         callbacks: {
-                            label: function(context) {
-                                const index = context.dataIndex;
-                                const item = dataLoaiXe[index];
+                            label: function(ctx) {
+                                const item = lxData[ctx.dataIndex];
                                 return [
-                                    ` ${item.Ten_Loai_Xe}: ${item.tong_tuong_tac} lượt`,
-                                    `   • Đặt lịch lái thử: ${item.so_luong_lai_thu}`,
-                                    `   • Số lượng mua: ${item.so_luong_don_hang}`
+                                    ` Tổng: ${item.tong_tuong_tac} lượt`,
+                                    ` • Lái thử: ${item.so_luong_lai_thu}`,
+                                    ` • Mua xe:  ${item.so_luong_don_hang}`
                                 ];
                             }
                         }
@@ -359,34 +542,48 @@
         });
     }
 
-    // Biểu đồ tròn Xu hướng theo Thương Hiệu
-    const dataThuongHieu = @json($topThuongHieuXuHuong ?? []);
-
-    const ctxThuongHieu = document.getElementById('chartThuongHieuXuHuong')?.getContext('2d');
-    if (ctxThuongHieu && dataThuongHieu.length > 0) {
-        new Chart(ctxThuongHieu, {
-            type: 'pie',
+    // ── 5. BIỂU ĐỒ TRÒN – THƯƠNG HIỆU ───────────────────────────
+    const thData = @json($topThuongHieuXuHuong ?? []);
+    const thCtx  = document.getElementById('chartThuongHieuXuHuong')?.getContext('2d');
+    if (thCtx && thData.length > 0) {
+        new Chart(thCtx, {
+            type: 'doughnut',
             data: {
-                labels: dataThuongHieu.map(i => i.Ten_Thuong_Hieu),
+                labels: thData.map(i => i.Ten_Thuong_Hieu),
                 datasets: [{
-                    data: dataThuongHieu.map(i => i.tong_tuong_tac),
+                    data: thData.map(i => i.tong_tuong_tac),
                     backgroundColor: palette,
-                    borderWidth: 1
+                    borderColor: '#fff',
+                    borderWidth: 3,
+                    hoverOffset: 16
                 }]
             },
             options: {
-                responsive: true,
+                responsive: true, 
+                maintainAspectRatio: true,
+                cutout: '58%',
+                layout: { padding: { bottom: 10 } },
                 plugins: {
-                    legend: { position: 'bottom' },
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#1e293b',
+                            font: { weight: '700', size: 11 },
+                            padding: 10,
+                            boxWidth: 12,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
                     tooltip: {
+                        ...commonTooltip, 
                         callbacks: {
-                            label: function(context) {
-                                const index = context.dataIndex;
-                                const item = dataThuongHieu[index];
+                            label: function(ctx) {
+                                const item = thData[ctx.dataIndex];
                                 return [
-                                    ` ${item.Ten_Thuong_Hieu}: ${item.tong_tuong_tac} lượt`,
-                                    `   • Đặt lịch lái thử: ${item.so_luong_lai_thu}`,
-                                    `   • Số lượng mua: ${item.so_luong_don_hang}`
+                                    ` Tổng: ${item.tong_tuong_tac} lượt`,
+                                    ` • Lái thử: ${item.so_luong_lai_thu}`,
+                                    ` • Mua xe:  ${item.so_luong_don_hang}`
                                 ];
                             }
                         }
@@ -394,6 +591,44 @@
                 }
             }
         });
-    }
+    }   
+
+    // ── FETCH CHI TIẾT THEO NGÀY ──────────────────────────────────
+    window.fetchKhungGioTheoNgay = function(ngay) {
+        fetch(`/trang_admin/kiem_ke/khunggio-theongay?ngay=${encodeURIComponent(ngay)}`)
+            .then(r => r.json())
+            .then(json => {
+                const body = document.querySelector('#bangChiTietKhungGio tbody');
+                document.getElementById('tieuDeKhungGio').textContent = 'Chi tiết khung giờ ngày ' + ngay;
+                body.innerHTML = (json.khungGio || []).map(item => `
+                    <tr><td>${item.khung_gio}</td><td>${item.loai_xe||'-'}</td><td>${item.ten_xe||'-'}</td><td>${item.ten_thuong_hieu||'-'}</td><td>${item.ten_mau||'-'}</td><td>${item.so_lan_dat}</td></tr>
+                `).join('') || '<tr><td colspan="6" style="text-align:center;color:#94a3b8;">Không có dữ liệu</td></tr>';
+                document.getElementById('chiTietKhungGio').style.display = 'block';
+            });
+    };
+
+    window.fetchBaoDuongTheoNgay = function(ngay) {
+        fetch(`/trang_admin/kiem_ke/bao-duong-theongay?ngay=${encodeURIComponent(ngay)}`)
+            .then(r => r.json())
+            .then(json => {
+                const body = document.querySelector('#bangChiTietBaoDuong tbody');
+                document.getElementById('tieuDeBaoDuong').textContent = 'Chi tiết bảo dưỡng ngày ' + ngay;
+                body.innerHTML = (json.baoDuong || []).map(item => `
+                    <tr><td>${item.ten_xe||'-'}</td><td>${item.ten_mau||'-'}</td><td>${item.ngay_bao_duong}</td><td>${item.ngay_cap_nhat}</td><td>${item.goi_bao_duong}</td><td>${item.so_lan_dat}</td></tr>
+                `).join('') || '<tr><td colspan="6" style="text-align:center;color:#94a3b8;">Không có dữ liệu</td></tr>';
+                document.getElementById('chiTietBaoDuong').style.display = 'block';
+            });
+    };
+
+    document.getElementById('btnFetchByDate')?.addEventListener('click', () => {
+        const val = document.getElementById('dateFilter').value;
+        val ? fetchKhungGioTheoNgay(val) : alert('Vui lòng chọn ngày!');
+    });
+
+    document.getElementById('btnBaoDuongFetchByDate')?.addEventListener('click', () => {
+        const val = document.getElementById('baoDuongDateFilter').value;
+        val ? fetchBaoDuongTheoNgay(val) : alert('Vui lòng chọn ngày!');
+    });
+});
 </script>
-@endif
+   
