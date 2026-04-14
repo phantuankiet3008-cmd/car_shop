@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <title>Thêm Ưu Đãi Mới</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f6f9; }
+        
         .form-container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
         h2 { text-align: center; color: #333; }
         label { display: block; margin-bottom: 5px; font-weight: bold; margin-top: 15px; }

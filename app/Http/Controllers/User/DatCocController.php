@@ -5,18 +5,20 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\User;
-
+use App\Services\Product;
 class DatCocController extends Controller
 {
-    public function datcoc($id){
-
-    $id = (int)$id;
+    public function datcoc(Request $request){
+    $id = $request->id_xe_mau;
 
     $id_kh = session('user_id');
 
-    
+    $sp = new Product();
     $service = new User();
-
+$checksoluong = $sp->kiemtraxedo($id);
+    if($checksoluong && $checksoluong->num_rows <=0){
+        return back()->with('error','màu xe bạn chọn này đã bán hết hãy chọn lại xe khác');
+    }
     // Lấy thông tin xe
     $xe = $service->lay_xe_mau($id);
 

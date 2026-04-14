@@ -5,29 +5,39 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\QL;
-use App\Services\CloudinaryService; // Import Service upload
+ // Import Service upload
 
 class SanPhamController extends Controller
 {
     protected $ql;
-    protected $cloudinary;
+   
 
     public function __construct()
     {
         $this->ql = new QL();
-        $this->cloudinary = new CloudinaryService();
+       
     }
 
     // Danh sách sản phẩm xe
-    public function index()
-    {
-        return view('admin.layouts.index_AD', [
-            'key' => 'san_pham',
-            'data' => [
-                'danh_sach' => $this->ql->DanhSach_SanPham()
-            ]
-        ]);
-    }
+   public function index(Request $request)
+{
+    // Lấy dữ liệu lọc từ URL
+    $filters = [
+        'ten'         => $request->input('search_ten'),
+        'id_loai'     => $request->input('search_loai'),
+        'id_thương_hieu' => $request->input('search_thuong_hieu'),
+    ];
+
+    return view('admin.layouts.index_AD', [
+        'key' => 'san_pham',
+        'data' => [
+            // Truyền mảng filters vào Model
+            'danh_sach'      => $this->ql->DanhSach_SanPham($filters), 
+            'ds_loai'        => $this->ql->DS_Loai_Xe(),
+            'ds_thuong_hieu' => $this->ql->DS_Thuong_Hieu_Xe()
+        ]
+    ]);
+}
 
     public function create()
     {
@@ -77,18 +87,16 @@ class SanPhamController extends Controller
         ]);
     }
 
-    public function update(Request $request, $id)
-    {
-        // Lưu ý: Trong hàm update, bạn cần chỉnh sửa file QL.php 
-        // để nó nhận link Cloudinary thay vì lưu file cục bộ.
-        $ok = $this->ql->Update_SanPham($id, $request->all(), $_FILES);
+   public function update(Request $request, $id)
+{
+    // Không cần truyền $_FILES nữa vì ảnh đã lên Cloud từ lúc ở trình duyệt
+    $ok = $this->ql->Update_SanPham($id, $request->all()); 
 
-        if ($ok) {
-            return redirect('/trang_admin/san_pham')->with('success', 'Cập nhật sản phẩm thành công');
-        }
-
-        return back()->with('error', 'Có lỗi khi cập nhật');
+    if ($ok) {
+        return redirect('/trang_admin/san_pham')->with('success', 'Cập nhật thành công');
     }
+    return back()->with('error', 'Có lỗi xảy ra');
+}
 
     public function destroy($id)
     {

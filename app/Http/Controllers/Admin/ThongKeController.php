@@ -5,13 +5,21 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\QL;
 
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+
+
 class ThongKeController extends Controller
 {
     public function index(Request $request, $tab = 'tieu-dung')
     {
         $service = new QL();
 
-        // ===============================================
+        // Thiết lập thời gian mặc định: 30 ngày trước đến 1 tháng sau tính từ ngày hiện tại
+        $from = $request->query('from', Carbon::now()->subDays(30)->format('Y-m-d'));
+        $to = $request->query('to', Carbon::now()->addMonth(1)->format('Y-m-d'));
+        $group = $request->query('group', 'ngay');
+
         // 1. NẾU BẤM VÀO TAB "DOANH THU"
         // ===============================================
         if ($tab == 'doanh-thu') {

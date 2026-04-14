@@ -28,45 +28,49 @@ protected $cloudinary;
     // =========================
     // Tài khoản Admin
     // =========================
-    function dang_nhap_ADM($TenDangNhap, $MatKhau) {
+    function DangNhap($username, $password)
+{
+    $stmt = $this->db->prepare("
+        SELECT id_Ad, UserName, PassWord, role_id 
+        FROM admin 
+        WHERE UserName = ? AND Trang_Thai = 1
+        LIMIT 1
+    ");
 
-        $TenDangNhap = $this->db->real_escape_string($TenDangNhap);
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
 
-        $sql = "SELECT * FROM admin WHERE UserName = '$TenDangNhap' LIMIT 1";
-        $result = $this->db->query($sql);
+    $result = $stmt->get_result();
 
-        if ($result && $result->num_rows == 1) {
-            $row = $result->fetch_assoc();
-
-            // ✔ So sánh bằng password_verify
-            if (password_verify($MatKhau, $row['PassWord'])) {
-
-                $_SESSION['admin_id']   = $row['id_Ad'];
-                $_SESSION['admin_name'] = $row['UserName'];
-
-                return true;
-            }
-        }
+    if (!$result || $result->num_rows == 0) {
         return false;
     }
 
-    function check_dang_nhap_ADM() {
-        if (!isset($_SESSION['admin_id'])) {
-            header("Location:index_AD.php");
-            exit();
-        }
+    $row = $result->fetch_assoc();
+
+    if (password_verify($password, $row['PassWord'])) {
+        return [
+            'id_Ad' => $row['id_Ad'],
+            'UserName' => $row['UserName'],
+            'role_id' => $row['role_id']
+        ];
     }
 
-    function TKAD($username, $password, $trang_thai)
-    {
-        $username   = $this->db->real_escape_string($username);
-        $trang_thai = (int)$trang_thai;
-        $password   = password_hash($password, PASSWORD_DEFAULT);
+    return false;
+}
 
-        $sql = "INSERT INTO admin (UserName, PassWord, Trang_Thai)
-                VALUES ('$username', '$password', $trang_thai)";
-        return $this->db->query($sql);
-    }
+function TKAD($username, $password, $role_id, $trang_thai = 1)
+{
+    $username   = $this->db->real_escape_string($username);
+    $role_id    = (int)$role_id;
+    $trang_thai = (int)$trang_thai;
+    $password   = password_hash($password, PASSWORD_DEFAULT);
+
+    $sql = "INSERT INTO admin (UserName, PassWord, role_id, Trang_Thai)
+            VALUES ('$username', '$password', '$role_id', '$trang_thai')";
+
+    return $this->db->query($sql);
+}
         // =========================
     // LOẠI XE
     // =========================
@@ -242,23 +246,44 @@ protected $cloudinary;
 // =========================
 
 // Lấy danh sách sản phẩm
-function DanhSach_SanPham () {
-    $sql = "
-            SELECT
-                sp.id_Xe,
-                sp.Ten_Xe,
-               
-                sp.Anh_Dai_Dien,
-                sp.Trang_Thai,
-                lx.Ten_Loai_Xe,
-                th.Ten_Thuong_Hieu
-            FROM san_pham_xe sp
-            LEFT JOIN loai_xe lx ON sp.id_Loai_Xe = lx.id_Loai_xe
-            LEFT JOIN thuong_hieu_xe th ON sp.id_Thuong_Hieu = th.id_Thuong_Hieu
-            ORDER BY sp.id_Xe DESC
-        ";
-        return $this->db->query($sql);
+function DanhSach_SanPham($filters = []) {
+    $where = " WHERE 1=1 "; // Điều kiện mặc định luôn đúng
+
+    // Lọc theo tên (Tìm kiếm gần đúng)
+    if (!empty($filters['ten'])) {
+        $ten = addslashes($filters['ten']);
+        $where .= " AND sp.Ten_Xe LIKE '%$ten%' ";
     }
+
+    // Lọc theo loại xe
+    if (!empty($filters['id_loai'])) {
+        $id_loai = (int)$filters['id_loai'];
+        $where .= " AND sp.id_Loai_Xe = $id_loai ";
+    }
+
+    // Lọc theo thương hiệu
+    if (!empty($filters['id_thương_hieu'])) {
+        $id_th = (int)$filters['id_thương_hieu'];
+        $where .= " AND sp.id_Thuong_Hieu = $id_th ";
+    }
+
+    $sql = "
+        SELECT
+            sp.id_Xe,
+            sp.Ten_Xe,
+            sp.Anh_Dai_Dien,
+            sp.Trang_Thai,
+            lx.Ten_Loai_Xe,
+            th.Ten_Thuong_Hieu
+        FROM san_pham_xe sp
+        LEFT JOIN loai_xe lx ON sp.id_Loai_Xe = lx.id_Loai_xe
+        LEFT JOIN thuong_hieu_xe th ON sp.id_Thuong_Hieu = th.id_Thuong_Hieu
+        $where
+        ORDER BY sp.id_Xe DESC
+    ";
+    
+    return $this->db->query($sql);
+}
 function ten_sanpham(){
     $sql = "SELECT id_Xe, Ten_Xe FROM san_pham_xe ORDER BY id_Xe DESC";
     $result = $this->db->query($sql);
@@ -302,22 +327,15 @@ function Get_Mau_Theo_Xe($id_xe){
 }
 
 // Thêm sản phẩm
-public function Add_SanPham($ten_xe, $mo_ta, $post, $files) {
+public function Add_SanPham($ten_xe, $mo_ta, $post) {
+    // 1. Lấy URLs từ các input ẩn đã được JS điền vào
+    $anh_dai_dien = $this->db->real_escape_string($post['anh_dai_dien_url'] ?? '');
+    $anh_3d       = $this->db->real_escape_string($post['anh_3d_url'] ?? '');
+    
     $ten_xe = $this->db->real_escape_string($ten_xe);
-    $mo_ta = $this->db->real_escape_string($mo_ta);
+    $mo_ta  = $this->db->real_escape_string($mo_ta);
     $id_loai = (int)$post['loai_xe']; 
     $id_thuong_hieu = (int)$post['thuong_hieu'];
-
-    // 1. Xử lý Upload Ảnh đại diện & Ảnh 3D
-    $anh_dai_dien = "";
-    if (!empty($files['anh_dai_dien']['tmp_name'])) {
-        $anh_dai_dien = $this->cloudinary->uploadImage($files['anh_dai_dien'], 'san_pham');
-    }
-
-    $anh_3d = "";
-    if (!empty($files['anh_3d']['tmp_name'])) {
-        $anh_3d = $this->cloudinary->uploadImage($files['anh_3d'], 'san_pham_3d');
-    }
 
     $sql = "INSERT INTO san_pham_xe (Ten_Xe, Mo_Ta, Anh_Dai_Dien, Anh_3d, id_Loai_Xe, id_Thuong_Hieu) 
             VALUES ('$ten_xe', '$mo_ta', '$anh_dai_dien', '$anh_3d', $id_loai, $id_thuong_hieu)";
@@ -327,60 +345,32 @@ public function Add_SanPham($ten_xe, $mo_ta, $post, $files) {
 
         if(isset($post['mau_xe'])){
             foreach($post['mau_xe'] as $i => $mau_value){
-                $is_default = ($i === 0) ? 1 : 0;
-                $gia_mau = (int) str_replace(['.', ','], '', $post['gia_mau'][$i]);
-                $so_luong = (int)$post['so_luong'][$i];
-
-                // --- LOGIC XỬ LÝ MÀU MỚI ---
                 $id_mau_final = 0;
                 if (strpos($mau_value, 'NEW|') === 0) {
-                    // Nếu là màu mới (VD: NEW|Xanh|#0000ff)
                     $parts = explode('|', $mau_value);
-                    $ten_mau_moi = $this->db->real_escape_string($parts[1]);
-                    $ma_mau_moi = $this->db->real_escape_string($parts[2]);
-
-                    // Chèn vào bảng danh mục màu sắc
-                    $this->db->query("INSERT INTO mau_xe (Ten_Mau, Ma_Mau) VALUES ('$ten_mau_moi', '$ma_mau_moi')");
+                    $ten_m = $this->db->real_escape_string($parts[1]);
+                    $ma_m  = $this->db->real_escape_string($parts[2]);
+                    $this->db->query("INSERT INTO mau_xe (Ten_Mau, Ma_Mau) VALUES ('$ten_m', '$ma_m')");
                     $id_mau_final = $this->db->insert_id;
                 } else {
-                    // Nếu là màu đã có sẵn (là ID số)
                     $id_mau_final = (int)$mau_value;
                 }
-                // ---------------------------
 
-                // Chèn vào bảng xe_mau
-                $this->db->query("
-                    INSERT INTO xe_mau (id_Xe, id_Mau, is_Default, Gia, So_Luong) 
-                    VALUES ($id_xe, $id_mau_final, $is_default, $gia_mau, $so_luong)
-                ");
+                $gia_mau = (int) str_replace(['.', ','], '', $post['gia_mau'][$i]);
+                $so_luong = (int)$post['so_luong'][$i];
+                $is_default = ($i === 0) ? 1 : 0;
 
+                $this->db->query("INSERT INTO xe_mau (id_Xe, id_Mau, is_Default, Gia, So_Luong) 
+                                 VALUES ($id_xe, $id_mau_final, $is_default, $gia_mau, $so_luong)");
                 $id_xe_mau = $this->db->insert_id;
 
-                // 2. Tự xử lý Upload mảng ảnh chi tiết theo màu
-if(isset($files['anh_mau']) && !empty($files['anh_mau']['tmp_name'][$i][0])){
-    foreach($files['anh_mau']['tmp_name'][$i] as $k => $tmp_path){
-        // Kiểm tra xem file có lỗi không trước khi đóng gói
-        if(isset($files['anh_mau']['error'][$i][$k]) && $files['anh_mau']['error'][$i][$k] == 0){
-            
-            // Đóng gói ĐẦY ĐỦ các key mà CloudinaryService yêu cầu
-            $file_payload = [
-                'tmp_name' => $tmp_path,
-                'name'     => $files['anh_mau']['name'][$i][$k],
-                'error'    => $files['anh_mau']['error'][$i][$k], // Thêm dòng này để hết lỗi Undefined key "error"
-                'size'     => $files['anh_mau']['size'][$i][$k]
-            ];
-            
-            $link_anh = $this->cloudinary->uploadImage($file_payload, 'anh_xe_mau');
-            
-            if (!empty($link_anh)) {
-                $this->db->query("
-                    INSERT INTO xe_mau_anh (id_Xe_Mau, Hinh_Anh_Xe_Mau)
-                    VALUES ($id_xe_mau, '$link_anh')
-                ");
-            }
-        }
-    }
-}
+                // 2. Lưu mảng ảnh Album (Tốc độ ánh sáng vì chỉ là chuỗi)
+                if(isset($post['anh_mau_urls'][$i])){
+                    foreach($post['anh_mau_urls'][$i] as $link_anh){
+                        $link_anh_esc = $this->db->real_escape_string($link_anh);
+                        $this->db->query("INSERT INTO xe_mau_anh (id_Xe_Mau, Hinh_Anh_Xe_Mau) VALUES ($id_xe_mau, '$link_anh_esc')");
+                    }
+                }
             }
         }
         return true;
@@ -388,91 +378,135 @@ if(isset($files['anh_mau']) && !empty($files['anh_mau']['tmp_name'][$i][0])){
     return false;
 }
 // Cập nhật sản phẩm
-public function Update_SanPham($id_xe, $post, $files) {
+// Cập nhật hàm Update_SanPham trong class QL
+public function Update_SanPham($id_xe, $post) {
     $id_xe = (int)$id_xe;
+
     $ten_xe = $this->db->real_escape_string($post['ten_xe']);
     $mo_ta = $this->db->real_escape_string($post['mo_ta']);
     $id_loai = (int)$post['id_loai'];
     $id_thuong_hieu = (int)$post['id_thuong_hieu'];
 
-    // 1. Cập nhật thông tin cơ bản của xe
-    $sql = "UPDATE san_pham_xe SET 
-                Ten_Xe = '$ten_xe', Mo_Ta = '$mo_ta',
-                id_Loai_Xe = $id_loai, id_Thuong_Hieu = $id_thuong_hieu
-            WHERE id_Xe = $id_xe";
-    $this->db->query($sql);
+    // 🔥 TRANSACTION (QUAN TRỌNG)
+    $this->db->begin_transaction();
 
-    // 2. Xử lý Ảnh đại diện & Ảnh 3D (Giữ nguyên logic của bạn)
-    if (!empty($files['new_anh_dai_dien']['name'])) {
-        $old = $this->db->query("SELECT Anh_Dai_Dien FROM san_pham_xe WHERE id_Xe = $id_xe")->fetch_assoc();
-        if ($old && !empty($old['Anh_Dai_Dien'])) { $this->cloudinary->deleteImage($old['Anh_Dai_Dien']); }
-        $new_url = $this->cloudinary->uploadImage($files['new_anh_dai_dien'], 'anh_dai_dien');
-        $this->db->query("UPDATE san_pham_xe SET Anh_Dai_Dien = '$new_url' WHERE id_Xe = $id_xe");
-    }
-    
-    if (!empty($files['new_anh_3d']['name'])) {
-        $old = $this->db->query("SELECT Anh_3d FROM san_pham_xe WHERE id_Xe = $id_xe")->fetch_assoc();
-        if ($old && !empty($old['Anh_3d'])) { $this->cloudinary->deleteImage($old['Anh_3d']); }
-        $new_url = $this->cloudinary->uploadImage($files['new_anh_3d'], 'anh_3d');
-        $this->db->query("UPDATE san_pham_xe SET Anh_3d = '$new_url' WHERE id_Xe = $id_xe");
-    }
+    try {
 
-    // 3. Cập nhật giá và số lượng các màu ĐÃ CÓ
-    if(isset($post['gia_mau'])){
-        foreach($post['gia_mau'] as $id_xe_mau => $gia){
-            $gia_clean = (int)str_replace(['.', ','], '', $gia);
-            $so_luong = (int)$post['so_luong'][$id_xe_mau];
-            $this->db->query("UPDATE xe_mau SET So_Luong = $so_luong, Gia = $gia_clean WHERE id_Xe_Mau = $id_xe_mau");
+        // 1. UPDATE THÔNG TIN XE
+        $this->db->query("UPDATE san_pham_xe SET 
+            Ten_Xe='$ten_xe', 
+            Mo_Ta='$mo_ta', 
+            id_Loai_Xe=$id_loai, 
+            id_Thuong_Hieu=$id_thuong_hieu 
+            WHERE id_Xe=$id_xe");
+
+        // 2. UPDATE ẢNH (nếu có)
+        if(!empty($post['new_anh_dai_dien_url'])) {
+            $url = $this->db->real_escape_string($post['new_anh_dai_dien_url']);
+            $this->db->query("UPDATE san_pham_xe SET Anh_Dai_Dien='$url' WHERE id_Xe=$id_xe");
         }
-    }
 
-    // 4. CHÈN BIẾN THỂ MÀU MỚI (Đã sửa để khớp database)
-if (isset($post['new_ten_mau'])) {
-    foreach ($post['new_ten_mau'] as $index => $ten_mau_moi) {
-        $ten_mau_esc = $this->db->real_escape_string($ten_mau_moi);
-        $gia_moi = (int)str_replace(['.', ','], '', $post['new_gia_mau'][$index]);
-        $sl_moi = (int)$post['new_so_luong'][$index];
+        if(!empty($post['new_anh_3d_url'])) {
+            $url = $this->db->real_escape_string($post['new_anh_3d_url']);
+            $this->db->query("UPDATE san_pham_xe SET Anh_3d='$url' WHERE id_Xe=$id_xe");
+        }
 
-        // Bước A: Tìm id_Mau từ bảng mau_xe dựa trên tên màu
-        $sql_mau = "SELECT id_Mau FROM mau_xe WHERE Ten_Mau = '$ten_mau_esc' LIMIT 1";
-        $res_mau = $this->db->query($sql_mau);
-        $row_mau = $res_mau->fetch_assoc();
+        // 3. 🔥 XÓA MÀU (ĐÚNG VỊ TRÍ)
+        $deletedColorIds = [];
+        if (!empty($post['delete_color_ids'])) {
+            $deletedColorIds = array_map('intval', explode(',', $post['delete_color_ids']));
 
-        if ($row_mau) {
-            $id_mau_id = $row_mau['id_Mau'];
+            foreach ($deletedColorIds as $id_xm) {
+                if ($id_xm > 0) {
+                    // Xóa ảnh trước
+                    $this->db->query("DELETE FROM xe_mau_anh WHERE id_Xe_Mau = $id_xm");
 
-            // Bước B: Thêm vào bảng xe_mau (Sửa cột Ten_Mau thành id_Mau)
-            $this->db->query("INSERT INTO xe_mau (id_Xe, id_Mau, Gia, So_Luong, is_Default) 
-                              VALUES ($id_xe, $id_mau_id, $gia_moi, $sl_moi, 0)");
-            
-            $new_id_xe_mau = $this->db->insert_id;
+                    // Xóa màu
+                    $this->db->query("DELETE FROM xe_mau WHERE id_Xe_Mau = $id_xm");
+                }
+            }
+        }
 
-            // Bước C: Xử lý upload mảng ảnh chi tiết cho màu mới này
-            if (isset($files['new_anh_mau']['name'][$index])) {
-                foreach ($files['new_anh_mau']['name'][$index] as $sub_key => $name) {
-                    if ($files['new_anh_mau']['error'][$index][$sub_key] == 0) {
-                        // Tạo cấu trúc file giả lập để uploadImage nhận diện đúng
-                        $file_payload = [
-                            'tmp_name' => $files['new_anh_mau']['tmp_name'][$index][$sub_key],
-                            'name'     => $files['new_anh_mau']['name'][$index][$sub_key],
-                            'type'     => $files['new_anh_mau']['type'][$index][$sub_key],
-                            'error'    => 0,
-                            'size'     => $files['new_anh_mau']['size'][$index][$sub_key]
-                        ];
-                        
-                        // Upload lên Cloudinary
-                        $url_anh_ct = $this->cloudinary->uploadImage($file_payload, 'anh_xe_mau');
-                        
-                        // Chèn vào bảng xe_mau_anh
-                        $this->db->query("INSERT INTO xe_mau_anh (id_Xe_Mau, Hinh_Anh_Xe_Mau) 
-                                          VALUES ($new_id_xe_mau, '$url_anh_ct')");
+        // 4. XÓA ẢNH RIÊNG LẺ
+        if(!empty($post['delete_anh_ids'])) {
+            foreach($post['delete_anh_ids'] as $id_anh) {
+                if(!empty($id_anh)) {
+                    $this->db->query("DELETE FROM xe_mau_anh WHERE id_Xe_Mau_Anh=".(int)$id_anh);
+                }
+            }
+        }
+
+        // 5. UPDATE MÀU CŨ + THÊM ẢNH
+        if(isset($post['gia_mau'])) {
+            foreach($post['gia_mau'] as $id_xm => $gia) {
+
+                $id_xm = (int)$id_xm;
+
+                // ❌ BỎ QUA nếu đã bị xóa
+                if (in_array($id_xm, $deletedColorIds)) continue;
+
+                $gia_clean = (int)str_replace(['.', ','], '', $gia);
+                $sl = (int)$post['so_luong'][$id_xm];
+
+                $this->db->query("UPDATE xe_mau SET So_Luong=$sl, Gia=$gia_clean WHERE id_Xe_Mau=$id_xm");
+
+                // thêm ảnh mới vào màu cũ
+                if(isset($post['more_anh_mau_urls'][$id_xm])) {
+                    foreach($post['more_anh_mau_urls'][$id_xm] as $u) {
+                        $u_e = $this->db->real_escape_string($u);
+                        $this->db->query("INSERT INTO xe_mau_anh (id_Xe_Mau, Hinh_Anh_Xe_Mau) VALUES ($id_xm, '$u_e')");
                     }
                 }
             }
         }
+
+        // 6. THÊM MÀU MỚI
+        if(isset($post['new_ten_mau'])) {
+            foreach($post['new_ten_mau'] as $idx => $val_mau) {
+
+                $id_m = 0;
+
+                // tạo màu mới nhanh
+                if (strpos($val_mau, 'NEW|') === 0) {
+                    $parts = explode('|', $val_mau);
+                    $ten_m = $this->db->real_escape_string($parts[1]);
+                    $ma_m = $this->db->real_escape_string($parts[2]);
+
+                    $this->db->query("INSERT INTO mau_xe (Ten_Mau, Ma_Mau) VALUES ('$ten_m', '$ma_m')");
+                    $id_m = $this->db->insert_id;
+                } else {
+                    $id_m = (int)$val_mau;
+                }
+
+                if($id_m > 0) {
+                    $gia_n = (int)str_replace(['.', ','], '', $post['new_gia_mau'][$idx]);
+                    $sl_n = (int)$post['new_so_luong'][$idx];
+
+                    $this->db->query("INSERT INTO xe_mau (id_Xe, id_Mau, Gia, So_Luong, is_Default) 
+                                     VALUES ($id_xe, $id_m, $gia_n, $sl_n, 0)");
+
+                    $new_id_xm = $this->db->insert_id;
+
+                    // thêm album ảnh
+                    if(isset($post['new_anh_mau_urls'][$idx])) {
+                        foreach($post['new_anh_mau_urls'][$idx] as $u) {
+                            $u_e = $this->db->real_escape_string($u);
+                            $this->db->query("INSERT INTO xe_mau_anh (id_Xe_Mau, Hinh_Anh_Xe_Mau) VALUES ($new_id_xm, '$u_e')");
+                        }
+                    }
+                }
+            }
+        }
+
+        // ✅ COMMIT
+        $this->db->commit();
+        return true;
+
+    } catch (\Exception $e) {
+        // ❌ ROLLBACK nếu lỗi
+        $this->db->rollback();
+        return false;
     }
-}
-    return true;
 }
 public function Delete_MauXe($id_Xe_Mau)
 {
@@ -546,7 +580,8 @@ function Get_AnhTheoMau($id_xe) {
             m.id_Mau,
             m.Ten_Mau,
             m.Ma_Mau,
-            xma.Hinh_Anh_Xe_Mau
+            xma.Hinh_Anh_Xe_Mau,
+            xma.id_Xe_Mau_Anh 
         FROM xe_mau xm
         JOIN mau_xe m ON xm.id_Mau = m.id_Mau
         LEFT JOIN xe_mau_anh xma ON xm.id_Xe_Mau = xma.id_Xe_Mau
@@ -918,7 +953,7 @@ function TimKiem_Khach_Hang($keyword) {
 
 }
 
-public function DanhSach_LaiThu($ngay = null, $idXe = null, $trangThai = null, $tenKhach = null)
+function DanhSach_LaiThu($ngay = null, $idXe = null, $trangThai = null, $tenKhach = null)
 {
     $sql = "
         SELECT dl.id_Dat_Lich,
@@ -975,83 +1010,366 @@ public function Xoa_LaiThu($id)
 }
 
 
-
-// BẢO DƯỠNG ADMIN
-function danh_sach_lich($request){
-
-    $sql = "SELECT 
-                l.id_lich,
-                k.Ho_Ten,
-                k.So_Dien_Thoai,
-                sp.Ten_Xe,
-                g.ten_goi,
-                g.gia,
-                l.ngay_bao_duong,
-                l.ghi_chu,
-                l.trang_thai
-            FROM lich_bao_duong l
-
-            JOIN khach_hang k 
-                ON l.id_Khach_Hang = k.id_Khach_Hang
-
-            JOIN xe_mau xm 
-                ON l.id_Xe_Mau = xm.id_Xe_Mau
-
-            JOIN san_pham_xe sp 
-                ON xm.id_Xe = sp.id_Xe
-
-            JOIN goi_bao_duong g 
-                ON l.id_goi = g.id_goi
-
+// THỐNG KÊ TIÊU DÙNG (LÁI THỬ / BẢO DƯỠNG)//
+public function thongKeKhungGioLaiThu($from = null, $to = null)
+{
+    $sql = "SELECT kg.id_Khung_Gio, CONCAT(kg.Gio_Bat_Dau, ' - ', kg.Gio_Ket_Thuc) as khung_gio, COUNT(*) as so_lan_dat 
+            FROM dat_lich_lai_thu dl
+            JOIN khung_gio_lai_thu kg ON dl.id_Khung_Gio = kg.id_Khung_Gio
             WHERE 1=1";
 
-    // lọc tên khách
-    if(!empty($request->ten_khach)){
-        $ten = $this->db->real_escape_string($request->ten_khach);
-        $sql .= " AND k.Ho_Ten LIKE '%$ten%'";
+    if ($from) {
+        $from = $this->db->real_escape_string($from);
+        $sql .= " AND dl.Ngay_Lai_Thu >= '$from'";
+    }
+    if ($to) {
+        $to = $this->db->real_escape_string($to);
+        $sql .= " AND dl.Ngay_Lai_Thu <= '$to'";
     }
 
-    // lọc số điện thoại
-    if(!empty($request->sdt)){
-        $sdt = $this->db->real_escape_string($request->sdt);
-        $sql .= " AND k.So_Dien_Thoai LIKE '%$sdt%'";
-    }
-
-    // lọc tên xe
-    if(!empty($request->ten_xe)){
-        $xe = $this->db->real_escape_string($request->ten_xe);
-        $sql .= " AND sp.Ten_Xe LIKE '%$xe%'";
-    }
-
-    // lọc gói bảo dưỡng
-    if(!empty($request->goi)){
-        $goi = $this->db->real_escape_string($request->goi);
-        $sql .= " AND g.ten_goi LIKE '%$goi%'";
-    }
-
-    // lọc ngày
-    if(!empty($request->ngay)){
-        $ngay = $this->db->real_escape_string($request->ngay);
-        $sql .= " AND l.ngay_bao_duong = '$ngay'";
-    }
-
-    // lọc trạng thái
-    if(!empty($request->trang_thai)){
-        $tt = $this->db->real_escape_string($request->trang_thai);
-        $sql .= " AND l.trang_thai = '$tt'";
-    }
+    $sql .= " GROUP BY kg.id_Khung_Gio, kg.Gio_Bat_Dau, kg.Gio_Ket_Thuc
+              ORDER BY so_lan_dat DESC";
 
     $result = $this->db->query($sql);
-
     $data = [];
-
-    if($result){
-        while($row = $result->fetch_assoc()){
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
             $data[] = $row;
         }
     }
-
     return $data;
+}
+
+public function thongKeXeLaiThu($limit = 10)
+{
+    $limit = (int)$limit;
+    $sql = "SELECT sp.id_Xe, sp.Ten_Xe, COUNT(*) as so_lan_lai_thu
+            FROM dat_lich_lai_thu dl
+            JOIN xe_mau xm ON dl.id_Xe_Mau = xm.id_Xe_Mau
+            JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+            GROUP BY sp.id_Xe, sp.Ten_Xe
+            ORDER BY so_lan_lai_thu DESC 
+            LIMIT $limit";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeThuongHieuLaiThu($limit = 10)
+{
+    $limit = (int)$limit;
+    $sql = "SELECT th.id_Thuong_Hieu, th.Ten_Thuong_Hieu, COUNT(*) as so_lan_lai_thu
+            FROM dat_lich_lai_thu dl
+            JOIN xe_mau xm ON dl.id_Xe_Mau = xm.id_Xe_Mau
+            JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+            JOIN thuong_hieu_xe th ON sp.id_Thuong_Hieu = th.id_Thuong_Hieu
+            GROUP BY th.id_Thuong_Hieu, th.Ten_Thuong_Hieu
+            ORDER BY so_lan_lai_thu DESC
+            LIMIT $limit";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeKhungGioLaiThuTheoNgay($ngay)
+{
+    $ngay = $this->db->real_escape_string($ngay);
+    $sql = "SELECT kg.id_Khung_Gio, CONCAT(kg.Gio_Bat_Dau, ' - ', kg.Gio_Ket_Thuc) as khung_gio, COUNT(*) as so_lan_dat\n"
+         . "FROM dat_lich_lai_thu dl\n"
+         . "JOIN khung_gio_lai_thu kg ON dl.id_Khung_Gio = kg.id_Khung_Gio\n"
+         . "WHERE dl.Ngay_Lai_Thu = '$ngay'\n"
+         . "GROUP BY kg.id_Khung_Gio, kg.Gio_Bat_Dau, kg.Gio_Ket_Thuc\n"
+         . "ORDER BY so_lan_dat DESC";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeChiTietNgay($ngay)
+{
+    $ngay = $this->db->real_escape_string($ngay);
+    $sql = "SELECT kg.id_Khung_Gio, CONCAT(kg.Gio_Bat_Dau, ' - ', kg.Gio_Ket_Thuc) as khung_gio, "
+         . "lx.Ten_Loai_Xe as loai_xe, sp.Ten_Xe as ten_xe, th.Ten_Thuong_Hieu as ten_thuong_hieu, "
+         . "xm.id_Mau as id_mau, mx.Ten_Mau as ten_mau, MIN(xma.Hinh_Anh_Xe_Mau) AS hinh_anh_mau, COUNT(DISTINCT dl.id_Dat_Lich) as so_lan_dat\n"
+         . "FROM dat_lich_lai_thu dl\n"
+         . "JOIN khung_gio_lai_thu kg ON dl.id_Khung_Gio = kg.id_Khung_Gio\n"
+         . "JOIN xe_mau xm ON dl.id_Xe_Mau = xm.id_Xe_Mau\n"
+         . "JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau\n" 
+         . "JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe\n"
+         . "JOIN loai_xe lx ON sp.id_Loai_Xe = lx.id_Loai_xe\n"
+         . "JOIN thuong_hieu_xe th ON sp.id_Thuong_Hieu = th.id_Thuong_Hieu\n"
+         . "LEFT JOIN xe_mau_anh xma ON xm.id_Xe_Mau = xma.id_Xe_Mau\n"
+         . "WHERE dl.Ngay_Lai_Thu = '$ngay'\n"
+         . "GROUP BY kg.id_Khung_Gio, kg.Gio_Bat_Dau, kg.Gio_Ket_Thuc, lx.id_Loai_xe, lx.Ten_Loai_Xe, sp.id_Xe, sp.Ten_Xe, th.id_Thuong_Hieu, th.Ten_Thuong_Hieu, xm.id_Mau, mx.Ten_Mau\n" 
+         . "ORDER BY kg.Gio_Bat_Dau, so_lan_dat DESC";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeChiTietBaoDuongTheoNgay($ngay)
+{
+    $ngay = $this->db->real_escape_string($ngay);
+    $sql = "SELECT sp.Ten_Xe as ten_xe, mx.Ten_Mau as ten_mau, lb.ngay_bao_duong as ngay_bao_duong, lb.ngay_cap_nhat as ngay_cap_nhat, lb.trang_thai, gb.ten_goi as goi_bao_duong, COUNT(DISTINCT lb.id_lich) as so_lan_dat\n"
+         . "FROM lich_bao_duong lb\n"
+         . "JOIN xe_mau xm ON lb.id_Xe_Mau = xm.id_Xe_Mau\n"
+         . "JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau\n"
+         . "JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe\n"
+         . "JOIN goi_bao_duong gb ON lb.id_goi = gb.id_goi\n"
+         . "WHERE lb.ngay_bao_duong = '$ngay'\n"
+         . "GROUP BY sp.id_Xe, mx.id_Mau, lb.ngay_bao_duong, lb.ngay_cap_nhat, lb.trang_thai, gb.id_goi, gb.ten_goi\n"
+         . "ORDER BY so_lan_dat DESC"; 
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeLichTheoThoiGian($from = null, $to = null, $group = 'ngay')
+{
+    $groupField = 'DATE(dl.Ngay_Lai_Thu)';
+    if ($group === 'thang') {
+        $groupField = "CONCAT(YEAR(dl.Ngay_Lai_Thu), '-', LPAD(MONTH(dl.Ngay_Lai_Thu), 2, '0'))";
+    } elseif ($group === 'nam') {
+        $groupField = 'YEAR(dl.Ngay_Lai_Thu)';
+    }
+
+    $sql = "SELECT $groupField as nhom, COUNT(*) as so_lan_dat
+            FROM dat_lich_lai_thu dl
+            WHERE 1=1";
+
+    if ($from) {
+        $from = $this->db->real_escape_string($from);
+        $sql .= " AND dl.Ngay_Lai_Thu >= '$from'";
+    }
+    if ($to) {
+        $to = $this->db->real_escape_string($to);
+        $sql .= " AND dl.Ngay_Lai_Thu <= '$to'";
+    }
+
+    $sql .= " GROUP BY $groupField ORDER BY nhom ASC"; 
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeLichBaoDuongTheoThoiGian($from = null, $to = null, $group = 'ngay')  //
+{
+    $groupField = 'DATE(lb.ngay_bao_duong)';
+    if ($group === 'thang') {
+        $groupField = "CONCAT(YEAR(lb.ngay_bao_duong), '-', LPAD(MONTH(lb.ngay_bao_duong), 2, '0'))";
+    } elseif ($group === 'nam') {
+        $groupField = 'YEAR(lb.ngay_bao_duong)';
+    }
+
+    $sql = "SELECT $groupField as nhom, COUNT(*) as so_lan_dat\n"
+         . "FROM lich_bao_duong lb\n"
+         . "WHERE 1=1";
+
+    if ($from) {
+        $from = $this->db->real_escape_string($from);
+        $sql .= " AND lb.ngay_bao_duong >= '$from'";
+    }
+    if ($to) {
+        $to = $this->db->real_escape_string($to);
+        $sql .= " AND lb.ngay_bao_duong <= '$to'";
+    }
+
+    $sql .= " GROUP BY $groupField ORDER BY nhom ASC";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeLoaiXeMuaNhieu($limit = 10)
+{
+    $limit = (int)$limit;
+    $sql = "SELECT lx.id_Loai_xe, lx.Ten_Loai_Xe, COUNT(*) as so_lan_mua
+            FROM don_hang dh
+            JOIN xe_mau xm ON dh.id_Xe_Mau = xm.id_Xe_Mau
+            JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+            JOIN loai_xe lx ON sp.id_Loai_Xe = lx.id_Loai_xe
+            WHERE dh.payment_status = 'paid'
+            GROUP BY lx.id_Loai_xe, lx.Ten_Loai_Xe
+            ORDER BY so_lan_mua DESC
+            LIMIT $limit";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeMauXeUaChuong($limit = 10)
+{
+    $limit = (int)$limit;
+    $sql = "SELECT mx.id_Mau, mx.Ten_Mau, COUNT(*) as so_lan_dat
+            FROM dat_lich_lai_thu dllt
+            JOIN xe_mau xm ON dllt.id_Xe_Mau = xm.id_Xe_Mau
+            JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau
+            GROUP BY mx.id_Mau, mx.Ten_Mau
+            ORDER BY so_lan_dat DESC
+            LIMIT $limit";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeMauXeMua($limit = 10)
+{
+    $limit = (int)$limit;
+    $sql = "SELECT mx.id_Mau, mx.Ten_Mau, COUNT(*) as so_lan_mua
+            FROM don_hang dh
+            JOIN xe_mau xm ON dh.id_Xe_Mau = xm.id_Xe_Mau
+            JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau
+            WHERE dh.payment_status = 'paid'
+            GROUP BY mx.id_Mau, mx.Ten_Mau
+            ORDER BY so_lan_mua DESC
+            LIMIT $limit";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeThuongHieuMuaNhieu($limit = 10)
+{
+    $limit = (int)$limit;
+    $sql = "SELECT th.id_Thuong_Hieu, th.Ten_Thuong_Hieu, COUNT(*) as so_lan_mua
+            FROM don_hang dh
+            JOIN xe_mau xm ON dh.id_Xe_Mau = xm.id_Xe_Mau
+            JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+            JOIN thuong_hieu_xe th ON sp.id_Thuong_Hieu = th.id_Thuong_Hieu
+            WHERE dh.payment_status = 'paid'
+            GROUP BY th.id_Thuong_Hieu, th.Ten_Thuong_Hieu
+            ORDER BY so_lan_mua DESC
+            LIMIT $limit";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeLoaiXeUaChuong($limit = 10)
+{
+    $limit = (int)$limit;
+    $sql = "SELECT lx.id_Loai_xe, lx.Ten_Loai_Xe, COUNT(*) as so_lan_lai_thu
+            FROM dat_lich_lai_thu dllt
+            JOIN xe_mau xm ON dllt.id_Xe_Mau = xm.id_Xe_Mau
+            JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+            JOIN loai_xe lx ON sp.id_Loai_Xe = lx.id_Loai_xe
+            GROUP BY lx.id_Loai_xe, lx.Ten_Loai_Xe
+            ORDER BY so_lan_lai_thu DESC
+            LIMIT $limit";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+public function thongKeLoaiXeXuHuong($limit = 10) // biểu đồ tròn  loại / dòng tổng đặt lịch và mua hàng 
+{
+    $limit = (int)$limit;
+    $sql = "SELECT 
+                lx.id_Loai_xe, 
+                lx.Ten_Loai_Xe, 
+                COALESCE(lai_thu.so_luong_lai, 0) as so_luong_lai_thu,
+                COALESCE(don_hang.so_luong_mua, 0) as so_luong_don_hang,
+                (COALESCE(lai_thu.so_luong_lai, 0) + COALESCE(don_hang.so_luong_mua, 0)) as tong_tuong_tac
+            FROM loai_xe lx
+            LEFT JOIN (
+                SELECT sp.id_Loai_Xe, COUNT(*) as so_luong_lai
+                FROM dat_lich_lai_thu dl
+                JOIN xe_mau xm ON dl.id_Xe_Mau = xm.id_Xe_Mau
+                JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+                GROUP BY sp.id_Loai_Xe
+            ) lai_thu ON lx.id_Loai_xe = lai_thu.id_Loai_Xe
+            LEFT JOIN (
+                SELECT sp.id_Loai_Xe, COUNT(*) as so_luong_mua
+                FROM don_hang dh
+                JOIN xe_mau xm ON dh.id_Xe_Mau = xm.id_Xe_Mau
+                JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+                WHERE dh.payment_status = 'paid'
+                GROUP BY sp.id_Loai_Xe
+            ) don_hang ON lx.id_Loai_xe = don_hang.id_Loai_Xe
+            WHERE (lai_thu.so_luong_lai > 0 OR don_hang.so_luong_mua > 0)
+            ORDER BY tong_tuong_tac DESC
+            LIMIT $limit";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+      return $data;
+    }
 }
 
 
@@ -1063,10 +1381,13 @@ function danh_sach_goi(){
     $result = $this->db->query($sql);
 
     $data = [];
-
+    if ($result) {
     while($row = $result->fetch_assoc()){
-    }     $data[] = $row;
+             $data[] = $row;
+    }}
+    return $data;
     }
+
 public function list_thuong_hieu_theo_loai($MaLoai)
 {
     $sql = "SELECT * 
@@ -1101,8 +1422,484 @@ public function list_thuong_hieu_theo_loai($MaLoai)
             return $this->db->query($sql);
         }
 
+        // Sửa gói
+    function lay_goi_id($id){
+        $id = (int)$id;
+        $sql = "SELECT * FROM goi_bao_duong WHERE id_goi = $id";
+        $result = $this->db->query($sql);
+        return $result->fetch_assoc();
+    }
+
+    // cập nhật
+    function update_goi($id, $ten, $mo_ta, $gia){
+        $id = (int)$id;
+        $ten = $this->db->real_escape_string($ten);
+        $mo_ta = $this->db->real_escape_string($mo_ta);
+        $gia = $this->db->real_escape_string($gia);
+
+        $sql = "UPDATE goi_bao_duong 
+                SET ten_goi='$ten', mo_ta='$mo_ta', gia='$gia'
+                WHERE id_goi = $id";
+
+        return $this->db->query($sql);
+    }
+    
         // xóa gói
-        function xoa_goi($id){
+        public function thuc_hien_xoa($id) 
+{
+    // 1. Kiểm tra xem có xe nào đang dùng gói này không
+    $check_sql = "SELECT * FROM lich_bao_duong WHERE id_goi = ?";
+    $stmt_check = $this->db->prepare($check_sql);
+    $stmt_check->bind_param("i", $id);
+    $stmt_check->execute();
+    $result = $stmt_check->get_result();
+
+    if ($result->num_rows > 0) {
+        return false; // Không được xóa
+    }
+
+    // 2. Nếu không có xe nào dùng thì mới xóa
+    $sql = "DELETE FROM goi_bao_duong WHERE id_goi = ?";
+    $stmt = $this->db->prepare($sql);
+    $stmt->bind_param("i", $id);
+    return $stmt->execute();
+}
+        
+function DanhSach_DonHang($filters = []) {
+    $where = " WHERE 1=1 ";
+
+    if (!empty($filters['keyword'])) {
+        $kw = $this->db->real_escape_string($filters['keyword']);
+        $where .= " AND (kh.Ho_Ten LIKE '%$kw%' OR dh.id_Don_Hang = '$kw')";
+    }
+
+    if (!empty($filters['payment_status'])) {
+        $ps = $this->db->real_escape_string($filters['payment_status']);
+        $where .= " AND dh.payment_status = '$ps'";
+    }
+
+    if (!empty($filters['trang_thai'])) {
+        $tt = $this->db->real_escape_string($filters['trang_thai']);
+        $where .= " AND dh.Trang_Thai = '$tt'";
+    }
+
+    $sql = "
+        SELECT 
+            dh.*, 
+            kh.Ho_Ten, 
+            kh.So_Dien_Thoai, 
+            sp.Ten_Xe,
+            mx.Ten_Mau
+        FROM don_hang dh
+        LEFT JOIN khach_hang kh ON dh.id_Khach_Hang = kh.id_Khach_Hang
+        LEFT JOIN xe_mau xm ON dh.id_Xe_Mau = xm.id_Xe_Mau
+        LEFT JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+        LEFT JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau
+        $where
+        ORDER BY dh.id_Don_Hang DESC
+    ";
+    
+    return $this->db->query($sql);
+}
+
+// 2. Lấy chi tiết 1 đơn hàng
+function Get_ChiTietDonHang($id) {
+    $id = (int)$id;
+    $sql = "SELECT * FROM don_hang WHERE id_Don_Hang = $id LIMIT 1";
+    $result = $this->db->query($sql);
+    return $result ? $result->fetch_assoc() : null;
+}
+
+// 3. Thêm mới đơn hàng
+function Add_DonHang($data, $tong_tien) {
+    $id_kh = (int)$data['id_khach_hang'];
+    $id_xm = (int)$data['id_xe_mau'];
+    $gia_goc = (int)$data['gia_goc'];
+    $gia_giam = (int)($data['gia_giam'] ?? 0);
+    $tien_coc = (int)($data['tien_coc'] ?? 0);
+    $p_status = $this->db->real_escape_string($data['payment_status'] ?? 'pending');
+    $trang_thai = $this->db->real_escape_string($data['trang_thai'] ?? 'new');
+    $ngay = date('Y-m-d H:i:s');
+
+    $sql = "INSERT INTO don_hang (id_Khach_Hang, id_Xe_Mau, Gia_Goc, Gia_Giam, Tong_Tien, Tien_Coc, payment_status, Trang_Thai, Ngay_Tao)
+            VALUES ($id_kh, $id_xm, $gia_goc, $gia_giam, $tong_tien, $tien_coc, '$p_status', '$trang_thai', '$ngay')";
+    
+    return $this->db->query($sql);
+}
+
+// 4. Cập nhật đơn hàng
+function Update_DonHang($id, $data, $tong_tien) {
+    $id = (int)$id;
+    $id_kh = (int)$data['id_khach_hang'];
+    $id_xm = (int)$data['id_xe_mau'];
+    $gia_goc = (int)$data['gia_goc'];
+    $gia_giam = (int)($data['gia_giam'] ?? 0);
+    $tien_coc = (int)($data['tien_coc'] ?? 0);
+    $p_status = $this->db->real_escape_string($data['payment_status']);
+    $trang_thai = $this->db->real_escape_string($data['trang_thai']);
+    $ngay_up = date('Y-m-d H:i:s');
+
+    $sql = "UPDATE don_hang SET 
+                id_Khach_Hang = $id_kh, 
+                id_Xe_Mau = $id_xm, 
+                Gia_Goc = $gia_goc, 
+                Gia_Giam = $gia_giam, 
+                Tong_Tien = $tong_tien, 
+                Tien_Coc = $tien_coc, 
+                payment_status = '$p_status', 
+                Trang_Thai = '$trang_thai',
+                Ngay_Cap_Nhat = '$ngay_up'
+            WHERE id_Don_Hang = $id";
+            
+    return $this->db->query($sql);
+}
+
+// 5. Xóa đơn hàng
+function Delete_DonHang($id) {
+    $id = (int)$id;
+    $sql = "DELETE FROM don_hang WHERE id_Don_Hang = $id";
+    return $this->db->query($sql);
+}
+
+// 6. Các hàm hỗ trợ xe & kho
+function List_XeKemMau() {
+    $sql = "
+        SELECT xm.id_Xe_Mau, sp.Ten_Xe, mx.Ten_Mau, xm.Gia, xm.So_Luong
+        FROM xe_mau xm
+        JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+        JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau
+        WHERE sp.Trang_Thai = 1 AND xm.So_Luong > 0
+    ";
+    return $this->db->query($sql);
+}
+
+function list_sanpham(){
+    $sql =" SELECT * FROM san_pham_xe ";
+     return $this->db->query($sql);
+}
+
+function Tru_So_Luong_Xe($id_xe_mau) {
+    $id_xe_mau = (int)$id_xe_mau;
+    $sql = "UPDATE xe_mau SET So_Luong = So_Luong - 1 WHERE id_Xe_Mau = $id_xe_mau AND So_Luong > 0";
+    return $this->db->query($sql);
+}
+
+
+// ==========================================================================
+// NHÓM CHỨC NĂNG: QUẢN LÝ NHÂN VIÊN
+// ==========================================================================
+
+function DanhSach_Nhan_Vien($filters = []) {
+    $where = " WHERE 1=1 ";
+
+    if (!empty($filters['ten'])) {
+        $ten = addslashes($filters['ten']);
+        $where .= " AND ad.Ho_Ten LIKE '%$ten%' ";
+
+    }
+
+    if (!empty($filters['role_id'])) {
+        $role = (int)$filters['role_id'];
+        $where .= " AND ad.role_id = $role ";
+    }
+    
+
+    if (!empty($filters['role_id'])) {
+        $role = (int)$filters['role_id'];
+        $where .= " AND ad.role_id = $role ";
+    }
+    $sql = "
+        SELECT 
+            ad.id_Ad,
+            ad.UserName,
+            ad.Ho_Ten,
+            ad.Email,
+            ad.So_Dien_Thoai,
+            ad.Trang_Thai,
+            ad.created_at,
+            r.ten_role,
+            ad.role_id
+        FROM admin ad
+        LEFT JOIN roles r ON ad.role_id = r.id
+        $where
+        ORDER BY ad.id_Ad DESC
+    ";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    while ($row = $result->fetch_assoc()) {
+        $data[] = $row;
+
+    }
+    return $data;
+}
+
+
+public function thongKeThuongHieuXuHuong($limit = 10) // biểu đồ tròn thương hiệu xu hướng tổng  đặt lịch và mua hàng 
+{
+    $limit = (int)$limit;
+    $sql = "SELECT 
+                th.id_Thuong_Hieu, 
+                th.Ten_Thuong_Hieu, 
+                COALESCE(lai_thu.so_luong_lai, 0) as so_luong_lai_thu,
+                COALESCE(don_hang.so_luong_mua, 0) as so_luong_don_hang,
+                (COALESCE(lai_thu.so_luong_lai, 0) + COALESCE(don_hang.so_luong_mua, 0)) as tong_tuong_tac
+            FROM thuong_hieu_xe th
+            LEFT JOIN (
+                SELECT sp.id_Thuong_Hieu, COUNT(*) as so_luong_lai
+                FROM dat_lich_lai_thu dl
+                JOIN xe_mau xm ON dl.id_Xe_Mau = xm.id_Xe_Mau
+                JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+                GROUP BY sp.id_Thuong_Hieu
+            ) lai_thu ON th.id_Thuong_Hieu = lai_thu.id_Thuong_Hieu
+            LEFT JOIN (
+                SELECT sp.id_Thuong_Hieu, COUNT(*) as so_luong_mua
+                FROM don_hang dh
+                JOIN xe_mau xm ON dh.id_Xe_Mau = xm.id_Xe_Mau
+                JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+                WHERE dh.payment_status = 'paid'
+                GROUP BY sp.id_Thuong_Hieu
+            ) don_hang ON th.id_Thuong_Hieu = don_hang.id_Thuong_Hieu
+            WHERE (lai_thu.so_luong_lai > 0 OR don_hang.so_luong_mua > 0)
+            ORDER BY tong_tuong_tac DESC
+            LIMIT $limit";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+function ChiTiet_Nhan_Vien($id) {
+    $id = (int)$id;
+    $sql = "SELECT * FROM admin WHERE id_Ad = $id";
+    $result = $this->db->query($sql);
+    return $result->fetch_assoc();
+}
+
+function Them_Nhan_Vien($request) {
+    $hoTen  = addslashes($request->Ho_Ten);
+    $user   = addslashes($request->UserName);
+    $email  = addslashes($request->Email);
+    $sdt    = addslashes($request->So_Dien_Thoai);
+    $role   = (int)$request->role_id;
+    $status = (int)$request->Trang_Thai;
+    $password = password_hash($request->MatKhau, PASSWORD_DEFAULT);
+
+    $sql = "
+        INSERT INTO admin 
+        (Ho_Ten, UserName, Email, So_Dien_Thoai, PassWord, role_id, Trang_Thai, created_at)
+        VALUES 
+        ('$hoTen', '$user', '$email', '$sdt', '$password', $role, $status, NOW())
+    ";
+    return $this->db->query($sql);
+}
+
+function CapNhat_Nhan_Vien($request, $id) {
+    $hoTen  = addslashes($request->Ho_Ten);
+    $user   = addslashes($request->UserName);
+    $email  = addslashes($request->Email);
+    $sdt    = addslashes($request->So_Dien_Thoai);
+    $role   = (int)$request->role_id;
+    $status = (int)$request->Trang_Thai;
+
+    if (!empty($request->MatKhau)) {
+        $password = password_hash($request->MatKhau, PASSWORD_DEFAULT);
+        $sql = "
+            UPDATE admin SET
+                Ho_Ten = '$hoTen',
+                UserName = '$user',
+                Email = '$email',
+                So_Dien_Thoai = '$sdt',
+                PassWord = '$password',
+                role_id = $role,
+                Trang_Thai = $status
+            WHERE id_Ad = $id
+        ";
+    } else {
+        $sql = "
+            UPDATE admin SET
+                Ho_Ten = '$hoTen',
+                UserName = '$user',
+                Email = '$email',
+                So_Dien_Thoai = '$sdt',
+                role_id = $role,
+                Trang_Thai = $status
+            WHERE id_Ad = $id
+        ";
+    }
+
+    return $this->db->query($sql);
+
+
+
+    return $this->db->query($sql);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// BẢO DƯỠNG ADMIN
+function danh_sach_lich($request) {
+    // 1. Lọc dữ liệu đầu vào
+    $ten_khach = $this->db->real_escape_string($request->ten_khach);
+    $sdt       = $this->db->real_escape_string($request->sdt);
+    $ten_xe    = $this->db->real_escape_string($request->ten_xe);
+    $goi       = $this->db->real_escape_string($request->goi);
+    $ngay      = $this->db->real_escape_string($request->ngay_bao_duong);
+    $trang_thai= $this->db->real_escape_string($request->trang_thai);
+
+    // 2. SQL chuẩn theo cấu trúc database của bạn
+    $sql = "
+        SELECT 
+            dl.id_lich,
+            kh.Ho_Ten,
+            kh.So_Dien_Thoai,
+            dl.ngay_bao_duong,
+            dl.ghi_chu,
+            dl.trang_thai,
+            dl.ngay_tao,
+            dl.ngay_cap_nhat,
+            sp.Ten_Xe AS ten_xe,
+            mx.Ten_Mau AS mau_xe,
+            gbd.ten_goi,
+            gbd.gia
+        FROM lich_bao_duong dl
+        LEFT JOIN khach_hang kh ON dl.id_Khach_Hang = kh.id_Khach_Hang
+        LEFT JOIN xe_mau xm ON dl.id_Xe_Mau = xm.id_Xe_Mau
+        LEFT JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+        LEFT JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau
+        LEFT JOIN goi_bao_duong gbd ON dl.id_goi = gbd.id_goi
+        WHERE 1=1
+    ";
+
+    // 3. Điều kiện lọc (Sửa lại alias dl. hoặc kh. cho đúng bảng)
+    if (!empty($ten_khach)) { $sql .= " AND kh.Ho_Ten LIKE '%$ten_khach%'"; }
+    if (!empty($sdt))       { $sql .= " AND kh.So_Dien_Thoai LIKE '%$sdt%'"; }
+    if (!empty($ten_xe))    { $sql .= " AND sp.Ten_Xe LIKE '%$ten_xe%'"; }
+    if (!empty($goi))       { $sql .= " AND gbd.ten_goi LIKE '%$goi%'"; }
+    if (!empty($ngay))      { $sql .= " AND dl.ngay_bao_duong = '$ngay'"; }
+    if (!empty($trang_thai)){ $sql .= " AND dl.trang_thai = '$trang_thai'"; }
+
+    $sql .= " ORDER BY dl.id_lich DESC";
+
+    $result = $this->db->query($sql);
+    $data = [];
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+    return $data;
+}
+
+    // Sửa
+    function Get_ChiTietbaoduong($id)
+{
+    $stmt = $this->db->prepare("
+        SELECT 
+            lbd.*,
+            kh.Ho_Ten,
+            kh.So_Dien_Thoai,
+            sp.Ten_Xe,
+            m.Ten_Mau,
+            g.ten_goi
+        FROM lich_bao_duong lbd
+
+        JOIN khach_hang kh 
+            ON lbd.id_Khach_Hang = kh.id_Khach_Hang
+
+        JOIN xe_mau xm 
+            ON lbd.id_Xe_Mau = xm.id_Xe_Mau
+
+        JOIN san_pham_xe sp 
+            ON xm.id_Xe = sp.id_Xe
+
+        JOIN mau_xe m 
+            ON xm.id_Mau = m.id_Mau
+
+        JOIN goi_bao_duong g 
+            ON lbd.id_goi = g.id_goi
+
+        WHERE lbd.id_lich = ?
+    ");
+
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+
+    return $stmt->get_result()->fetch_assoc();
+}
+
+function Get_All_GoiBaoDuong()
+{
+    $sql = "SELECT id_goi, ten_goi FROM goi_bao_duong";
+
+    $result = $this->db->query($sql);
+
+    $data = [];
+
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+
+    return $data;
+}
+
+function Update_baoduong($id, $data)
+{
+    $id_goi = $data['id_goi'];
+    $ngay = $data['ngay_bao_duong'];
+    $trang_thai = $data['trang_thai'];
+    $ghi_chu = $data['ghi_chu'];
+
+    $stmt = $this->db->prepare("
+        UPDATE lich_bao_duong 
+        SET id_goi = ?, ngay_bao_duong = ?, trang_thai = ?, ghi_chu = ?
+        WHERE id_lich = ?
+    ");
+
+    $stmt->bind_param("isssi", $id_goi, $ngay, $trang_thai, $ghi_chu, $id);
+
+    return $stmt->execute();
+}
+  function Delete_GoiBaoDuong($id){
 
             $id = (int)$id;
         
@@ -1111,77 +1908,152 @@ public function list_thuong_hieu_theo_loai($MaLoai)
             return $this->db->query($sql);
         }
 
+    // Xóa
+    function Delete_BaoDuong($id)
+{
+    $stmt = $this->db->prepare("
+        DELETE FROM lich_bao_duong 
+        WHERE id_lich = ?
+    ");
 
-        // SỬA XÓA BẢO DƯỠNG
-        function Get_ChiTietbaoduong($id){
+    $stmt->bind_param("i", $id);
 
-            $id = (int)$id;
-            
-            $sql = "SELECT 
-                        l.id_lich,
-                        l.id_Khach_Hang,
-                        l.id_Xe_Mau,
-                        l.id_goi,
-                        l.ngay_bao_duong,
-                        l.ghi_chu,
-                        l.trang_thai,
-                        k.Ho_Ten,
-                        k.So_Dien_Thoai,
-                        sp.Ten_Xe,
-                        m.Ten_Mau,
-                        g.ten_goi
-                    FROM lich_bao_duong l
-                    JOIN khach_hang k ON l.id_Khach_Hang = k.id_Khach_Hang
-                    JOIN xe_mau xm ON l.id_Xe_Mau = xm.id_Xe_Mau
-                    JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
-                    JOIN mau_xe m ON xm.id_Mau = m.id_Mau
-                    JOIN goi_bao_duong g ON l.id_goi = g.id_goi
-                    WHERE l.id_lich = $id
-                    LIMIT 1";
-            
-            $result = $this->db->query($sql);
-            
-            if($result && $result->num_rows > 0){
-                return $result->fetch_assoc();
-            }
-            
-            return false;
-            
-            }
-
-            function Update_baoduong($id, $post){
-
-                $id = (int)$id;
-                
-                $ngay = $this->db->real_escape_string($post['ngay_bao_duong']);
-                $ghi_chu = $this->db->real_escape_string($post['ghi_chu']);
-                $trang_thai = $this->db->real_escape_string($post['trang_thai']);
-                
-                $sql = "UPDATE lich_bao_duong
-                        SET 
-                            ngay_bao_duong = '$ngay',
-                            ghi_chu = '$ghi_chu',
-                            trang_thai = '$trang_thai'
-                        WHERE id_lich = $id";
-                
-                return $this->db->query($sql);
-                
-                }
-
-                function Delete_BaoDuong($id){
-
-                    $id = (int)$id;
-                    
-                    $sql = "DELETE FROM lich_bao_duong
-                            WHERE id_lich = $id";
-                    
-                    return $this->db->query($sql);
-                    
-                    }
-
-
-
-
-
+    return $stmt->execute();
 }
 
+function Xoa_Nhan_Vien($id) {
+    $id = (int)$id;
+    $sql = "DELETE FROM admin WHERE id_Ad = $id";
+    return $this->db->query($sql);
+}
+   // ==========================================
+    // CÁC HÀM THỐNG KÊ DOANH THU 
+    // ==========================================
+
+    // 1. Tổng doanh thu trong năm
+    public function ThongKe_TongDoanhThu($nam) {
+        $nam = (int)$nam;
+        $sql = "SELECT SUM(Tong_Tien) as total FROM don_hang WHERE payment_status = 'paid' AND YEAR(Ngay_Tao) = $nam";
+        $result = $this->db->query($sql);
+        $row = $result->fetch_assoc();
+        return $row['total'] ? (float)$row['total'] : 0;
+    }
+
+    // 2. Khách hàng mới trong năm
+    public function ThongKe_KhachHangMoi($nam) {
+        $nam = (int)$nam;
+        $sql = "SELECT COUNT(*) as total FROM khach_hang WHERE YEAR(Ngay_Tao) = $nam";
+        $result = $this->db->query($sql);
+        $row = $result->fetch_assoc();
+        return (int)$row['total'];
+    }
+
+    // 3. Tỷ lệ khách mua lại (Giữ chân)
+    public function ThongKe_TyLeQuayLai() {
+        $sqlTotal = "SELECT COUNT(*) as total FROM khach_hang";
+        $resTotal = $this->db->query($sqlTotal);
+        $totalKhach = (int)$resTotal->fetch_assoc()['total'];
+
+        if ($totalKhach === 0) return 0;
+
+        $sqlReturn = "SELECT COUNT(*) as total_return FROM (
+                        SELECT id_Khach_Hang 
+                        FROM don_hang 
+                        WHERE payment_status = 'paid' 
+                        GROUP BY id_Khach_Hang 
+                        HAVING COUNT(id_Don_Hang) > 1
+                      ) as returning_customers";
+        $resReturn = $this->db->query($sqlReturn);
+        $totalReturn = (int)$resReturn->fetch_assoc()['total_return'];
+
+        return round(($totalReturn / $totalKhach) * 100, 2);
+    }
+
+    // 4. Lấy dữ liệu 12 tháng cho biểu đồ
+    public function ThongKe_BieuDoDoanhThu($nam) {
+        $nam = (int)$nam;
+        $sql = "SELECT MONTH(Ngay_Tao) as thang, SUM(Tong_Tien) as doanh_thu 
+                FROM don_hang 
+                WHERE payment_status = 'paid' AND YEAR(Ngay_Tao) = $nam 
+                GROUP BY MONTH(Ngay_Tao)";
+        $result = $this->db->query($sql);
+        
+        $data = array_fill(1, 12, 0); 
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $data[(int)$row['thang']] = (float)$row['doanh_thu'];
+            }
+        }
+        return array_values($data); 
+    }
+
+    // 4.1 Lấy dữ liệu 7 ngày gần nhất (Tuần)
+    public function ThongKe_BieuDoDoanhThu_Tuan() {
+        // Lấy 7 ngày có doanh thu gần nhất để biểu đồ luôn đẹp khi demo
+        $sql = "SELECT DATE(Ngay_Tao) as ngay, SUM(Tong_Tien) as doanh_thu 
+                FROM don_hang 
+                WHERE payment_status = 'paid' 
+                GROUP BY DATE(Ngay_Tao) 
+                ORDER BY DATE(Ngay_Tao) DESC LIMIT 7";
+        $result = $this->db->query($sql);
+        $labels = [];
+        $data = [];
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                array_unshift($labels, date('d/m', strtotime($row['ngay'])));
+                array_unshift($data, (float)$row['doanh_thu']);
+            }
+        }
+        // Điền thêm ngày trống nếu DB chưa đủ 7 ngày
+        while(count($labels) < 7) {
+            array_unshift($labels, '--/--');
+            array_unshift($data, 0);
+        }
+        return ['labels' => $labels, 'data' => $data];
+    }
+
+    // 4.2 Lấy dữ liệu 5 năm gần nhất (Năm)
+    public function ThongKe_BieuDoDoanhThu_Nam($namHienTai) {
+        $data = [];
+        $labels = [];
+        for ($i = 4; $i >= 0; $i--) { // Lùi về 5 năm
+            $nam = $namHienTai - $i;
+            $labels[] = (string)$nam;
+            $sql = "SELECT SUM(Tong_Tien) as total FROM don_hang WHERE payment_status = 'paid' AND YEAR(Ngay_Tao) = $nam";
+            $res = $this->db->query($sql);
+            $row = $res->fetch_assoc();
+            $data[] = $row['total'] ? (float)$row['total'] : 0;
+        }
+        return ['labels' => $labels, 'data' => $data];
+    }
+    // 5. Đếm số lượng xe bán ra
+    public function ThongKe_SoLuongXeBanRa($nam) {
+        $nam = (int)$nam;
+        $sql = "SELECT COUNT(*) as total FROM don_hang WHERE payment_status = 'paid' AND YEAR(Ngay_Tao) = $nam";
+        $result = $this->db->query($sql);
+        $row = $result->fetch_assoc();
+        return (int)$row['total'];
+    }
+
+    // 6. Lấy chi tiết xe bán ra cho Modal
+    public function ThongKe_ChiTietXeBanRa($nam) {
+        $nam = (int)$nam;
+        $sql = "SELECT sp.Ten_Xe, mx.Ten_Mau, dh.Tong_Tien, dh.Ngay_Tao 
+                FROM don_hang dh
+                JOIN xe_mau xm ON dh.id_Xe_Mau = xm.id_Xe_Mau
+                JOIN san_pham_xe sp ON xm.id_Xe = sp.id_Xe
+                JOIN mau_xe mx ON xm.id_Mau = mx.id_Mau
+                WHERE dh.payment_status = 'paid' AND YEAR(dh.Ngay_Tao) = $nam
+                ORDER BY dh.Ngay_Tao DESC";
+        $result = $this->db->query($sql);
+        $data = [];
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $data[] = $row;
+            }
+        }
+        return $data;
+    }
+    
+
+}

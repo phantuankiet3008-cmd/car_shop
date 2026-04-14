@@ -11,7 +11,7 @@
 
         <!-- Search -->
 <div class="search-box">
-    <form action="{{ url('/car_shop/user') }}" method="GET">
+    <form action="{{ url('user/car_shop/danhsachsanpham/0/0') }}" method="GET">
         <input type="text"
                name="search"
                placeholder="Bạn đang tìm gì..."
@@ -41,11 +41,12 @@
     </div>
 
     <!-- CART -->
-    <a href="{{ url('user/car_shop/giohang') }}">
+      @if(session('user_id'))
+    <a href="{{ url('/user/car_shop/don_cua_toi') }}">
         <i class="fas fa-shopping-cart"></i>
         <span>Đơn Hàng</span>
     </a>
-
+    @endif
     <!-- LOGOUT -->
     @if(session('user_id'))
         <a href="{{ url('user/car_shop/dangxuat') }}">
