@@ -243,7 +243,7 @@ function submitFilter() {
     const thuongHieuId = document.getElementById('thuongHieuSelect').value;
     const searchValue = document.getElementById('searchInput').value.trim();
 
-    let baseUrl = "{{ url('user/car_shop/danhsachsanpham') }}";
+    let baseUrl = "{{ route('tranglaithu') }}";
     let finalUrl = baseUrl + '/' + loaiId + '/' + thuongHieuId;
 
     if (searchValue !== '') {

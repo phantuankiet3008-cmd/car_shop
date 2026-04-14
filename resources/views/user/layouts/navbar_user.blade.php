@@ -18,13 +18,14 @@
 
 
         </li>
- @if(session('user_id'))
+ 
  <li>
         <a href="{{ route('tranglaithu') }}">
             
             🗓️ĐẶT LỊCH LÁI THỬ
         </a>
  </li>
+ @if(session('user_id'))
  <li>
      <a href="{{ route('datlichbaoduong') }}">
            

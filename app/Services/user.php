@@ -362,27 +362,23 @@ public function tao_don_dat_coc($id_kh, $id_xe_mau)
     $xe = $this->lay_xe_mau($id_xe_mau);
     if(!$xe) return false;
 
-    $gia = $xe['Gia'];
+    $gia = $xe['Gia']; // Đây chính là Giá Gốc
 
     // ===== ưu đãi =====
     $uu_dai = $this->uu_dai_cua_xe($id_xe_mau);
-
     $max_giam = 0;
 
     foreach($uu_dai as $ud){
-
         $giam = 0;
-
         if($ud['Loai'] == 'phan_tram'){
             $giam = $gia * $ud['Gia_Tri'] / 100;
         }
-
         if($ud['Loai'] == 'tien'){
             $giam = $ud['Gia_Tri'];
         }
 
         if($giam > $max_giam){
-            $max_giam = $giam;
+            $max_giam = $giam; // Đây chính là Giá Giảm
         }
     }
 
@@ -390,20 +386,18 @@ public function tao_don_dat_coc($id_kh, $id_xe_mau)
     if($tong < 0) $tong = 0;
 
     $tien_coc = $tong * 0.01;
-
     $now = date('Y-m-d H:i:s');
 
-    // ===== insert =====
+    // ===== insert (Đã thêm Gia_Goc và Gia_Giam) =====
     $sql = "INSERT INTO don_hang 
-        (id_Khach_Hang, id_Xe_Mau, Tong_Tien, Tien_Coc, payment_status, Trang_Thai, Ngay_Tao)
+        (id_Khach_Hang, id_Xe_Mau, Gia_Goc, Gia_Giam, Tong_Tien, Tien_Coc, payment_status, Trang_Thai, Ngay_Tao)
         VALUES
-        ($id_kh, $id_xe_mau, $tong, $tien_coc, 'pending', 'new', '$now')";
+        ($id_kh, $id_xe_mau, $gia, $max_giam, $tong, $tien_coc, 'pending', 'new', '$now')";
 
     $this->db->query($sql);
 
     return $this->db->insert_id;
 }
-
 public function lay_don($id)
 {
     $id = (int)$id;
@@ -544,6 +538,17 @@ public function don_hang_cua_toi($id_khach)
     ";
 
     return $this->db->query($sql);
+}
+function huy_lich_lai_thu($id_Dat_Lich, $user_id)
+{
+    $sql = "UPDATE dat_lich_lai_thu 
+            SET trang_thai = '2' 
+            WHERE id_Dat_Lich = ? AND id_khach_hang = ? ";
+
+    $stmt = $this->db->prepare($sql);
+    $stmt->bind_param("ii", $id_Dat_Lich, $user_id);
+
+    return $stmt->execute();
 }
 }
 ?>

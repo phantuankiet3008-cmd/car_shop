@@ -15,6 +15,30 @@
 .user_table td {
     padding: 10px;
     border-bottom: 1px solid #eee;
+}.btn-huy {
+    background-color: #e74c3c;
+    /* đỏ */
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-huy:hover {
+    background-color: #c0392b;
+}
+
+.btn-huy:active {
+    transform: scale(0.95);
+}
+
+.btn-huy:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
 }
     </style>
  
@@ -31,6 +55,7 @@
         <th>Ngày</th>
         <th>Khung giờ</th>
         <th>Trạng thái</th>
+        <th>Hành động</th>
     </tr>
 
     @if($danh_sach)
@@ -50,6 +75,14 @@
                     <span class="status_cancel">Đã hủy</span>
                 @endif
             </td>
+            <td>
+            @if($danhSach['Trang_Thai'] == '0' || $danhSach['Trang_Thai'] == '1')
+    <form method="POST" action="{{ url('/user/car_shop/huy_lai_thu/'.$danhSach['id_Dat_Lich']) }}">
+        @csrf
+        <button type="submit" class="btn-huy" onclick="return confirm('Bạn có chắc chắn muốn hủy lịch này không?')">Hủy</button>
+    </form>
+@endif
+        </td>
         </tr>
         @endwhile
     @endif

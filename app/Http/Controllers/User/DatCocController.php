@@ -16,7 +16,7 @@ class DatCocController extends Controller
     $sp = new Product();
     $service = new User();
 $checksoluong = $sp->kiemtraxedo($id);
-    if($checksoluong && $checksoluong->num_rows <0){
+    if($checksoluong && $checksoluong->num_rows <=0){
         return back()->with('error','màu xe bạn chọn này đã bán hết hãy chọn lại xe khác');
     }
     // Lấy thông tin xe

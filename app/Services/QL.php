@@ -1445,20 +1445,24 @@ public function list_thuong_hieu_theo_loai($MaLoai)
     }
     
         // xóa gói
-        public function xoa_goi($id)
+        public function thuc_hien_xoa($id) 
 {
-    $ql = new QL();
+    // 1. Kiểm tra xem có xe nào đang dùng gói này không
+    $check_sql = "SELECT * FROM lich_bao_duong WHERE id_goi = ?";
+    $stmt_check = $this->db->prepare($check_sql);
+    $stmt_check->bind_param("i", $id);
+    $stmt_check->execute();
+    $result = $stmt_check->get_result();
 
-    $check = $ql->db->query("SELECT 1 FROM lich_bao_duong WHERE id_goi = $id LIMIT 1");
-
-    if ($check && $check->num_rows > 0) {
-        return redirect()->back()->with('error', 'Có xe đang sử dụng gói này, không thể xóa!');
+    if ($result->num_rows > 0) {
+        return false; // Không được xóa
     }
 
-    $ql->xoa_goi($id);
-
-    return redirect()->route('goibaoduong.index')
-        ->with('success', 'Xóa thành công');
+    // 2. Nếu không có xe nào dùng thì mới xóa
+    $sql = "DELETE FROM goi_bao_duong WHERE id_goi = ?";
+    $stmt = $this->db->prepare($sql);
+    $stmt->bind_param("i", $id);
+    return $stmt->execute();
 }
         
 function DanhSach_DonHang($filters = []) {
@@ -2011,4 +2015,6 @@ function Xoa_Nhan_Vien($id) {
         }
         return $data;
     }
+    
+
 }

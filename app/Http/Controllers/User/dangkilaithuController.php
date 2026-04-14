@@ -211,6 +211,18 @@ function tranglaithu(Request $request, $IDloai = 0, $IDTH = 0){
             'uu_dai'
         ));
     }
+function huylaithu($id){
+    $service = new User();
+    $userId = session('user_id');
+
+    $result = $service->huy_lich_lai_thu($id, $userId);
+
+    if ($result) {
+        return back()->with('success', 'Hủy lịch thành công!');
+    } else {
+        return back()->with('error', 'Không thể hủy lịch.');
+    }
+}
 
 
 }

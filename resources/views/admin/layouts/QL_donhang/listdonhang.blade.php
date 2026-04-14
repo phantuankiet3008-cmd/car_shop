@@ -46,6 +46,7 @@
                     <th style="padding: 15px; text-align: left;">Mẫu Xe</th>
                     <th style="padding: 15px; text-align: left;">Tổng Tiền</th>
                     <th style="padding: 15px; text-align: left;">Cọc/Thanh Toán</th>
+                    <th style="padding: 15px; text-align: left;">ngày tạo </th>
                     <th style="padding: 15px; text-align: left;">Trạng Thái</th>
                     <th style="padding: 15px; text-align: center;">Hành Động</th>
                 </tr>
@@ -71,6 +72,13 @@
                             {{ strtoupper($dh['payment_status']) }}
                         </span>
                     </td>
+                    <td style="padding: 15px;">
+                <span style="font-size: 13px; color: #cbd5e1;">
+                    <i class="fa-regular fa-calendar-days" style="margin-right: 5px; color: #64748b;"></i>
+                    {{ date('d/m/Y', strtotime($dh['Ngay_Tao'])) }}
+                </span><br>
+                <small style="color: #64748b;">{{ date('H:i', strtotime($dh['Ngay_Tao'])) }}</small>
+            </td>
                     <td style="padding: 15px;">
                         <span class="status-pill status-{{ $dh['Trang_Thai'] }}" style="padding: 5px 12px; border-radius: 20px; font-size: 12px; background: #0f172a; display: inline-block; border-left: 3px solid;">
                             {{ 

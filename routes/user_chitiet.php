@@ -56,6 +56,7 @@ Route::prefix('user')->group(function () {
     
     Route::get('/car_shop/capnhatmk', [QuenMK_controller::class, 'formCapNhatMK'])->name('form.capnhatmk');
     Route::post('/car_shop/capnhatmk', [QuenMK_controller::class, 'capNhatMK'])->name('password.reset.process');
+    Route::get('/car_shop/lai_thu/{IDloai?}/{IDTH?}', [dangkilaithuController::class,'tranglaithu'])->name('tranglaithu');
 });
 
 // =========================================================
@@ -97,8 +98,10 @@ Route::middleware('user.auth')->prefix('user')->group(function () {
     Route::post('/car_shop/lay_gio_da_dat', [dangkilaithuController::class, 'layGioDaDat'])->name('dangkilaithu');
     Route::post('/car_shop/dat_lich_lai_thu', [dangkilaithuController::class, 'store']);
     Route::get('/car_shop/lich-lai-thu-cua-toi', [dangkilaithuController::class, 'lichCuaToi']);
+    Route::post('/car_shop/huy_lai_thu/{id}', [dangkilaithuController::class, 'huylaithu']);
+
     // trang lái thử
-    Route::get('/car_shop/lai_thu/{IDloai?}/{IDTH?}', [dangkilaithuController::class,'tranglaithu'])->name('tranglaithu');
+   
     Route::get('/car_shop/chitietxelaithu/{id}', [dangkilaithuController::class,'chitietxelaithu'])->name('xelaithu');
 
     // BẢO DƯỠNG XE

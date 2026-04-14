@@ -72,14 +72,19 @@ class QLGoiBaoDuong_controller extends Controller
 
 
     // Xóa gói
-    function xoa_goi($id)
+ public function xoa_goi($id)
 {
-    $service = new QL();
+    $service = new QL(); // Khởi tạo service
 
-    $service->xoa_goi($id);
+    // Gọi hàm thực hiện xóa (đã đổi tên để tránh trùng lặp gây đệ quy)
+    $ket_qua = $service->thuc_hien_xoa($id);
+
+    if (!$ket_qua) {
+        return redirect()->back()->with('error', 'Có xe đang sử dụng gói này, không thể xóa!');
+    }
 
     return redirect('/trang_admin/goibaoduong')
-        ->with('success','Xóa gói bảo dưỡng thành công');
+        ->with('success', 'Xóa gói bảo dưỡng thành công');
 }
 
 }
