@@ -8,16 +8,19 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 
+
 class ThongKeController extends Controller
 {
     public function index(Request $request, $tab = 'tieu-dung')
     {
         $service = new QL();
 
+
         // Thiết lập thời gian mặc định: 30 ngày trước đến 1 tháng sau tính từ ngày hiện tại
         $from = $request->query('from', Carbon::now()->subDays(30)->format('Y-m-d'));
         $to = $request->query('to', Carbon::now()->addMonth(1)->format('Y-m-d'));
         $group = $request->query('group', 'ngay');
+
 
         // 1. NẾU BẤM VÀO TAB "DOANH THU"
         // ===============================================
@@ -28,9 +31,12 @@ class ThongKeController extends Controller
             $soLuongXeBanRa = $service->ThongKe_SoLuongXeBanRa($namHienTai);
             $khachHangMoi = $service->ThongKe_KhachHangMoi($namHienTai);
             $tyLeQuayLai  = $service->ThongKe_TyLeQuayLai();
-            $bieuDoDoanhThu = $service->ThongKe_BieuDoDoanhThu($namHienTai);
             
-            // DÒNG MỚI THÊM: Lấy chi tiết xe bán ra
+            // --- 3 DỮ LIỆU ĐỂ VẼ BIỂU ĐỒ ---
+            $bieuDoDoanhThu = $service->ThongKe_BieuDoDoanhThu($namHienTai); // Tháng
+            $bieuDoTuan = $service->ThongKe_BieuDoDoanhThu_Tuan();           // Tuần 
+            $bieuDoNam = $service->ThongKe_BieuDoDoanhThu_Nam($namHienTai);  // Năm 
+            
             $chiTietXeBanRa = $service->ThongKe_ChiTietXeBanRa($namHienTai);
 
             return view('admin.layouts.index_AD', [
@@ -40,8 +46,13 @@ class ThongKeController extends Controller
                 'soLuongXeBanRa' => $soLuongXeBanRa,
                 'khachHangMoi' => $khachHangMoi,
                 'tyLeQuayLai'  => $tyLeQuayLai,
-                'bieuDoDoanhThu' => $bieuDoDoanhThu,
-                'chiTietXeBanRa' => $chiTietXeBanRa, // DÒNG MỚI THÊM
+                
+                // Trả 3 mảng này qua cho View
+                'bieuDoDoanhThu' => $bieuDoDoanhThu, 
+                'bieuDoTuan' => $bieuDoTuan,     
+                'bieuDoNam' => $bieuDoNam,       
+                
+                'chiTietXeBanRa' => $chiTietXeBanRa, 
                 'namHienTai' => $namHienTai
             ]);
         }

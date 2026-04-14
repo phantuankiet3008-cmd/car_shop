@@ -72,41 +72,34 @@
             </span>
         </div>
     </div>
-
-    <div class="insight-chart-section">
+<div class="chart-tabs">
+                <span id="tab-tuan" onclick="chonBoLoc('tuan')">Tuần</span>
+                <span id="tab-thang" class="active" onclick="chonBoLoc('thang')">Tháng</span>
+                <span id="tab-nam" onclick="chonBoLoc('nam')">Năm</span>
+            </div>
+   <div class="insight-chart-section">
         <div class="chart-top">
             <div class="chart-title">
                 <h4>Dự Báo Tăng Trưởng</h4>
-                <p>Kết quả thực tế và dự kiến cho năm {{ $namHienTai ?? date('Y') }}</p>
+                <p id="tieude-bieudo">Kết quả thực tế và dự kiến theo Tháng</p>
             </div>
-            <div class="chart-tabs">
-                <span>Tuần</span>
-                <span class="active">Tháng</span>
-                <span>Năm</span>
             </div>
-        </div>
         
         <div style="height: 350px; width: 100%;">
             <canvas id="insightRevenueChart"></canvas>
         </div>
     </div>
-</div>
-
-<div id="modalXeBan" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
+</div> <div id="modalXeBan" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center;">
     <div style="background-color: #fff; padding: 25px; border-radius: 16px; width: 80%; max-width: 800px; max-height: 80vh; overflow-y: auto; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h3 style="margin: 0; color: #0f172a;">Chi Tiết Xe Đã Bán Năm {{ $namHienTai ?? date('Y') }}</h3>
+            <h3 style="margin: 0; color: #0f172a;">Chi Tiết Xe Đã Bán</h3>
             <span onclick="closeModalXeBan()" style="font-size: 24px; font-weight: bold; color: #64748b; cursor: pointer;">&times;</span>
         </div>
         
         <table border="1" cellpadding="10" cellspacing="0" width="100%" style="border-collapse: collapse; text-align: left; border-color: #e2e8f0;">
             <thead style="background-color: #f8fafc;">
                 <tr>
-                    <th>STT</th>
-                    <th>Tên Xe</th>
-                    <th>Màu Xe</th>
-                    <th>Giá Bán (VNĐ)</th>
-                    <th>Ngày Bán</th>
+                    <th>STT</th><th>Tên Xe</th><th>Màu Xe</th><th>Giá Bán</th><th>Ngày Bán</th>
                 </tr>
             </thead>
             <tbody>
@@ -121,9 +114,7 @@
                         </tr>
                     @endforeach
                 @else
-                    <tr>
-                        <td colspan="5" style="text-align: center; padding: 20px;">Chưa có dữ liệu xe bán ra.</td>
-                    </tr>
+                    <tr><td colspan="5" style="text-align: center; padding: 20px;">Chưa có dữ liệu.</td></tr>
                 @endif
             </tbody>
         </table>
@@ -132,24 +123,23 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// Khởi tạo biểu đồ
 document.addEventListener("DOMContentLoaded", function() {
     const ctx = document.getElementById('insightRevenueChart').getContext('2d');
     
-    // Tạo gradient màu xanh mờ dần xuống
     let gradient = ctx.createLinearGradient(0, 0, 0, 400);
     gradient.addColorStop(0, 'rgba(59, 130, 246, 0.4)'); 
     gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
 
-    const dataDoanhThu = {!! json_encode($bieuDoDoanhThu ?? [0,0,0,0,0,0,0,0,0,0,0,0]) !!};
+    const dataThang = {!! json_encode($bieuDoDoanhThu ?? [0,0,0,0,0,0,0,0,0,0,0,0]) !!};
+    const labelsThang = ['Th 1', 'Th 2', 'Th 3', 'Th 4', 'Th 5', 'Th 6', 'Th 7', 'Th 8', 'Th 9', 'Th 10', 'Th 11', 'Th 12'];
 
-    new Chart(ctx, {
+    window.doanhThuChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['Th 1', 'Th 2', 'Th 3', 'Th 4', 'Th 5', 'Th 6', 'Th 7', 'Th 8', 'Th 9', 'Th 10', 'Th 11', 'Th 12'],
+            labels: labelsThang, 
             datasets: [{
                 label: 'Doanh Thu',
-                data: dataDoanhThu,
+                data: dataThang,
                 borderColor: '#3b82f6', 
                 backgroundColor: gradient,
                 borderWidth: 4,
@@ -167,17 +157,14 @@ document.addEventListener("DOMContentLoaded", function() {
             maintainAspectRatio: false,
             plugins: {
                 legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) { return context.raw.toLocaleString('vi-VN') + ' đ'; }
-                    }
-                }
+                tooltip: { callbacks: { label: function(context) { return context.raw.toLocaleString('vi-VN') + ' đ'; } } }
             },
             scales: {
                 y: { display: false, beginAtZero: true },
-                x: {
+                x: { 
+                    display: true, 
                     grid: { display: false, drawBorder: false },
-                    ticks: { color: '#94a3b8', font: { size: 12, weight: '600' } }
+                    ticks: { color: '#94a3b8', font: { size: 12, weight: '600' }, display: true } 
                 }
             },
             interaction: { mode: 'index', intersect: false },
@@ -185,16 +172,52 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
-// Hàm xử lý Mở/Đóng Modal Chi tiết Xe
+// TRẢ LẠI HÀM NÀY ĐỂ Ô BÊN TRÁI BẤM ĐƯỢC
+function chonBoLoc(kieuLoc) {
+    const tabs = ['tuan', 'thang', 'nam'];
+    tabs.forEach(tab => {
+        let el = document.getElementById('tab-' + tab);
+        if(el) el.classList.remove('active');
+    });
+    
+    let activeEl = document.getElementById('tab-' + kieuLoc);
+    if(activeEl) activeEl.classList.add('active');
+
+    const dataThang = {!! json_encode($bieuDoDoanhThu ?? [0,0,0,0,0,0,0,0,0,0,0,0]) !!};
+    const labelsThang = ['Th 1', 'Th 2', 'Th 3', 'Th 4', 'Th 5', 'Th 6', 'Th 7', 'Th 8', 'Th 9', 'Th 10', 'Th 11', 'Th 12'];
+    const duLieuTuan = {!! json_encode($bieuDoTuan ?? ['labels'=>[], 'data'=>[]]) !!};
+    const duLieuNam = {!! json_encode($bieuDoNam ?? ['labels'=>[], 'data'=>[]]) !!};
+
+    let titleEl = document.getElementById('tieude-bieudo');
+
+    if (kieuLoc === 'tuan') {
+        window.doanhThuChart.data.labels = duLieuTuan.labels;
+        window.doanhThuChart.data.datasets[0].data = duLieuTuan.data;
+        if(titleEl) titleEl.innerText = "Kết quả thực tế 7 ngày gần nhất";
+    } 
+    else if (kieuLoc === 'thang') {
+        window.doanhThuChart.data.labels = labelsThang;
+        window.doanhThuChart.data.datasets[0].data = dataThang;
+        if(titleEl) titleEl.innerText = "Kết quả thực tế và dự kiến theo Tháng";
+    } 
+    else if (kieuLoc === 'nam') {
+        window.doanhThuChart.data.labels = duLieuNam.labels;
+        window.doanhThuChart.data.datasets[0].data = duLieuNam.data;
+        if(titleEl) titleEl.innerText = "Kết quả thực tế 5 năm gần nhất";
+    }
+    
+    window.doanhThuChart.update();
+}
+
+// Giữ nguyên Modal
 function openModalXeBan() {
-    document.getElementById('modalXeBan').style.display = 'flex';
+    let m = document.getElementById('modalXeBan');
+    if(m) m.style.display = 'flex';
 }
-
 function closeModalXeBan() {
-    document.getElementById('modalXeBan').style.display = 'none';
+    let m = document.getElementById('modalXeBan');
+    if(m) m.style.display = 'none';
 }
-
-// Bấm ra ngoài vùng xám đen để đóng Modal
 window.onclick = function(event) {
     let modal = document.getElementById('modalXeBan');
     if (event.target == modal) {
