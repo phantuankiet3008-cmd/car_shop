@@ -111,7 +111,11 @@ Route::prefix('trang_admin')->group(function () {
               Route::get('xoa/{id}', [QLBaoDuong_controller::class, 'destroy']);
 
             });
-
+            Route::prefix('goibaoduong')->group(function () {
+            Route::get('xoa/{id}', [QLGoiBaoDuong_controller::class, 'xoa_goi']);
+        });
+         Route::get('uu_dai/xoa/{id}', [UuDaiController::class, 'destroy']); 
+         Route::get('uu_dai_xe/xoa/{id_xe}/{id_uudai}', [UuDaiController::class, 'destroyXeUuDai']);
         });
 
         // ===== NHÓM QUẢN TRỊ & KẾ TOÁN (Role 1, 3 - Bao gồm Thống kê) =====
@@ -144,12 +148,11 @@ Route::prefix('trang_admin')->group(function () {
 
             // Ưu đãi
             Route::resource('uu_dai', UuDaiController::class)->only(['index', 'create', 'store']);
-            Route::get('uu_dai/xoa/{id}', [UuDaiController::class, 'destroy']); // Role 1,2 được xóa ưu đãi? (Giữ theo code cũ)
 
             Route::get('xe_uu_dai', [UuDaiController::class, 'indexXeUuDai']);
             Route::get('xe_uu_dai/them', [UuDaiController::class, 'createXeUuDai']);
             Route::post('xe_uu_dai/them', [UuDaiController::class, 'storeXeUuDai']);
-            Route::get('uu_dai_xe/xoa/{id_xe}/{id_uudai}', [UuDaiController::class, 'destroyXeUuDai']);
+            
 
             // Quản lý Đơn hàng (Thêm/Sửa)
             Route::prefix('don_hang')->group(function () {
@@ -234,7 +237,7 @@ Route::prefix('trang_admin')->group(function () {
         Route::get('', [UuDaiController::class, 'indexXeUuDai']);
         Route::get('them', [UuDaiController::class, 'createXeUuDai']);
         Route::post('them', [UuDaiController::class, 'storeXeUuDai']);
-        Route::get('xoa/{id_xe}/{id_uudai}', [UuDaiController::class, 'destroyXeUuDai']);
+        
     });
 
     // ================= ĐƠN HÀNG =================
@@ -272,7 +275,7 @@ Route::prefix('trang_admin')->group(function () {
                 Route::post('them', [QLGoiBaoDuong_controller::class, 'them_goi']);
                 Route::get('sua/{id}', [QLGoiBaoDuong_controller::class, 'edit'])->name('goibaoduong.edit');
                 Route::post('sua/{id}', [QLGoiBaoDuong_controller::class, 'update'])->name('goibaoduong.update');
-                Route::get('xoa/{id}', [QLGoiBaoDuong_controller::class, 'xoa_goi']);
+                
             });
         });
 

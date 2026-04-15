@@ -56,7 +56,7 @@ class DonHang_Controller extends Controller
 
     if ($ok) {
         // 2. Nếu trạng thái là 'da_ky', thực hiện trừ kho
-        if ($request->trang_thai == 'da_ky') {
+        if ($request->trang_thai == 'da_giao') {
             $this->ql->Tru_So_Luong_Xe($request->id_xe_mau);
         }
         return redirect('/trang_admin/don_hang')->with('success', 'Tạo đơn hàng thành công');
@@ -103,7 +103,7 @@ class DonHang_Controller extends Controller
     if ($ok) {
         // 3. Kiểm tra logic trừ kho:
         // Nếu trạng thái cũ KHÁC 'da_ky' và trạng thái mới LÀ 'da_ky'
-        if ($don_hang_cu['Trang_Thai'] != 'da_ky' && $request->trang_thai == 'da_ky') {
+        if ($don_hang_cu['Trang_Thai'] != 'da_giao' && $request->trang_thai == 'da_giao') {
             $this->ql->Tru_So_Luong_Xe($request->id_xe_mau);
         }
         

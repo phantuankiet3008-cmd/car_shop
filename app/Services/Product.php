@@ -482,6 +482,7 @@ public function getThongTinXeTheoXeMau($id_Xe_Mau)
 
                 xm.id_Xe_Mau,
                 xm.Gia,
+                XM.So_Luong,
                 xm.is_Default,
 
                 m.id_Mau,
@@ -548,6 +549,21 @@ public function kiemtraxedo($id_xe_mau) {
     // Lấy ra số lượng của biến thể xe cụ thể đó
     $sql = "SELECT So_Luong FROM xe_mau WHERE id_Xe_Mau = $id_xe_mau";
     return $this->db->query($sql);
+}
+public function dem_don_cho_duyet($idXeMau){
+
+    $idXeMau = (int)$idXeMau;
+
+    $sql = "SELECT COUNT(*) as tong
+            FROM don_hang
+            WHERE id_Xe_Mau = $idXeMau
+            AND Trang_Thai ='da_ky' ";
+
+    $result = $this->db->query($sql);
+
+    $row = $result->fetch_assoc();
+
+    return $row['tong'];
 }
 }
 ?>

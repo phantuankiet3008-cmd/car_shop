@@ -22,12 +22,16 @@ class DangkilaithuController extends Controller
        if (!$checksoluong || $checksoluong->num_rows <= 0) {
             return back()->with('error', 'Rất tiếc, mẫu xe màu này hiện đã hết hàng hoặc không khả dụng để lái thử.');
         }
-
+    
         $thongTinXe = $sp->getThongTinXeTheoXeMau($id_Xe_Mau);
         if (!$thongTinXe) {
             abort(404, 'Không tìm thấy thông tin xe.');
         }
+    $don = $sp->dem_don_cho_duyet($id_Xe_Mau);
 
+    if($thongTinXe['So_Luong'] <= $don){
+        return back()->with('error','Xe màu này đã hết lượt lái thử');
+    }
         
         $kg = [];
         $result_khung = $sp->getKhungGio();
