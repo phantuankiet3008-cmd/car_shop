@@ -157,3 +157,8 @@
                 <option value="0" {{ old('Trang_Thai', $data['khach_hang']['Trang_Thai']) == 0 ? 'selected' : '' }}>Khoá</option>
             </select>
         </div>
+        <button type="submit" class="btn-submit-modern">
+            <i class="fa-solid fa-floppy-disk"></i> Cập nhật
+        </button>
+    </form>
+</div>
