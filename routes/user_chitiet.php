@@ -44,7 +44,7 @@ Route::prefix('user')->group(function () {
     Route::post('/car_shop/dangnhap', [DangNhap_controller::class, 'dangnhap']);
     
     Route::get('/car_shop/dangky', function () { return view('user.layouts.DangKy'); })->name('dangky');
-    Route::post('/car_shop/dangky', [DangKy_controller::class, 'dangky']);
+    Route::post('/car_shop/dangky', [DangKy_controller::class, 'dangky'])->name('dangky');
     
     Route::get('/car_shop/dangxuat', function () { session()->flush(); return redirect()->route('trangchu'); })->name('dangxuat');
 

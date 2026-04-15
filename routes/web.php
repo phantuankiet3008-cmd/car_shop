@@ -36,6 +36,7 @@ Route::prefix('trang_admin')->group(function () {
     Route::get('DangNhapADM', [DangNhapADM_controller::class, 'showLogin'])->name('admin.login.form');
     Route::post('DangNhapADM', [DangNhapADM_controller::class, 'login'])->name('admin.login');
     Route::get('logout', [DangNhapADM_controller::class, 'logout'])->name('admin.logout');
+   
 
     // ================= KHU VỰC CẦN ĐĂNG NHẬP (Middleware chung) =================
     Route::middleware(['check.session'])->group(function () {

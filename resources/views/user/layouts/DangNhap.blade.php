@@ -45,12 +45,12 @@
 
                     <p class="link-text">
                         Chưa có tài khoản?
-                        <a href="{{ url('/car_shop/dangky') }}">Đăng KÝ</a>
+                        <a href="{{ url('user/car_shop/dangky') }}">Đăng KÝ</a>
                     </p>
 
                     <p class="link-text">
                         Quên mật khẩu
-                        <a href="{{ url('/car_shop/quenmk') }}">Quên Mật Khẩu</a>
+                        <a href="{{ url('user/car_shop/quenmk') }}">Quên Mật Khẩu</a>
                     </p>
                 </form>
             </div>
