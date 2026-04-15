@@ -30,7 +30,7 @@ class DangkilaithuController extends Controller
     $don = $sp->dem_don_cho_duyet($id_Xe_Mau);
 
     if($thongTinXe['So_Luong'] <= $don){
-        return back()->with('error','Xe màu này đã hết lượt lái thử');
+        return back()->with('error','Xe màu này đã hết lượt lái thử vì đã có người đặt cọc');
     }
         
         $kg = [];

@@ -24,4 +24,21 @@ class donhangController extends Controller
             'don_hang' => $donHang
         ]);
     }
+    function thanhtoanlai ($id){
+        $service = new User();
+        $don = $service->lay_don($id);
+        $id_kh = session('user_id');
+        if(!$don){
+            return redirect()->back()->with('error','Đơn hàng không tồn tại');
+        }
+
+        if($don->id_Khach_Hang != $id_kh){
+            abort(403);
+        }
+        $xe = $service->lay_xe_mau($don->id_Xe_Mau);
+        $khach = $service->lay_khach_hang($id_kh);
+
+        return view('user.layouts.Checkout', compact('don','xe','khach'));
+    
+    }
 }

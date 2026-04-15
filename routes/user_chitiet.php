@@ -71,6 +71,7 @@ Route::middleware('user.auth')->prefix('user')->group(function () {
 
     // Đơn hàng & Đặt cọc
    Route::get('/car_shop/don_cua_toi', [DonHangController::class, 'donCuaToi']);
+   Route::post('/car_shop/thanhtoanlai/{id}',[DonHangController::class, 'thanhtoanlai']);
     Route::get('/car_shop/datcoc/{id}', [DatCocController::class, 'datcoc']); 
     Route::post('/car_shop/datcoc/', [DatCocController::class, 'datcoc'])->name('datcoc');
     Route::post('/car_shop/tao-don', [DatCocController::class, 'taoDon'])->name('taoDon');

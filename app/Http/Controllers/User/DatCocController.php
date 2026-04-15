@@ -33,7 +33,7 @@ $checksoluong = $sp->kiemtraxedo($id);
     $don = $service->dem_don_cho_duyet($id);
 
     if($xe['So_Luong'] <= $don){
-        return back()->with('error','Xe màu này đã hết lượt đặt cọc');
+        return back()->with('error','Xe màu này đã hết lượt đặt cọc vì đã có người đặt cọc');
     }
 
     // ======================

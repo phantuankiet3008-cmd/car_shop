@@ -27,6 +27,7 @@
                         <th>Thanh toán</th>
                         <th>Trạng thái</th>
                         <th>Ngày</th>
+                        <th>Hành động</th>
                     </tr>
                 </thead>
 
@@ -82,6 +83,14 @@
                     <td>
                         {{ date('d/m/Y', strtotime($row['Ngay_Tao'])) }}
                     </td>
+                    <td>
+            @if($row['payment_status'] == 'pending')
+            <form method="POST" action="{{ url('/user/car_shop/thanhtoanlai/'.$row['id_Don_Hang']) }}">
+                @csrf
+                <button type="submit" class="btn-thanhtoanlai">Thanh Toán Lại</button>
+            </form>
+            @endif
+        </td>
 
                 </tr>
 
