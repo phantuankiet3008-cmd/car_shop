@@ -63,10 +63,10 @@ lịch lái thử của bạn
 @endif
 
 <p style="text-align:center;font-weight:600;font-size:20px;color:#000;">
-    {{ $khachhang['Ho_Ten'] ?? '' }}
+    Tên: {{ $khachhang['Ho_Ten'] ?? '' }}
 </p>
 <p style="text-align:center;font-weight:600;font-size:18px;color:#000;">
-    {{ $khachhang['So_Dien_Thoai'] ?? '' }}
+     Số Điện Thoại: {{$khachhang['So_Dien_Thoai'] ?? '' }}
 </p>
 
 </div>

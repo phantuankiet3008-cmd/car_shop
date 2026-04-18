@@ -5,49 +5,50 @@
     <meta charset="UTF-8">
     <title>Đăng ký</title>
     <link rel="stylesheet" href="{{ asset('user/css/login_user.css') }}">
+    
 </head>
 
 <body>
+<div class="register-container">
+        <h2>Đăng ký tài khoản</h2>
 
-    <h2>Đăng ký tài khoản</h2>
-
-    @csrf
-
-    <div class="form-group auth-box">
-        <input type="text" id="phone" placeholder="Số điện thoại">
-    </div>
-
-    <button type="button" onclick="sendOTP()">Gửi OTP</button>
-
-    <div id="otp-box" style="display:none;">
-        <input id="otp" placeholder="Nhập OTP">
-        <button type="button" onclick="verifyOTP()">Xác minh</button>
-    </div>
-
-    <form method="POST" action="{{ route('dangky') }}" id="registerForm" style="display:none;">
         @csrf
 
-        <input type="hidden" name="SDT" id="sdt_hidden">
-
         <div class="form-group auth-box">
-            <input type="text" name="HoTen" placeholder="Họ và tên" required>
+            <input type="text" id="phone" placeholder="Số điện thoại">
         </div>
 
-        <div class="form-group auth-box">
-            <input type="text" name="DiaChi" placeholder="Địa Chỉ" required>
+        <button type="button" onclick="sendOTP()">Gửi OTP</button>
+
+        <div id="otp-box" style="display:none;">
+            <input id="otp" placeholder="Nhập OTP">
+            <button type="button" onclick="verifyOTP()">Xác minh</button>
         </div>
 
-        <div class="form-group auth-box">
-            <input type="email" name="email" placeholder="Email" required>
-        </div>
+        <form method="POST" action="{{ route('dangky') }}" id="registerForm" style="display:none;">
+            @csrf
 
-        <div class="form-group auth-box">
-            <input type="password" name="MatKhau" placeholder="Mật khẩu" required>
-        </div>
+            <input type="hidden" name="SDT" id="sdt_hidden">
 
-        <button type="submit" class="btn">Đăng ký</button>
-    </form>
+            <div class="form-group auth-box">
+                <input type="text" name="HoTen" placeholder="Họ và tên" required>
+            </div>
 
+            <div class="form-group auth-box">
+                <input type="text" name="DiaChi" placeholder="Địa Chỉ" required>
+            </div>
+
+            <div class="form-group auth-box">
+                <input type="email" name="email" placeholder="Email" required>
+            </div>
+
+            <div class="form-group auth-box">
+                <input type="password" name="MatKhau" placeholder="Mật khẩu" required>
+            </div>
+
+            <button type="submit" class="btn">Đăng ký</button>
+        </form>
+    </div>
     <script>
     function sendOTP() {
         let phone = document.getElementById("phone").value;

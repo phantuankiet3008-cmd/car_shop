@@ -62,6 +62,9 @@
                 <a href="{{ url('/user/car_shop/chitietxe/' . ($thuongHieuData['ford']['id_Xe'] ?? 0)) }}" class="btn-overlay">Đặt xe ngay</a>
                 <a href="{{ url('user/car_shop/danhsachsanpham/0/' . ($thuongHieuData['ford']['id_Thuong_Hieu'] ?? 0)) }}" class="btn-overlay">Xem chi tiết</a>
             </div>
+          <div class="noi_dung">
+    <h3>Khám phá dòng xe Ford 2026 mạnh mẽ, bền bỉ, phù hợp mọi địa hình.</h3>
+</div>
         </div>
     </div>
 </div>
@@ -78,6 +81,9 @@
                 <a href="{{ url('/user/car_shop/chitietxe/' . ($thuongHieuData['toyota']['id_Xe'] ?? 0)) }}" class="btn-overlay">Đặt xe ngay</a>
                 <a href="{{ url('user/car_shop/danhsachsanpham/0/' . ($thuongHieuData['toyota']['id_Thuong_Hieu'] ?? 0)) }}" class="btn-overlay">Xem chi tiết</a>
             </div>
+            <div class="noi_dung">
+    <h3>Khám phá Toyota 2026 – tiết kiệm nhiên liệu, bền bỉ và đáng tin cậy.</h3>
+</div>
         </div>
     </div>
 </div>
@@ -93,6 +99,9 @@
                 <a href="{{ url('/user/car_shop/chitietxe/' . ($thuongHieuData['hyundai']['id_Xe'] ?? 0)) }}" class="btn-overlay">Đặt xe ngay</a>
                 <a href="{{ url('user/car_shop/danhsachsanpham/0/' . ($thuongHieuData['hyundai']['id_Thuong_Hieu'] ?? 0)) }}" class="btn-overlay">Xem chi tiết</a>
             </div>
+            <div class="noi_dung">
+    <h3>Hyundai 2026 – thiết kế trẻ trung, công nghệ hiện đại, giá hợp lý.</h3>
+</div>
         </div>
     </div>
 </div>
@@ -109,6 +118,9 @@
                 <a href="{{ url('/user/car_shop/chitietxe/' . ($thuongHieuData['mitsubishi']['id_Xe'] ?? 0)) }}" class="btn-overlay">Đặt xe ngay</a>
                 <a href="{{ url('user/car_shop/danhsachsanpham/0/' . ($thuongHieuData['mitsubishi']['id_Thuong_Hieu'] ?? 0)) }}" class="btn-overlay">Xem chi tiết</a>
             </div>
+            <div class="noi_dung">
+    <h3>Mitsubishi 2026 – vận hành ổn định, phù hợp gia đình và đường dài.</h3>
+</div>
         </div>
     </div>
 </div>
@@ -125,6 +137,9 @@
                 <a href="{{ url('/user/car_shop/chitietxe/' . ($thuongHieuData['vinfast']['id_Xe'] ?? 0)) }}" class="btn-overlay">Đặt xe ngay</a>
                 <a href="{{ url('user/car_shop/danhsachsanpham/0/' . ($thuongHieuData['vinfast']['id_Thuong_Hieu'] ?? 0)) }}" class="btn-overlay">Xem chi tiết</a>
             </div>
+            <div class="noi_dung">
+    <h3>VinFast 2026 – xe điện thông minh, dẫn đầu xu hướng tương lai.</h3>
+</div>
         </div>
     </div>
 </div>
@@ -141,6 +156,9 @@
                 <a href="{{ url('/user/car_shop/chitietxe/' . ($thuongHieuData['bmw']['id_Xe'] ?? 0)) }}" class="btn-overlay">Đặt xe ngay</a>
                 <a href="{{ url('user/car_shop/danhsachsanpham/0/' . ($thuongHieuData['bmw']['id_Thuong_Hieu'] ?? 0)) }}" class="btn-overlay">Xem chi tiết</a>
             </div>
+            <div class="noi_dung">
+    <h3>BMW 2026 – đẳng cấp, sang trọng, trải nghiệm lái thể thao đỉnh cao.</h3>
+</div>
         </div>
     </div>
 </div>

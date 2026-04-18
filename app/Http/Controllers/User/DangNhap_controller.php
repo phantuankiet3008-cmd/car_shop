@@ -33,7 +33,8 @@ class DangNhap_controller extends Controller {
         session([
             'user_id' => $user['id_Khach_Hang'],
             'user_name' => $user['Ho_Ten'],
-            'SDT'       => $user['So_Dien_Thoai'] 
+            'SDT'       => $user['So_Dien_Thoai'],
+            'Avatar'    => $user['Avatar']
 
         ]);
 

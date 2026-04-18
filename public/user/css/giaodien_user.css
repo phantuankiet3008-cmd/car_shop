@@ -946,3 +946,28 @@ footer {
     font-size: 13px;
     padding: 6px;
 }
+.noi_dung {
+    margin-top: 10px;
+    max-width: 500px;
+}
+
+.noi_dung p {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #f1f1f1;
+    opacity: 0.9;
+}
+.overlay-content {
+    animation: fadeUp 0.6s ease;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
